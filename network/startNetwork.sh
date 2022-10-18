@@ -12,9 +12,9 @@ export MSYS_NO_PATHCONV=1
 starttime=$(date +%s)
 
 ##install node packages
-#pushd ./chaincode-supply/supply/
-#npm install
-#popd
+pushd ./chaincode-supply/supply/
+npm install
+popd
 
 # clean out any old identites in the wallets
 #rm -rf javascript/wallet/*
