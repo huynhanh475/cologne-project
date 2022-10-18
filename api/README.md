@@ -90,4 +90,77 @@
 
 ## Batch Management
 
+### Create a batch order
+- Endpoint: `\batch`
+- Method: Post
+- Chaincode:
+- Params: role
+- Body:
+
+```json
+{
+    productID: "productOne",
+    manufacturerID: "manufacturerOne",
+    retailerID: "retailerOne",
+    date: 
+    {
+        manufacturedDate: "2022-10-15",
+        orderedDate: "2022-10-18",
+    }
+    quantity: 1000
+}
+```
+
+### Update a batch order
+- Endpoint: `\batch`
+- Method: Put
+- Chaincode:
+- Params: role
+- Body:
+
+```json
+{
+    batchID: "batchOne",
+    delivererID: "delivererOne",
+    date:
+    {
+        toDelivererDate: "2022-10-19",
+        toRetailerDate: "2022-10-20",
+        deliveredDate: "2022-10-21"
+    }
+    status: "good/bad",
+}
+```
+
+### Query all batch orders
+- Enpoint: `\batch`
+- Method: Get
+- Chaincode:
+- Params: role
+- Body:
+  
+```json
+{
+    batchID: "batchOne",
+    productID: "productOne",
+    retailerID: "retailerOne",
+    delivererID: "delivererOne"
+}
+```
+
 ## Transaction
+
+### Transact the batch
+- Endpoint: `\transact`
+- Method: Post
+- Chaincode:
+- Params: role
+- Body:
+
+```json
+{
+    productID: "productOne",
+    batchID: "batchOne",
+    status: "block/unblock"
+}
+```
