@@ -90,26 +90,6 @@
 
 ## Batch Management
 
-### Retailer creates a batch order
-- Endpoint: `/batch`
-- Method: Post
-- Chaincode: `registerBatchOrder`
-- Params: role
-- Body:
-
-```json
-{
-    "productID": "productOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "date": 
-    {
-        "orderedDate": "2022-10-18",
-    },
-    "quantity": 1000
-}
-```
-
 ### Users can query all  of their current orders
 - Enpoint: `/batch`
 - Method: Get
@@ -128,6 +108,22 @@
 
 ## Transaction
 
+### Retailer creates a batch order
+- Endpoint: `/batch`
+- Method: Post
+- Chaincode: `registerBatchOrder`
+- Params: role
+- Body:
+
+```json
+{
+    "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerOne",
+    "quantity": 1000
+}
+```
+
 ### Manufacturer replies the order of the retailer
 - Endpoint: `/transact/order`
 - Method: Put
@@ -138,14 +134,9 @@
 ```json
 {
     "batchID": "batchOne",
-    "productID": "productID",
     "manufacturerID": "manufacturerOne",
     "retailerID": "retailerID",
-    "status": "acceptManu/declineManu",
-    "date":
-    {
-        "orderedDate": "2022-10-18"
-    }
+    "status": "acceptManu/declineManu"
 }
 ```
 
@@ -159,14 +150,9 @@
 ```json
 {
     "batchID": "batchOne",
-    "productID": "productOne",
     "manufacturerID": "manufacturerOne",
     "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "date":
-    {
-        "orderedDate": "2022-10-18"
-    }
+    "delivererID": "delivererOne"
 }
 ```
 
@@ -180,15 +166,10 @@
 ```json
 {
     "batchID": "batchOne",
-    "productID": "productOne",
     "manufacturerID": "manufacturerOne",
     "retailerID": "retailerOne",
     "delivererID": "delivererOne",
-    "status": "acceptDeli/declineDeli",
-    "date":
-    {
-        "orderedDate": "2022-10-18"
-    }
+    "status": "acceptDeli/declineDeli"
 }
 ```
 
@@ -202,16 +183,10 @@
 ```json
 {
     "batchID": "batchOne",
-    "productID": "productOne",
     "manufacturerID": "manufacturerOne",
     "retailerID": "retailerOne",
     "delivererID": "delivererOne",
-    "status": "unblock",
-    "date":
-    {
-        "orderedDate": "2022-10-18",
-        "toDelivererDate": "2022-10-22"
-    }
+    "status": "unblock"
 }
 ```
 
@@ -225,16 +200,10 @@
 ```json
 {
     "batchID": "batchOne",
-    "productID": "productOne",
     "manufacturerID": "manufacturerOne",
     "retailerID": "retailerOne",
     "delivererID": "delivererOne",
-    "status": "delivering",
-    "date":
-    {
-        "orderedDate": "2022-10-18",
-        "toDelivererDate": "2022-10-22"
-    }
+    "status": "delivering"
 }
 ```
 
@@ -247,17 +216,10 @@
 ```json
 {
     "batchID": "batchOne",
-    "productID": "productOne",
     "manufacturerID": "manufacturerOne",
     "retailerID": "retailerOne",
     "delivererID": "delivererOne",
-    "status": "delivered",
-    "date":
-    {
-        "orderedDate": "2022-10-18",
-        "toDelivererDate": "2022-10-22",
-        "toRetailerDate": "2022-10-25"
-    }
+    "status": "delivered"
 }
 ```
 
@@ -270,16 +232,9 @@
 ```json
 {
     "batchID": "batchOne",
-    "productID": "productOne",
     "manufacturerID": "manufacturerOne",
     "retailerID": "retailerOne",
     "delivererID": "delivererOne",
-    "status": "done",
-    "date":
-    {
-        "orderedDate": "2022-10-18",
-        "toDelivererDate": "2022-10-25",
-        "toRetailerDate": "2022-10-27"
-    }
+    "status": "done"
 }
 ```
