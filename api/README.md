@@ -93,58 +93,62 @@
 ### Create a batch order
 - Endpoint: `\batch`
 - Method: Post
-- Chaincode:
+- Chaincode: `registerBatchOrder`
 - Params: role
 - Body:
 
 ```json
 {
-    productID: "productOne",
-    manufacturerID: "manufacturerOne",
-    retailerID: "retailerOne",
-    date: 
+    "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerOne",
+    "date": 
     {
-        manufacturedDate: "2022-10-15",
-        orderedDate: "2022-10-18",
-    }
-    quantity: 1000
+        "manufacturedDate": "2022-10-15",
+        "orderedDate": "2022-10-18",
+    },
+    "quantity": 1000
 }
 ```
 
 ### Update a batch order
 - Endpoint: `\batch`
 - Method: Put
-- Chaincode:
+- Chaincode: `updateBatchOrder`
 - Params: role
 - Body:
 
 ```json
 {
-    batchID: "batchOne",
-    delivererID: "delivererOne",
-    date:
+    "productID": "productOne",
+    "batchID": "batchOne",
+    "manufacturerID": "manufacturerOne",
+    "delivererID": "delivererOne",
+    "retailerID": "retailerOne",
+    "date":
     {
-        toDelivererDate: "2022-10-19",
-        toRetailerDate: "2022-10-20",
-        deliveredDate: "2022-10-21"
-    }
-    status: "good/bad",
+        "orderedDate": "2022-10-18",
+        "toDelivererDate": "2022-10-19",
+        "toRetailerDate": "2022-10-20",
+        "deliveredDate": "2022-10-21"
+    },
+    "status": "good/bad",
 }
 ```
 
 ### Query all batch orders
 - Enpoint: `\batch`
 - Method: Get
-- Chaincode:
+- Chaincode: `queryBatches`
 - Params: role
 - Body:
   
 ```json
 {
-    batchID: "batchOne",
-    productID: "productOne",
-    retailerID: "retailerOne",
-    delivererID: "delivererOne"
+    "batchID": "batchOne",
+    "productID": "productOne",
+    "retailerID": "retailerOne",
+    "delivererID": "delivererOne"
 }
 ```
 
@@ -153,14 +157,14 @@
 ### Transact the batch
 - Endpoint: `\transact`
 - Method: Post
-- Chaincode:
+- Chaincode: `transferToDeliverer`, `transferToRetailer`
 - Params: role
 - Body:
 
 ```json
 {
-    productID: "productOne",
-    batchID: "batchOne",
-    status: "block/unblock"
+    "productID": "productOne",
+    "batchID": "batchOne",
+    "status": "block/unblock"
 }
 ```
