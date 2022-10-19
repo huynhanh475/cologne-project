@@ -36,11 +36,11 @@
 
 ```json
 {
-    name: "name",
-    email: "email",
-    userType: "role (manufacturer, deliverer, retailer)",
-    address: "address",
-    password: "password",
+    "name": "name",
+    "email": "email",
+    "userType": "role (manufacturer, deliverer, retailer)",
+    "address": "address",
+    "password": "password",
 }
 ```
 
@@ -82,15 +82,16 @@
 
 ```json
 {
-    name: "name",
-    price: 200000,
-    quantity: 1000
+    "name": "name",
+    "price": 200000,
+    "quantity": 1000
 }
 ```
 
 ## Batch Management
 
 ### Users can query all  of their current orders
+
 - Enpoint: `/batch`
 - Method: Get
 - Chaincode: `queryBatches`
@@ -109,7 +110,8 @@
 ## Transaction
 
 ### Retailer creates a batch order
-- Endpoint: `/batch`
+
+- Endpoint: `/transact/registerOrder`
 - Method: Post
 - Chaincode: `registerBatchOrder`
 - Params: role
@@ -125,7 +127,8 @@
 ```
 
 ### Manufacturer replies the order of the retailer
-- Endpoint: `/transact/order`
+
+- Endpoint: `/transact/approveOrder`
 - Method: Put
 - Chaincode: `approveBatchOrder`
 - Params: role
@@ -141,6 +144,7 @@
 ```
 
 ### Manufacturer invites/adds the deliverer
+
 - Endpoint: `/transact/invite`
 - Method: Put
 - Chaincode: `inviteDeliverer`
@@ -157,6 +161,7 @@
 ```
 
 ### Deliverer replies the invitation from the manufacturer
+
 - Endpoint: `/transact/reply`
 - Method: Put
 - Chaincode: `approveInvitation`
@@ -174,6 +179,7 @@
 ```
 
 ### Manufacturer transfers the batch to the deliverer
+
 - Endpoint: `/transact/confirm`
 - Method: Put
 - Chaincode: `transferToDeliverer`
@@ -191,6 +197,7 @@
 ```
 
 ### Deliverer confirms that the batch has been received
+
 - Endpoint: `/transact/receive`
 - Method: Put
 - Chaincode: `delivererConfirmTransfer`
@@ -208,11 +215,13 @@
 ```
 
 ### Deliverer transfers the batch to the retailer
+
 - Endpoint: `/transact/arrive`
 - Method: Put
 - Chaincode: `transferToRetailer`
 - Params: role
 - Body:
+
 ```json
 {
     "batchID": "batchOne",
@@ -224,11 +233,13 @@
 ```
 
 ### Retailer confirms that the batch has been received
+
 - Endpoint: `/transact/done`
 - Method: Put
 - Chaincode: `retailerConfirmTransfer`
 - Params: role
 - Body:
+
 ```json
 {
     "batchID": "batchOne",
