@@ -90,8 +90,8 @@
 
 ## Batch Management
 
-### Create a batch order
-- Endpoint: `\batch`
+### Retailer creates a batch order
+- Endpoint: `/batch`
 - Method: Post
 - Chaincode: `registerBatchOrder`
 - Params: role
@@ -104,40 +104,14 @@
     "retailerID": "retailerOne",
     "date": 
     {
-        "manufacturedDate": "2022-10-15",
         "orderedDate": "2022-10-18",
     },
     "quantity": 1000
 }
 ```
 
-### Update a batch order
-- Endpoint: `\batch`
-- Method: Put
-- Chaincode: `updateBatchOrder`
-- Params: role
-- Body:
-
-```json
-{
-    "productID": "productOne",
-    "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "delivererID": "delivererOne",
-    "retailerID": "retailerOne",
-    "date":
-    {
-        "orderedDate": "2022-10-18",
-        "toDelivererDate": "2022-10-19",
-        "toRetailerDate": "2022-10-20",
-        "deliveredDate": "2022-10-21"
-    },
-    "status": "good/bad",
-}
-```
-
-### Query all batch orders
-- Enpoint: `\batch`
+### Users can query all  of their current orders
+- Enpoint: `/batch`
 - Method: Get
 - Chaincode: `queryBatches`
 - Params: role
@@ -145,8 +119,8 @@
   
 ```json
 {
-    "batchID": "batchOne",
     "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
     "retailerID": "retailerOne",
     "delivererID": "delivererOne"
 }
@@ -154,17 +128,158 @@
 
 ## Transaction
 
-### Transact the batch
-- Endpoint: `\transact`
-- Method: Post
-- Chaincode: `transferToDeliverer`, `transferToRetailer`
+### Manufacturer replies the order of the retailer
+- Endpoint: `/transact/order`
+- Method: Put
+- Chaincode: `approveBatchOrder`
 - Params: role
 - Body:
 
 ```json
 {
-    "productID": "productOne",
     "batchID": "batchOne",
-    "status": "block/unblock"
+    "productID": "productID",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerID",
+    "status": "acceptManu/declineManu",
+    "date":
+    {
+        "orderedDate": "2022-10-18"
+    }
+}
+```
+
+### Manufacturer invites/adds the deliverer
+- Endpoint: `/transact/invite`
+- Method: Put
+- Chaincode: `inviteDeliverer`
+- Params: role
+- Body:
+
+```json
+{
+    "batchID": "batchOne",
+    "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerOne",
+    "delivererID": "delivererOne",
+    "date":
+    {
+        "orderedDate": "2022-10-18"
+    }
+}
+```
+
+### Deliverer replies the invitation from the manufacturer
+- Endpoint: `/transact/reply`
+- Method: Put
+- Chaincode: `approveInvitation`
+- Params: role
+- Body:
+
+```json
+{
+    "batchID": "batchOne",
+    "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerOne",
+    "delivererID": "delivererOne",
+    "status": "acceptDeli/declineDeli",
+    "date":
+    {
+        "orderedDate": "2022-10-18"
+    }
+}
+```
+
+### Manufacturer transfers the batch to the deliverer
+- Endpoint: `/transact/confirm`
+- Method: Put
+- Chaincode: `transferToDeliverer`
+- Params: role
+- Body:
+
+```json
+{
+    "batchID": "batchOne",
+    "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerOne",
+    "delivererID": "delivererOne",
+    "status": "unblock",
+    "date":
+    {
+        "orderedDate": "2022-10-18",
+        "toDelivererDate": "2022-10-22"
+    }
+}
+```
+
+### Deliverer confirms that the batch has been received
+- Endpoint: `/transact/receive`
+- Method: Put
+- Chaincode: `delivererConfirmTransfer`
+- Params: role
+- Body:
+
+```json
+{
+    "batchID": "batchOne",
+    "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerOne",
+    "delivererID": "delivererOne",
+    "status": "delivering",
+    "date":
+    {
+        "orderedDate": "2022-10-18",
+        "toDelivererDate": "2022-10-22"
+    }
+}
+```
+
+### Deliverer transfers the batch to the retailer
+- Endpoint: `/transact/arrive`
+- Method: Put
+- Chaincode: `transferToRetailer`
+- Params: role
+- Body:
+```json
+{
+    "batchID": "batchOne",
+    "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerOne",
+    "delivererID": "delivererOne",
+    "status": "delivered",
+    "date":
+    {
+        "orderedDate": "2022-10-18",
+        "toDelivererDate": "2022-10-22",
+        "toRetailerDate": "2022-10-25"
+    }
+}
+```
+
+### Retailer confirms that the batch has been received
+- Endpoint: `/transact/done`
+- Method: Put
+- Chaincode: `retailerConfirmTransfer`
+- Params: role
+- Body:
+```json
+{
+    "batchID": "batchOne",
+    "productID": "productOne",
+    "manufacturerID": "manufacturerOne",
+    "retailerID": "retailerOne",
+    "delivererID": "delivererOne",
+    "status": "done",
+    "date":
+    {
+        "orderedDate": "2022-10-18",
+        "toDelivererDate": "2022-10-25",
+        "toRetailerDate": "2022-10-27"
+    }
 }
 ```
