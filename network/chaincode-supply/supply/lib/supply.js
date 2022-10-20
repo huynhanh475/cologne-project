@@ -21,6 +21,7 @@ const { Contract } = require('fabric-contract-api');
 
 class Supply extends Contract {
 
+    static batchCounter = 0;
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
         const products = [
@@ -87,6 +88,28 @@ class Supply extends Contract {
         await ctx.stub.putState(user_ID, Buffer.from(JSON.stringify(user)));
         console.info('================= END : Create User ===============');
     }
+
+
+    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay,)
+    {
+        console.info('=============== Start : Register Batch =================');
+
+        const batch = {
+            batchId:'batch' + batchCounter,
+            productId: productId,
+            manufacturerId:manufacturerId,
+            retailerId: retailerId,
+            delivererId: '',
+            status:'pending-registration',
+            date: batchDay,
+            quantity: quantity,
+        };
+
+        await ctx.stub.putState('batch' + batchCounter, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Batch Registration ==============');
+    }
+
+
 /*
     async createCar(ctx, carNumber, make, model, color, owner) {
         console.info('============= START : Create Car ===========');
