@@ -1,5 +1,7 @@
 # This is network
 # How to run network:
-# ./startNetwork.sh
+./startNetwork.sh
 # How to bring down network
-# ./networkDown.sh
+./networkDown.sh
+# How to bring down network
+
