@@ -26,12 +26,12 @@ class Supply extends Contract {
         const products = [
             {
                 product_ID: 'product0',
-                Name: 'Orange0',
-                Manufacturer_ID: 'manufacturer0',
-                Status: 'good',
-                Date: '20/10/2022',
-                Price: '10',
-                Quantity: '1000',
+                name: 'Orange0',
+                manufacturer_ID: 'manufacturer0',
+                status: 'good',
+                date: '20/10/2022',
+                price: 10,
+                quantity: 1000,
             },
         ];
 
@@ -43,13 +43,49 @@ class Supply extends Contract {
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    async queryProduct(ctx, productNumber) {
-        const productAsBytes = await ctx.stub.getState(productNumber); // get the car from chaincode state
+    async queryProduct(ctx, product_ID) {
+        const productAsBytes = await ctx.stub.getState(product_ID); // get the car from chaincode state
         if (!productAsBytes || productAsBytes.length === 0) {
-            throw new Error(`${productNumber} does not exist`);
+            throw new Error(`${product_ID} does not exist`);
         }
         console.log(productAsBytes.toString());
         return productAsBytes.toString();
+    }
+
+    async createProduct (ctx, product_ID, name,  manufacturer_ID, date, price, quantity)
+    {
+        console.info('============= START : Create Product =============');
+
+        const product = {
+            product_ID,
+            docType: 'product',
+            name, 
+            manufacturer_ID,
+            date, 
+            price,
+            quantity,
+        };
+
+        await ctx.stub.putState(product_ID, Buffer.from(JSON.stringify(product)));
+        console.info('===============END : Create Product==============');
+    }
+
+    async createUser(name, user_ID, email, user_Type, address, password)
+    {
+        console.info('============ START : Create User ================');
+
+        const user = {
+            name: name,
+            docType: 'user',
+            user_ID: user_ID,
+            email: email,
+            user_Type: user_Type,
+            address: address,
+            password: password,
+        };
+
+        await ctx.stub.putState(user_ID, Buffer.from(JSON.stringify(user)));
+        console.info('================= END : Create User ===============');
     }
 /*
     async createCar(ctx, carNumber, make, model, color, owner) {
