@@ -4,6 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/*
+ * Add an object to the database: ctx.stub.putState(key, value)
+ * Query an object from the database: ctx.stub.getState(key, value)
+*/
 'use strict';
 
 const { Contract } = require('fabric-contract-api');
@@ -12,67 +16,13 @@ class Supply extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        const cars = [
+        const product = [
             {
                 color: 'blue',
                 make: 'Toyota',
                 model: 'Prius',
                 owner: 'Tomoko',
-            },
-            {
-                color: 'red',
-                make: 'Ford',
-                model: 'Mustang',
-                owner: 'Brad',
-            },
-            {
-                color: 'green',
-                make: 'Hyundai',
-                model: 'Tucson',
-                owner: 'Jin Soo',
-            },
-            {
-                color: 'yellow',
-                make: 'Volkswagen',
-                model: 'Passat',
-                owner: 'Max',
-            },
-            {
-                color: 'black',
-                make: 'Tesla',
-                model: 'S',
-                owner: 'Adriana',
-            },
-            {
-                color: 'purple',
-                make: 'Peugeot',
-                model: '205',
-                owner: 'Michel',
-            },
-            {
-                color: 'white',
-                make: 'Chery',
-                model: 'S22L',
-                owner: 'Aarav',
-            },
-            {
-                color: 'violet',
-                make: 'Fiat',
-                model: 'Punto',
-                owner: 'Pari',
-            },
-            {
-                color: 'indigo',
-                make: 'Tata',
-                model: 'Nano',
-                owner: 'Valeria',
-            },
-            {
-                color: 'brown',
-                make: 'Holden',
-                model: 'Barina',
-                owner: 'Shotaro',
-            },
+            }
         ];
 
         for (let i = 0; i < cars.length; i++) {
@@ -139,6 +89,17 @@ class Supply extends Contract {
         await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
         console.info('============= END : changeCarOwner ===========');
     }
+
+    async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
+    async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
+    async approveBatchOrder (ctx,Batch_ID,Retailer_ID )
+    async inviteDeliverer (ctx,manufacturer_ID, Deliverer_ID )
+    async approveInvitation (ctx, Deliverer_ID,manufacturer_ID)
+    async transferToDeliverer (ctx, manufacturer_ID,Batch_ID)
+    async delivererConfirmTransfer (ctx, Deliverer_ID,Batch_ID)
+    async transferToRetailer (ctx, Retailer_ID, Batch_ID)
+    async retailerConfirmTransfer (ctx, Retailer_ID, Batch_ID)
+
 
 }
 
