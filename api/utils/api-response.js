@@ -23,6 +23,13 @@ export function unauthorized(res, msg) {
     });
 }
 
+export function forbidden(res, msg) {
+    return res.status(403).json({
+        message: msg,
+        data: {},
+    });
+}
+
 export function notFound(res) {
     return res.status(404).json({
         message: 'API not found',
