@@ -12,12 +12,15 @@ export MSYS_NO_PATHCONV=1
 starttime=$(date +%s)
 
 ##install node packages
-pushd ./chaincode-supply/supply/
-npm install
-popd
+#pushd ./chaincode-supply/supply/
+#npm install
+#popd
 
 # clean out any old identites in the wallets
-#rm -rf javascript/wallet/*
+rm -rf javascript/wallet/*
+rm -rf javascript/wallet2/*
+rm -rf javascript/wallet3/*
+
 #rm -rf java/wallet/*
 #rm -rf typescript/wallet/*
 #rm -rf go/wallet/*
@@ -29,7 +32,7 @@ pushd ./test-network
 #./network.sh deployCC -ccn fabcar -ccv 1 -cci initLedger -ccl ${CC_SRC_LANGUAGE} -ccp ${CC_SRC_PATH}
 popd
 pushd ./test-network/addOrg3
-./addOrg3.sh up -s couchdb -c mychannel
+./addOrg3.sh up -ca -s couchdb -c mychannel
 popd
 
 ##Deploy chaincode on org1, org2
