@@ -12,36 +12,46 @@
 
 const { Contract } = require('fabric-contract-api');
 
+/*Data models
+ * User{Name, User_ID, Email, User_Type, Address, Password}
+ * BatchDates{ManufactureDate, OrderedDate, SendToDelivererDate, SendToRetailerDate}
+ * Product{Product_ID, Name, Manufacturer_ID, Status, Date, Price, Quantity}
+ * Batch{Batch_ID, Product_ID, Manufacturer_ID, Retailer_ID, Deliverer_ID, Status, Date, Quantity}
+*/
+
 class Supply extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        const product = [
+        const products = [
             {
-                color: 'blue',
-                make: 'Toyota',
-                model: 'Prius',
-                owner: 'Tomoko',
-            }
+                product_ID: 'product0',
+                Name: 'Orange0',
+                Manufacturer_ID: 'manufacturer0',
+                Status: 'good',
+                Date: '20/10/2022',
+                Price: '10',
+                Quantity: '1000',
+            },
         ];
 
-        for (let i = 0; i < cars.length; i++) {
-            cars[i].docType = 'car';
-            await ctx.stub.putState('CAR' + i, Buffer.from(JSON.stringify(cars[i])));
-            console.info('Added <--> ', cars[i]);
+        for (let i = 0; i < products.length; i++) {
+            products[i].docType = 'product';
+            await ctx.stub.putState('product' + i, Buffer.from(JSON.stringify(products[i])));
+            console.info('Added <--> ', products[i]);
         }
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    async queryCar(ctx, carNumber) {
-        const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
-        if (!carAsBytes || carAsBytes.length === 0) {
-            throw new Error(`${carNumber} does not exist`);
+    async queryProduct(ctx, productNumber) {
+        const productAsBytes = await ctx.stub.getState(productNumber); // get the car from chaincode state
+        if (!productAsBytes || productAsBytes.length === 0) {
+            throw new Error(`${productNumber} does not exist`);
         }
-        console.log(carAsBytes.toString());
-        return carAsBytes.toString();
+        console.log(productAsBytes.toString());
+        return productAsBytes.toString();
     }
-
+/*
     async createCar(ctx, carNumber, make, model, color, owner) {
         console.info('============= START : Create Car ===========');
 
@@ -89,7 +99,8 @@ class Supply extends Contract {
         await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
         console.info('============= END : changeCarOwner ===========');
     }
-
+*/
+/*
     async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
     async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
     async approveBatchOrder (ctx,Batch_ID,Retailer_ID )
@@ -99,7 +110,7 @@ class Supply extends Contract {
     async delivererConfirmTransfer (ctx, Deliverer_ID,Batch_ID)
     async transferToRetailer (ctx, Retailer_ID, Batch_ID)
     async retailerConfirmTransfer (ctx, Retailer_ID, Batch_ID)
-
+*/
 
 }
 
