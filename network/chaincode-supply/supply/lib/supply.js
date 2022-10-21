@@ -17,11 +17,12 @@ const { Contract } = require('fabric-contract-api');
  * BatchDates{ManufactureDate, OrderedDate, SendToDelivererDate, SendToRetailerDate}
  * Product{Product_ID, Name, Manufacturer_ID, Status, Date, Price, Quantity}
  * Batch{Batch_ID, Product_ID, Manufacturer_ID, Retailer_ID, Deliverer_ID, Status, Date, Quantity}
+ * 
 */
 
 class Supply extends Contract {
 
-    static batchCounter = 0;
+    batchCounter = 0;
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
@@ -45,9 +46,9 @@ class Supply extends Contract {
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    async signIn(userId, password)
+    async signIn(ctx, userId, password)
     {
-        const userEntity = ctx.stub.getState(userId);
+        const userEntity = await ctx.stub.getState(userId);
         if(!userEntity || userEntity.length === 0)
         {
             throw new Error(`${userId} does not exist`);
@@ -55,7 +56,8 @@ class Supply extends Contract {
 
         //need hash password before
         // if hashed(password) == password
-        if(userEntity.password !== password)
+        const userJson = await JSON.parse(await userEntity.toString());
+        if(userJson.password !== password)
         {
             throw new Error(`Wrong password provided`);
         } 
@@ -91,7 +93,7 @@ class Supply extends Contract {
         console.info('===============END : Create Product==============');
     }
 
-    async createUser(name, userId, email, userType, address, password)
+    async createUser(ctx, name, userId, email, userType, address, password)
     {
         console.info('============ START : Create User ================');
 
@@ -109,12 +111,23 @@ class Supply extends Contract {
         console.info('================= END : Create User ===============');
     }
 
+    async queryUser(ctx, userId)
+    {
+        const userAsBytes = await ctx.stub.getState(userId);
+        if(!userAsBytes || userAsBytes.length === 0)
+        {
+            throw new Error(`${userId} does not exist`);
+        }
+        console.log(userAsBytes.toString());
+        return userAsBytes.toString();
+    }
+
     async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
     {
         console.info('=============== Start : Register Batch =================');
 
         const batch = {
-            batchId:'batch' + batchCounter,//uuid generator (?)
+            batchId:'batch' + this.batchCounter,//uuid generator (?)
             productId: productId,
             manufacturerId:manufacturerId,
             retailerId: retailerId,
@@ -124,11 +137,31 @@ class Supply extends Contract {
             quantity: quantity,
         };
 
-        await ctx.stub.putState('batch' + batchCounter, Buffer.from(JSON.stringify(batch)));
-        batchCounter++;
+        await ctx.stub.putState('batch' + this.batchCounter, Buffer.from(JSON.stringify(batch)));
+        this.batchCounter++;
         console.info('================= END : Batch Registration ==============');
     }
 
+/*
+    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
+    {
+        console.info('=============== Start : Register Batch =================');
+
+        const batch = {
+            batchId:'batch' + 0,//uuid generator (?)
+            productId: productId,
+            manufacturerId:manufacturerId,
+            retailerId: retailerId,
+            delivererId: '',
+            status:'pending-registration',
+            date: batchDay,
+            quantity: quantity,
+        };
+
+        await ctx.stub.putState('batch' + 0, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Batch Registration ==============');
+    }
+*/
     async transferToDeliverer (ctx, batchId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
@@ -138,6 +171,16 @@ class Supply extends Contract {
         
         batchAsBytes.status = 'transfered-to-deliverer';
         await ctx.stub.putState(batchId, batchAsBytes);
+    }
+
+    async queryBatch(ctx, batchId)
+    {
+        var batchAsBytes = await ctx.stub.getState(batchId);
+        if (!batchAsBytes || batchAsBytes.length === 0) {
+            throw new Error(`${batchId}} does not exist`);
+        }
+        console.log(batchAsBytes.toString());
+        return batchAsBytes.toString();
     }
 /*
     async createCar(ctx, carNumber, make, model, color, owner) {
