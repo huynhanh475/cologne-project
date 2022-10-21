@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Chaincodes
 
 ## Create Product
@@ -16,7 +15,7 @@
 - Params: productID, retailerID, manufacturerID, quantity, date
 ## Approve Batch Order
 - Method: approveBatchOrder 
-- Params: batchID, manufacturerID
+- Params: batchID
   
 ## Invite Deliver
 - Method: inviteDeliver
@@ -24,18 +23,10 @@
 
 ## Approve Invitation
 - Method: approveInvitation
-- Params: manufacturerID, delivererID, batchID
+- Params: batchID, action
 # Setup the network (go to network folder)
 ## Start network: 
 - ./startNetwork.sh
 ## Stop network
 -  ./networkDown.sh
-=======
-# This is network
-# How to run network:
-./startNetwork.sh
-# How to bring down network
-./networkDown.sh
-# How to bring down network
->>>>>>> 9bd88c2020a85c487a8f377448ca102c96e250d1
 
