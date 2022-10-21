@@ -48,7 +48,7 @@ async function main() {
 
         // Disconnect from the gateway.
         //testing
-        await contract.evaluateTransaction('registerBatch', 'product1','r1','m1','1','temp');
+        await contract.evaluateTransaction('registerBatchOrder', 'product1','r1','m1','1','temp');
         await contract.evaluateTransaction('approveBatchOrder', 'batch0');
         await contract.evaluateTransaction('inviteDeliverer', 'batch0','d1');
         await contract.evaluateTransaction('approveInvitation', 'batch0','accept');

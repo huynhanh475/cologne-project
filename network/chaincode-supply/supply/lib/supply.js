@@ -95,7 +95,7 @@ class Supply extends Contract {
         console.info('=============== Start : Register Batch =================');
 
         const batch = {
-            batchId:'batch' + batchCounter,
+            batchId:'batch0',
             productId: productId,
             manufacturerId:manufacturerId,
             retailerId: retailerId,
