@@ -44,7 +44,9 @@ async function main() {
         // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR12', 'Dave')
         //await contract.submitTransaction('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom');
         //ctx, product_ID, name,  manufacturer_ID, date, price, quantity
-        await contract.submitTransaction('createProduct', 'product1', 'Orange1', 'manufacturer1', '20/10/2022', 20, 500);
+        //await contract.submitTransaction('createProduct', 'product1', 'Orange1', 'manufacturer1', '20/10/2022', 20, 500);
+        //await contract.submitTransaction('registerBatchOrder', 'product1', 'retailer1', 'manufacturer3','11', '20/10/2022');
+        await contract.submitTransaction('createUser', 'Minh','user1', 'minhdinh@gmail.com', 'retailer', 'no address', '12345');
         console.log('Transaction has been submitted');
 
         // Disconnect from the gateway.
