@@ -4,94 +4,142 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/*
+ * Add an object to the database: ctx.stub.putState(key, value)
+ * Query an object from the database: ctx.stub.getState(key, value)
+*/
 'use strict';
 
 const { Contract } = require('fabric-contract-api');
 
+/*Data models
+ * User{Name, User_ID, Email, User_Type, Address, Password}
+ * BatchDates{ManufactureDate, OrderedDate, SendToDelivererDate, SendToRetailerDate}
+ * Product{Product_ID, Name, Manufacturer_ID, Status, Date, Price, Quantity}
+ * Batch{Batch_ID, Product_ID, Manufacturer_ID, Retailer_ID, Deliverer_ID, Status, Date, Quantity}
+*/
+
 class Supply extends Contract {
+
+    static batchCounter = 0;
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        const cars = [
+        const products = [
             {
-                color: 'blue',
-                make: 'Toyota',
-                model: 'Prius',
-                owner: 'Tomoko',
-            },
-            {
-                color: 'red',
-                make: 'Ford',
-                model: 'Mustang',
-                owner: 'Brad',
-            },
-            {
-                color: 'green',
-                make: 'Hyundai',
-                model: 'Tucson',
-                owner: 'Jin Soo',
-            },
-            {
-                color: 'yellow',
-                make: 'Volkswagen',
-                model: 'Passat',
-                owner: 'Max',
-            },
-            {
-                color: 'black',
-                make: 'Tesla',
-                model: 'S',
-                owner: 'Adriana',
-            },
-            {
-                color: 'purple',
-                make: 'Peugeot',
-                model: '205',
-                owner: 'Michel',
-            },
-            {
-                color: 'white',
-                make: 'Chery',
-                model: 'S22L',
-                owner: 'Aarav',
-            },
-            {
-                color: 'violet',
-                make: 'Fiat',
-                model: 'Punto',
-                owner: 'Pari',
-            },
-            {
-                color: 'indigo',
-                make: 'Tata',
-                model: 'Nano',
-                owner: 'Valeria',
-            },
-            {
-                color: 'brown',
-                make: 'Holden',
-                model: 'Barina',
-                owner: 'Shotaro',
+                productId: 'product0',
+                name: 'Orange0',
+                manufacturerId: 'manufacturer0',
+                status: 'good',
+                date: '20/10/2022',
+                price: 10,
+                quantity: 1000,
             },
         ];
 
-        for (let i = 0; i < cars.length; i++) {
-            cars[i].docType = 'car';
-            await ctx.stub.putState('CAR' + i, Buffer.from(JSON.stringify(cars[i])));
-            console.info('Added <--> ', cars[i]);
+        for (let i = 0; i < products.length; i++) {
+            products[i].docType = 'product';
+            await ctx.stub.putState('product' + i, Buffer.from(JSON.stringify(products[i])));
+            console.info('Added <--> ', products[i]);
         }
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    async queryCar(ctx, carNumber) {
-        const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
-        if (!carAsBytes || carAsBytes.length === 0) {
-            throw new Error(`${carNumber} does not exist`);
+    async signIn(userId, password)
+    {
+        const userEntity = ctx.stub.getState(userId);
+        if(!userEntity || userEntity.length === 0)
+        {
+            throw new Error(`${userId} does not exist`);
         }
-        console.log(carAsBytes.toString());
-        return carAsBytes.toString();
+
+        //need hash password before
+        // if hashed(password) == password
+        if(userEntity.password !== password)
+        {
+            throw new Error(`Wrong password provided`);
+        } 
+        else{
+            return userEntity;
+        }
     }
 
+    async queryProduct(ctx, productId) {
+        const productAsBytes = await ctx.stub.getState(productId); // get the car from chaincode state
+        if (!productAsBytes || productAsBytes.length === 0) {
+            throw new Error(`${productId} does not exist`);
+        }
+        console.log(productAsBytes.toString());
+        return productAsBytes.toString();
+    }
+
+    async createProduct (ctx, productId, name,  manufacturerId, date, price, quantity)
+    {
+        console.info('============= START : Create Product =============');
+
+        const product = {
+            productId,
+            docType: 'product',
+            name, 
+            manufacturerId,
+            date, 
+            price,
+            quantity,
+        };
+
+        await ctx.stub.putState(productId, Buffer.from(JSON.stringify(product)));
+        console.info('===============END : Create Product==============');
+    }
+
+    async createUser(name, userId, email, userType, address, password)
+    {
+        console.info('============ START : Create User ================');
+
+        const user = {
+            name: name,
+            docType: 'user',
+            userId: userId,
+            email: email,
+            userType: userType,
+            address: address,
+            password: password,
+        };
+
+        await ctx.stub.putState(userId, Buffer.from(JSON.stringify(user)));
+        console.info('================= END : Create User ===============');
+    }
+
+    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
+    {
+        console.info('=============== Start : Register Batch =================');
+
+        const batch = {
+            batchId:'batch' + batchCounter,//uuid generator (?)
+            productId: productId,
+            manufacturerId:manufacturerId,
+            retailerId: retailerId,
+            delivererId: '',
+            status:'pending-registration',
+            date: batchDay,
+            quantity: quantity,
+        };
+
+        await ctx.stub.putState('batch' + batchCounter, Buffer.from(JSON.stringify(batch)));
+        batchCounter++;
+        console.info('================= END : Batch Registration ==============');
+    }
+
+    async transferToDeliverer (ctx, batchId)
+    {
+        var batchAsBytes = await ctx.stub.getState(batchId);
+        if (!batchAsBytes || batchAsBytes.length === 0) {
+            throw new Error(`${batchId}} does not exist`);
+        }
+        
+        batchAsBytes.status = 'transfered-to-deliverer';
+        await ctx.stub.putState(batchId, batchAsBytes);
+    }
+/*
     async createCar(ctx, carNumber, make, model, color, owner) {
         console.info('============= START : Create Car ===========');
 
@@ -139,6 +187,18 @@ class Supply extends Contract {
         await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
         console.info('============= END : changeCarOwner ===========');
     }
+*/
+/*
+    async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
+    async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
+    async approveBatchOrder (ctx,Batch_ID,Retailer_ID )
+    async inviteDeliverer (ctx,manufacturer_ID, Deliverer_ID )
+    async approveInvitation (ctx, Deliverer_ID,manufacturer_ID)
+    async transferToDeliverer (ctx, manufacturer_ID,Batch_ID)
+    async delivererConfirmTransfer (ctx, Deliverer_ID,Batch_ID)
+    async transferToRetailer (ctx, Retailer_ID, Batch_ID)
+    async retailerConfirmTransfer (ctx, Retailer_ID, Batch_ID)
+*/
 
 }
 
