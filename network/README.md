@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Chaincodes
 
 ## Create Product
@@ -29,4 +30,12 @@
 - ./startNetwork.sh
 ## Stop network
 -  ./networkDown.sh
+=======
+# This is network
+# How to run network:
+./startNetwork.sh
+# How to bring down network
+./networkDown.sh
+# How to bring down network
+>>>>>>> 9bd88c2020a85c487a8f377448ca102c96e250d1
 
