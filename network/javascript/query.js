@@ -48,10 +48,10 @@ async function main() {
 
         // Disconnect from the gateway.
         //testing
-        contract.evaluateTransaction('registerBatch', 'product1','r1','m1','1','temp');
-        contract.evaluateTransaction('approveBatchOrder', 'batch0');
-        contract.evaluateTransaction('inviteDeliverer', 'batch0','d1');
-        contract.evaluateTransaction('approveInvitation', 'batch0','accept');
+        await contract.evaluateTransaction('registerBatch', 'product1','r1','m1','1','temp');
+        await contract.evaluateTransaction('approveBatchOrder', 'batch0');
+        await contract.evaluateTransaction('inviteDeliverer', 'batch0','d1');
+        await contract.evaluateTransaction('approveInvitation', 'batch0','accept');
         await gateway.disconnect();
         
     } catch (error) {
