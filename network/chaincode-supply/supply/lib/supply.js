@@ -169,8 +169,9 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
         
-        batchAsBytes.status = 'transfered-to-deliverer';
-        await ctx.stub.putState(batchId, batchAsBytes);
+        var batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        batchAsJson.status = 'transfered-to-deliverer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
 
     async queryBatch(ctx, batchId)
