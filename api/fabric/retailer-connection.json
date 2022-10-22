@@ -1,0 +1,78 @@
+{
+    "name": "mychannel",
+    "version": "1.0",
+    "client": {
+      "organization": "Org3",
+      "connection": {
+        "timeout": {
+          "peer": {
+            "endorser": "300",
+            "eventHub": "300",
+            "eventReg": "300"
+          },
+          "orderer": "300"
+        }
+      }
+    },
+    "channels": {
+      "mychannel": {
+        "orderers": [
+          "orderer.example.com"
+        ],
+        "peers": {
+          "peer0.org3.example.com": {
+            "endorsingPeer": true,
+            "chaincodeQuery": true,
+            "ledgerQuery": true,
+            "eventSource": true,
+            "discover": true
+          }
+        }
+      }
+    },
+    "organizations": {
+      "Org3": {
+        "mspid": "Org3MSP",
+        "peers": [
+          "peer0.org3.example.com"
+        ],
+        "certificateAuthorities": [
+          "ca.org3.example.com"
+        ]
+      }
+    },
+    "orderers": {
+      "orderer.example.com": {
+        "url": "grpcs://localhost:7050",
+        "grpcOptions": {
+          "ssl-target-name-override": "orderer.example.com"
+        },
+        "tlsCACerts": {
+          "path": "../../network/test-network/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem"
+        }
+      }
+    },
+    "peers": {
+      "peer0.org3.example.com": {
+        "url": "grpcs://localhost:11051",
+        "grpcOptions": {
+          "ssl-target-name-override": "peer0.org3.example.com"
+        },
+        "tlsCACerts": {
+          "path": "../../network/test-network/organizations/peerOrganizations/org3.example.com/tlsca/tlsca.org3.example.com-cert.pem"
+        }
+      }
+    },
+    "certificateAuthorities": {
+      "ca.org3.example.com": {
+        "url": "https://localhost:11054",
+        "caName": "ca.org3.example.com",
+        "httpOptions": {
+          "verify": false
+        },
+        "tlsCACerts": {
+          "path": "../../network/test-network/organizations/peerOrganizations/org3.example.com/ca/ca.org3.example.com-cert.pem"
+        }
+      }
+    }
+  }

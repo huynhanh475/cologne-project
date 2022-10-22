@@ -8,11 +8,11 @@ dotenv.config()
 const manufacturerCcpPath = join(process.cwd(), process.env.MANUFACTURER_CONN);
 const manufacturerCcp = JSON.parse(readFileSync(manufacturerCcpPath, 'utf8'));
 
-// const delivererCcpPath = join(process.cwd(), process.env.DELIVERER_CONN);
-// const delivererCcp = JSON.parse(readFileSync(delivererCcpPath, 'utf8'));
+const delivererCcpPath = join(process.cwd(), process.env.DELIVERER_CONN);
+const delivererCcp = JSON.parse(readFileSync(delivererCcpPath, 'utf8'));
 
-// const retailerCcpPath = join(process.cwd(), process.env.RETAILER_CONN);
-// const retailerCcp = JSON.parse(readFileSync(retailerCcpPath, 'utf8'));
+const retailerCcpPath = join(process.cwd(), process.env.RETAILER_CONN);
+const retailerCcp = JSON.parse(readFileSync(retailerCcpPath, 'utf8'));
 
 function getConnectionMaterial(isManufacturer, isDeliverer, isRetailer) {
     const connectionMaterial = {};
@@ -23,19 +23,19 @@ function getConnectionMaterial(isManufacturer, isDeliverer, isRetailer) {
         connectionMaterial.caURL = process.env.MANUFACTURER_CA_ADDR;
     }
 
-    // if (isDeliverer) {
-    //     connectionMaterial.walletPath = join(process.cwd(), process.env.DELIVERER_WALLET);
-    //     connectionMaterial.connection = delivererCcp;
-    //     connectionMaterial.orgMSPID = process.env.DELIVERER_MSP;
-    //     connectionMaterial.caURL = process.env.DELIVERER_CA_ADDR;
-    // }
+    if (isDeliverer) {
+        connectionMaterial.walletPath = join(process.cwd(), process.env.DELIVERER_WALLET);
+        connectionMaterial.connection = delivererCcp;
+        connectionMaterial.orgMSPID = process.env.DELIVERER_MSP;
+        connectionMaterial.caURL = process.env.DELIVERER_CA_ADDR;
+    }
 
-    // if (isRetailer) {
-    //     connectionMaterial.walletPath = join(process.cwd(), process.env.RETAILER_WALLET);
-    //     connectionMaterial.connection = retailerCcp;
-    //     connectionMaterial.orgMSPID = process.env.RETAILER_MSP;
-    //     connectionMaterial.caURL = process.env.RETAILER_CA_ADDR;
-    // }
+    if (isRetailer) {
+        connectionMaterial.walletPath = join(process.cwd(), process.env.RETAILER_WALLET);
+        connectionMaterial.connection = retailerCcp;
+        connectionMaterial.orgMSPID = process.env.RETAILER_MSP;
+        connectionMaterial.caURL = process.env.RETAILER_CA_ADDR;
+    }
 
     return connectionMaterial;
 }
@@ -188,7 +188,7 @@ export async function invoke(networkObj, ...funcAndArgs) {
         console.log('Transaction has been submitted');
         networkObj.gateway.disconnect();
 
-        return JSON.parse(res);
+        return JSON.parse(result);
     }
     catch (error) {
         console.error(`Failed to submit transaction: ${error}`);
