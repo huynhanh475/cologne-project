@@ -1,3 +1,5 @@
+root@DESKTOP-MN0JR6V:~/cologne-project/network# cat chaincode-supply/supply/
+lib/supply.js
 /*
  * Copyright IBM Corp. All Rights Reserved.
  *
@@ -21,7 +23,7 @@ const { Contract } = require('fabric-contract-api');
 
 class Supply extends Contract {
 
-    static batchCounter = 0;
+
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
@@ -58,7 +60,7 @@ class Supply extends Contract {
         if(userEntity.password !== password)
         {
             throw new Error(`Wrong password provided`);
-        } 
+        }
         else{
             return userEntity;
         }
@@ -80,9 +82,9 @@ class Supply extends Contract {
         const product = {
             productId,
             docType: 'product',
-            name, 
+            name,
             manufacturerId,
-            date, 
+            date,
             price,
             quantity,
         };
@@ -112,9 +114,9 @@ class Supply extends Contract {
     async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
     {
         console.info('=============== Start : Register Batch =================');
-        
+
         const batch = {
-            batchId:'batch' + batchCounter,//uuid generator (?)
+            batchId:'batch0',//uuid generator (?)
             productId: productId,
             manufacturerId:manufacturerId,
             retailerId: retailerId,
@@ -124,8 +126,8 @@ class Supply extends Contract {
             quantity: quantity,
         };
 
-        await ctx.stub.putState('batch' + batchCounter, Buffer.from(JSON.stringify(batch)));
-        batchCounter++;
+        await ctx.stub.putState('batch0', Buffer.from(JSON.stringify(batch)));
+
         console.info('================= END : Batch Registration ==============');
     }
 
@@ -135,7 +137,7 @@ class Supply extends Contract {
         if (!batchAsBytes || batchAsBytes.length === 0) {
             throw new Error(`${batchId}} does not exist`);
         }
-        
+
         batchAsBytes.status = 'transfered-to-deliverer';
         await ctx.stub.putState(batchId, batchAsBytes);
     }
@@ -146,7 +148,7 @@ class Supply extends Contract {
         if (!batchAsBytes || batchAsBytes.length === 0) {
             throw new Error(`${batchId}} does not exist`);
         }
-        
+
         batchAsBytes.status = 'deliverer-confirm-transfer';
         await ctx.stub.putState(batchId, batchAsBytes);
     }
@@ -157,7 +159,7 @@ class Supply extends Contract {
         if (!batchAsBytes || batchAsBytes.length === 0) {
             throw new Error(`${batchId}} does not exist`);
         }
-        
+
         batchAsBytes.status = 'retailer-confirm-transfer';
         await ctx.stub.putState(batchId, batchAsBytes);
     }
@@ -173,7 +175,7 @@ class Supply extends Contract {
     async approveBatchOrder (ctx, batchId)
     {
         console.info('=============== Start : Approve Batch =================');
-        const batch = await JSON.parse(queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
         batch.status = 'approved';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Batch Approval ==============');
@@ -181,7 +183,7 @@ class Supply extends Contract {
     async inviteDeliverer(ctx, batchId, delivererId)
     {
         console.info('=============== Start : Inviting deliverer =================');
-        const batch = await JSON.parse(queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
         batch.delivererId = delivererId;
         batch.status = 'pending-invite-to-deliverer'
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
@@ -190,7 +192,7 @@ class Supply extends Contract {
     async approveInvitation (ctx, batchId,action)
     {
         console.info('=============== Start : Approve Invitation =================');
-        const batch = await JSON.parse(queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
         if(action == 'approved')
         {
             batch.status = 'approve-invitation-by-deliverer';
@@ -206,5 +208,3 @@ class Supply extends Contract {
     }
 
 }
-
-module.exports = Supply;
