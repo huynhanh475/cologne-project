@@ -11,6 +11,10 @@ async function main() {
     await network.enrollAdmin(false, true, false);
     await network.enrollAdmin(false, false, true);
 
+    // testing connection with the network
+    await network.registerUser(true, false, false, 'appUser');
+    await network.connect(true, false, false, 'appUser');
+
     const app = express();
     app.use(morgan('combined'));
     app.use(bodyParser.json());
