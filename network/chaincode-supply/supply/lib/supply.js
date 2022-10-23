@@ -174,6 +174,33 @@ class Supply extends Contract {
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
 
+    async delivererConfirmTransfer (ctx, batchId)
+    {
+        var batchAsBytes = await ctx.stub.getState(batchId);
+        if (!batchAsBytes || batchAsBytes.length === 0) {
+            throw new Error(`${batchId}} does not exist`);
+        }
+
+        var batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        batchAsJson.status = 'deliverer-confirm-transfer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+    }
+
+    async retailerConfirmTransfer (ctx, batchId)
+    {
+        var batchAsBytes = await ctx.stub.getState(batchId);
+        if (!batchAsBytes || batchAsBytes.length === 0) {
+            throw new Error(`${batchId}} does not exist`);
+        }
+
+        var batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        batchAsJson.status = 'retailer-confirm-transfer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+    }
+
+
+
+
     async queryBatch(ctx, batchId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
