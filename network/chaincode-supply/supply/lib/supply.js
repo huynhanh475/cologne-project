@@ -88,7 +88,6 @@ class Supply extends Contract {
             price,
             quantity,
         };
-
         await ctx.stub.putState(productId, Buffer.from(JSON.stringify(product)));
         console.info('===============END : Create Product==============');
     }
@@ -118,6 +117,7 @@ class Supply extends Contract {
         const batch = {
             batchId:'batch0',//uuid generator (?)
             productId: productId,
+            docType: 'batch',
             manufacturerId:manufacturerId,
             retailerId: retailerId,
             delivererId: '',
@@ -213,5 +213,23 @@ class Supply extends Contract {
         batch.status = 'transfered-to-retailer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Transfer to retailer ==============');
+    }
+    async getAllBatches(ctx)
+    {
+        const allResults = [];
+        for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            if (record.docType == 'batch')
+            allResults.push({ Key: key, Record: record });
+        }
+        console.info(allResults);
+        return JSON.stringify(allResults);
     }
 }
