@@ -13,7 +13,8 @@ async function main() {
 
     // testing connection with the network
     await network.registerUser(true, false, false, 'appUser');
-    await network.connect(true, false, false, 'appUser');
+    const networkObj = await network.connect(true, false, false, 'appUser');
+    await network.query(networkObj, 'queryProduct', 'product0');
 
     const app = express();
     app.use(morgan('combined'));
