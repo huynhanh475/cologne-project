@@ -24,6 +24,23 @@
 ## Approve Invitation
 - Method: approveInvitation
 - Params: batchID, action
+
+## Transfer to Deliverer
+- Method: transferToDeliverer
+- Params: batchID
+## Deliverer confirm transfer
+- Method: delivererConfirmTransfer
+- Params: batchID
+## Transfer to Retailer
+- Method: transferToRetailer
+- Params: retailerID, batchID
+
+
+## Retailer confirm Transfer
+- Method: retailerConfirmTransfer
+- Params: batchID
+
+
 # Setup the network (go to network folder)
 ## Start network: 
 - ./startNetwork.sh
