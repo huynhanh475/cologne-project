@@ -206,5 +206,12 @@ class Supply extends Contract {
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Approve Invitation ==============');
     }
-
+    async transferToRetailer (ctx, retailerId, batchId)
+    {
+        console.info('=============== Start : Transfer to retailer =================');
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        batch.status = 'transfered-to-retailer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Transfer to retailer ==============');
+    }
 }
