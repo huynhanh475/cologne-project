@@ -12,3 +12,6 @@ organizations/peerOrganizations/*
 system-genesis-block/*
 *.tar.gz
 log.txt
+
+# Org3 keystore
+addOrg3/fabric-ca/org3/msp/keystore/
