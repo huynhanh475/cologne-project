@@ -315,6 +315,24 @@ class Supply extends Contract {
         }
         console.info('================= END : Report Fault ==============');
     }
+    async queryFaultBatches(ctx)
+    {
+        const allResults = [];
+        for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            if (record.docType == 'batch' && record.status == 'fault')
+            allResults.push(record);
+        }
+        console.info(allResults);
+        return JSON.stringify(allResults);
+    }
 /*
     async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
     async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
