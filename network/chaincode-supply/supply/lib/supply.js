@@ -171,8 +171,16 @@ class Supply extends Contract {
             quantity: quantity,
         };
 
+        const batchDates = {
+            orderedDate: '',
+            sendToDelivererDate: '',
+            sendToRetailerDate: '',
+            markedFaultDate: ''
+        }
+
         const batchAsBytes = await Buffer.from(JSON.stringify(batch));
         await ctx.stub.putState('batch' + this.batchCounter, batchAsBytes);
+        await ctx.stub.putState('batchDates' + this.batchCounter, Buffer.from(JSON.stringify(batchDates)));
         this.batchCounter++;
         console.info('================= END : Batch Registration ==============');
 	    return batchAsBytes;
