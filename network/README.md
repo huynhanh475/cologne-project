@@ -40,7 +40,7 @@
 - Method: retailerConfirmTransfer
 - Params: batchID
 
-
+## reportFaultBatch(batchID, userID)
 # Setup the network (go to network folder)
 ## Start network: 
 - ./startNetwork.sh

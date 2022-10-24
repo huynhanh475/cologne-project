@@ -288,12 +288,33 @@ class Supply extends Contract {
                 record = strValue;
             }
             if (record.docType == 'batch')
-            allResults.push({ Key: key, Record: record });
+            allResults.push(record);
         }
         console.info(allResults);
         return JSON.stringify(allResults);
     }
-    
+    async reportFaultBatch(ctx, batchId, userID)
+    {
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        // batch.status = 'fault';
+        // batch.markedFaultBy = userID;
+        // await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        const product = await JSON.parse(await this.queryProduct(ctx,batch.productId));
+        product.status = 'fault';
+        product.markedFaultBy = userID;
+        await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
+        const allResults=JSON.parse(this.getAllBatches(ctx));
+        for (let i in allResults)
+        {
+            if(allResults[i].productId == batch.productId)
+            {
+                allResults[i].status = 'fault';
+                allResults[i].markedFaultBy = userID;
+                await ctx.stub.putState(allResults[i].batchId, Buffer.from(JSON.stringify(allResults[i])));
+            }
+        }
+        console.info('================= END : Report Fault ==============');
+    }
 /*
     async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
     async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
