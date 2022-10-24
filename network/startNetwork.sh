@@ -16,11 +16,14 @@ starttime=$(date +%s)
 #npm install
 #popd
 
+# check install binaries if not exist
+./installBinaries.sh
+
 # clean out any old identites in the wallets
 rm -rf javascript/wallet/*
 rm -rf javascript/wallet2/*
 rm -rf javascript/wallet3/*
-
+rm -rf ../api/identity
 #rm -rf java/wallet/*
 #rm -rf typescript/wallet/*
 #rm -rf go/wallet/*
