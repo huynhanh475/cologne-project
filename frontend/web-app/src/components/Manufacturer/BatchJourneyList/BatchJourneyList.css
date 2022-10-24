@@ -1,0 +1,71 @@
+@import '~antd/dist/antd.css';
+
+.batchjourneytable {
+    height: 400px;
+    width: 80%;
+    padding-left: 280px;
+  }
+  
+  .batchjourneytable .datatableTitle {
+    width: 100%;
+    font-family: 'Verdana', sans-serif;
+    font-size: 100px;
+    color: rgb(0, 0, 0);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+  }
+  
+  .batchjourneytable .cellAction {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    gap: 15px;
+  }
+  
+  .batchjourneytable .cellAction .transferButton {
+    padding: 2px 5px;
+    border-radius: 5px;
+    color: darkblue;
+    border: 1px dotted rgba(0, 0, 139, 0.596);
+    cursor: pointer;
+  }
+  
+  .batchjourneytable .cellAction .markFaultButton {
+    padding: 2px 5px;
+    border-radius: 5px;
+    color: crimson;
+    border: 1px dotted rgba(220, 20, 60, 0.6);
+    cursor: pointer;
+  } 
+
+.filter_batch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-top: 10px;
+}
+    
+    
+.filter_batch input{
+  margin-top: 20px;
+  width: 350px;
+  height: 10px;
+  border-radius: 20px;
+  font-size: 15px;
+  padding-left: 10px;
+  background-color: transparent;
+  border: 2px solid #01185e;
+  color: #013567;
+  font-family: 'Verdana', sans-serif;
+}

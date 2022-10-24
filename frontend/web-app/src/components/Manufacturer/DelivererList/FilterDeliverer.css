@@ -1,0 +1,21 @@
+.filter_user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-top: 10px;
+}
+  
+  
+.filter_user input{
+    margin-top: 20px;
+    width: 350px;
+    height: 10px;
+    border-radius: 20px;
+    font-size: 15px;
+    padding-left: 10px;
+    background-color: transparent;
+    border: 2px solid #01185e;
+    color: #013567;
+    font-family: 'Verdana', sans-serif;
+}
