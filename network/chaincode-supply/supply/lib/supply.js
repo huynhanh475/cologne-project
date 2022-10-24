@@ -23,6 +23,8 @@ const { Contract } = require('fabric-contract-api');
 class Supply extends Contract {
 
     batchCounter = 0;
+    productCounter = 0;
+    userCounter = 0;
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
@@ -60,7 +62,7 @@ class Supply extends Contract {
         if(userJson.password !== password)
         {
             throw new Error(`Wrong password provided`);
-        } 
+        }
         else{
             return userEntity;
         }
@@ -75,40 +77,45 @@ class Supply extends Contract {
         return productAsBytes.toString();
     }
 
-    async createProduct (ctx, productId, name,  manufacturerId, date, price, quantity)
+    async createProduct (ctx, name,  manufacturerId, date, price, quantity)
     {
         console.info('============= START : Create Product =============');
 
         const product = {
-            productId,
+            productId = 'product' + this.productCounter,
             docType: 'product',
-            name, 
+            name,
             manufacturerId,
-            date, 
+            date,
             price,
             quantity,
         };
 
-        await ctx.stub.putState(productId, Buffer.from(JSON.stringify(product)));
+	const productAsBytes = await Buffer.from(JSON.stringify(product));
+        await ctx.stub.putState('product' + this.productCounter, productAsBytes);
+        this.productCounter++;
         console.info('===============END : Create Product==============');
+	return productAsBytes;
     }
 
-    async createUser(ctx, name, userId, email, userType, address, password)
+    async createUser(ctx, name, email, userType, address, password)
     {
         console.info('============ START : Create User ================');
 
         const user = {
             name: name,
             docType: 'user',
-            userId: userId,
+            userId: 'user' + this.userCounter,
             email: email,
             userType: userType,
             address: address,
             password: password,
         };
-
-        await ctx.stub.putState(userId, Buffer.from(JSON.stringify(user)));
+        const userAsBytes = await Buffer.from(JSON.stringify(user));
+        await ctx.stub.putState('user' + this.userCounter, userAsBytes);
+        this.userCounter++;
         console.info('================= END : Create User ===============');
+        return userAsBytes;
     }
 
     async queryUser(ctx, userId)
@@ -122,6 +129,20 @@ class Supply extends Contract {
         return userAsBytes.toString();
     }
 
+    async queryAllUser(ctx)
+    {
+	const users = [];
+        for(let i=0; i<this.userCounter; i++)
+	{
+	    const userAsBytes = await ctx.stub.getState('user' + i);
+            if(!userAsBytes || userAsBytes.length ===0)
+	    {
+		throw new Error(`No user registered`);
+	    }
+	    await users.push(userAsBytes);
+	}
+        return users;
+    }
     async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
     {
         console.info('=============== Start : Register Batch =================');
@@ -137,10 +158,13 @@ class Supply extends Contract {
             quantity: quantity,
         };
 
-        await ctx.stub.putState('batch' + this.batchCounter, Buffer.from(JSON.stringify(batch)));
+        const batchAsBytes = await Buffer.from(JSON.stringify(batch));
+        await ctx.stub.putState('batch' + this.batchCounter, batchAsBytes);
         this.batchCounter++;
         console.info('================= END : Batch Registration ==============');
+	return batchAsBytes;
     }
+
 
 /*
     async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
@@ -168,8 +192,8 @@ class Supply extends Contract {
         if (!batchAsBytes || batchAsBytes.length === 0) {
             throw new Error(`${batchId}} does not exist`);
         }
-        
-        var batchAsJson = await JSON.parse( await batchAsBytes.toString())
+
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
         batchAsJson.status = 'transfered-to-deliverer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
@@ -181,7 +205,7 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        var batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
         batchAsJson.status = 'deliverer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
@@ -193,12 +217,10 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        var batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
         batchAsJson.status = 'retailer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
-
-
 
 
     async queryBatch(ctx, batchId)
