@@ -21,7 +21,7 @@ function FaultyBatchList() {
             rows={data}
             getRowId={(row) => row.batchID}
             columns={FaultyBatchColumn}
-            pageSize={9}
+            pageSize={10}
             rowsPerPageOptions={[9]}
             checkboxSelection
             />       
