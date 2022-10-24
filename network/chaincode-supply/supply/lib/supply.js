@@ -17,11 +17,14 @@ const { Contract } = require('fabric-contract-api');
  * BatchDates{ManufactureDate, OrderedDate, SendToDelivererDate, SendToRetailerDate}
  * Product{Product_ID, Name, Manufacturer_ID, Status, Date, Price, Quantity}
  * Batch{Batch_ID, Product_ID, Manufacturer_ID, Retailer_ID, Deliverer_ID, Status, Date, Quantity}
+ * 
 */
 
 class Supply extends Contract {
 
-
+    batchCounter = 0;
+    productCounter = 0;
+    userCounter = 0;
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
@@ -45,9 +48,9 @@ class Supply extends Contract {
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    async signIn(userId, password)
+    async signIn(ctx, userId, password)
     {
-        const userEntity = ctx.stub.getState(userId);
+        const userEntity = await ctx.stub.getState(userId);
         if(!userEntity || userEntity.length === 0)
         {
             throw new Error(`${userId} does not exist`);
@@ -55,7 +58,8 @@ class Supply extends Contract {
 
         //need hash password before
         // if hashed(password) == password
-        if(userEntity.password !== password)
+        const userJson = await JSON.parse(await userEntity.toString());
+        if(userJson.password !== password)
         {
             throw new Error(`Wrong password provided`);
         }
@@ -73,60 +77,114 @@ class Supply extends Contract {
         return productAsBytes.toString();
     }
 
-    async createProduct (ctx, productId, name,  manufacturerId, date, price, quantity)
+    async createProduct (ctx, name,  manufacturerId, date, price, quantity)
     {
         console.info('============= START : Create Product =============');
 
         const product = {
-            productId,
+            productId : 'product' + this.productCounter,
             docType: 'product',
             name,
             manufacturerId,
             date,
             price,
             quantity,
+            status : 'healthy',
+            markedFaultBy: '',
         };
-        await ctx.stub.putState(productId, Buffer.from(JSON.stringify(product)));
+
+	    const productAsBytes = await Buffer.from(JSON.stringify(product));
+        await ctx.stub.putState('product' + this.productCounter, productAsBytes);
+        this.productCounter++;
         console.info('===============END : Create Product==============');
+	    return productAsBytes;
     }
 
-    async createUser(name, userId, email, userType, address, password)
+    async createUser(ctx, name, email, userType, address, password)
     {
         console.info('============ START : Create User ================');
 
         const user = {
             name: name,
             docType: 'user',
-            userId: userId,
+            userId: 'user' + this.userCounter,
             email: email,
             userType: userType,
             address: address,
             password: password,
         };
-
-        await ctx.stub.putState(userId, Buffer.from(JSON.stringify(user)));
+        const userAsBytes = await Buffer.from(JSON.stringify(user));
+        await ctx.stub.putState('user' + this.userCounter, userAsBytes);
+        this.userCounter++;
         console.info('================= END : Create User ===============');
+        return userAsBytes;
     }
 
+    async queryUser(ctx, userId)
+    {
+        const userAsBytes = await ctx.stub.getState(userId);
+        if(!userAsBytes || userAsBytes.length === 0)
+        {
+            throw new Error(`${userId} does not exist`);
+        }
+        console.log(userAsBytes.toString());
+        return userAsBytes.toString();
+    }
+
+    async queryAllUser(ctx)
+    {
+	const users = [];
+    for(let i=0; i<this.userCounter; i++)
+	{
+	    const userAsBytes = await ctx.stub.getState('user' + i);
+        if(!userAsBytes || userAsBytes.length ===0)
+        {
+            throw new Error(`${'user' + i} does not exist`);
+        }
+        users.push(userAsBytes.toString());
+	}
+    return users;
+
+    }
+
+    //modify this to make sure fault product can not be ordered
+    //BatchDates will be created after the batch order is approved
     async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
     {
         console.info('=============== Start : Register Batch =================');
 
+        const productAsBytes = await ctx.stub.getState(productId);
+        const productAsJson = await JSON.parse(productAsBytes.toString());
+        if(productAsJson.status === 'fault')
+        {
+            throw new Error(`Product ${productId} could not be ordered as it is fault`);
+        }
         const batch = {
-            batchId:'batch0',//uuid generator (?)
+            batchId:'batch' + this.batchCounter,//uuid generator (?)
             productId: productId,
             docType: 'batch',
             manufacturerId:manufacturerId,
             retailerId: retailerId,
             delivererId: '',
             status:'pending-registration',
+            markedFaultBy: '',
             date: batchDay,
             quantity: quantity,
         };
 
-        await ctx.stub.putState('batch0', Buffer.from(JSON.stringify(batch)));
+        const batchDates = {
+            orderedDate: '',
+            sendToDelivererDate: '',
+            sendToRetailerDate: '',
+            markedFaultDate: ''
+        }
 
+        const batchAsBytes = await Buffer.from(JSON.stringify(batch));
+        await ctx.stub.putState('batch' + this.batchCounter, batchAsBytes);
+        await ctx.stub.putState('batchDates' + this.batchCounter, Buffer.from(JSON.stringify(batchDates)));
+        this.batchCounter++;
         console.info('================= END : Batch Registration ==============');
+	    return batchAsBytes;
     }
 
     async transferToDeliverer (ctx, batchId)
@@ -136,8 +194,9 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        batchAsBytes.status = 'transfered-to-deliverer';
-        await ctx.stub.putState(batchId, batchAsBytes);
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        batchAsJson.status = 'transfered-to-deliverer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
 
     async delivererConfirmTransfer (ctx, batchId)
@@ -147,8 +206,9 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        batchAsBytes.status = 'deliverer-confirm-transfer';
-        await ctx.stub.putState(batchId, batchAsBytes);
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        batchAsJson.status = 'deliverer-confirm-transfer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
 
     async retailerConfirmTransfer (ctx, batchId)
@@ -158,14 +218,17 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        batchAsBytes.status = 'retailer-confirm-transfer';
-        await ctx.stub.putState(batchId, batchAsBytes);
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        batchAsJson.status = 'retailer-confirm-transfer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
+
+
     async queryBatch(ctx, batchId)
     {
-        const batchAsBytes = await ctx.stub.getState(batchId); // get the car from chaincode state
+        var batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
-            throw new Error(`${batchId} does not exist`);
+            throw new Error(`${batchId}} does not exist`);
         }
         console.log(batchAsBytes.toString());
         return batchAsBytes.toString();
@@ -230,4 +293,19 @@ class Supply extends Contract {
         console.info(allResults);
         return JSON.stringify(allResults);
     }
+    
+/*
+    async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
+    async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
+    async approveBatchOrder (ctx,Batch_ID,Retailer_ID )
+    async inviteDeliverer (ctx,manufacturer_ID, Deliverer_ID )
+    async approveInvitation (ctx, Deliverer_ID,manufacturer_ID)
+    async transferToDeliverer (ctx, manufacturer_ID,Batch_ID)
+    async delivererConfirmTransfer (ctx, Deliverer_ID,Batch_ID)
+    async transferToRetailer (ctx, Retailer_ID, Batch_ID)
+    async retailerConfirmTransfer (ctx, Retailer_ID, Batch_ID)
+*/
+
 }
+
+module.exports = Supply;
