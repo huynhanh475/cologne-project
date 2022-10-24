@@ -23,7 +23,7 @@ starttime=$(date +%s)
 rm -rf javascript/wallet/*
 rm -rf javascript/wallet2/*
 rm -rf javascript/wallet3/*
-
+rm -rf ../api/identity
 #rm -rf java/wallet/*
 #rm -rf typescript/wallet/*
 #rm -rf go/wallet/*
