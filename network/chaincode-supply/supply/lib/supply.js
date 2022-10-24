@@ -143,12 +143,20 @@ class Supply extends Contract {
         users.push(userAsBytes.toString());
 	}
     return users;
-    
+
     }
+
+    //modify this to make sure fault product can not be ordered
     async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
     {
         console.info('=============== Start : Register Batch =================');
 
+        const productAsBytes = await ctx.stub.getState(productId);
+        const productAsJson = await JSON.parse(productAsBytes.toString());
+        if(productAsJson.status === 'fault')
+        {
+            throw new Error(`Product ${productId} could not be ordered as it is fault`);
+        }
         const batch = {
             batchId:'batch' + this.batchCounter,//uuid generator (?)
             productId: productId,
@@ -164,7 +172,7 @@ class Supply extends Contract {
         await ctx.stub.putState('batch' + this.batchCounter, batchAsBytes);
         this.batchCounter++;
         console.info('================= END : Batch Registration ==============');
-	return batchAsBytes;
+	    return batchAsBytes;
     }
 
 
