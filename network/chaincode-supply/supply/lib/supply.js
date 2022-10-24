@@ -90,6 +90,7 @@ class Supply extends Contract {
             price,
             quantity,
             status : 'healthy',
+            markedFaultBy: '',
         };
 
 	    const productAsBytes = await Buffer.from(JSON.stringify(product));
@@ -147,6 +148,7 @@ class Supply extends Contract {
     }
 
     //modify this to make sure fault product can not be ordered
+    //BatchDates will be created after the batch order is approved
     async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
     {
         console.info('=============== Start : Register Batch =================');
@@ -164,6 +166,7 @@ class Supply extends Contract {
             retailerId: retailerId,
             delivererId: '',
             status:'pending-registration',
+            markedFaultBy: '',
             date: batchDay,
             quantity: quantity,
         };
@@ -175,27 +178,6 @@ class Supply extends Contract {
 	    return batchAsBytes;
     }
 
-
-/*
-    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
-    {
-        console.info('=============== Start : Register Batch =================');
-
-        const batch = {
-            batchId:'batch' + 0,//uuid generator (?)
-            productId: productId,
-            manufacturerId:manufacturerId,
-            retailerId: retailerId,
-            delivererId: '',
-            status:'pending-registration',
-            date: batchDay,
-            quantity: quantity,
-        };
-
-        await ctx.stub.putState('batch' + 0, Buffer.from(JSON.stringify(batch)));
-        console.info('================= END : Batch Registration ==============');
-    }
-*/
     async transferToDeliverer (ctx, batchId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
@@ -243,6 +225,7 @@ class Supply extends Contract {
         return batchAsBytes.toString();
     }
 
+    
 /*
     async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
     async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
