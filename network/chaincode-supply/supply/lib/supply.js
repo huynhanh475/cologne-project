@@ -1,5 +1,3 @@
-root@DESKTOP-MN0JR6V:~/cologne-project/network# cat chaincode-supply/supply/
-lib/supply.js
 /*
  * Copyright IBM Corp. All Rights Reserved.
  *
