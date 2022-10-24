@@ -82,20 +82,21 @@ class Supply extends Contract {
         console.info('============= START : Create Product =============');
 
         const product = {
-            productId = 'product' + this.productCounter,
+            productId : 'product' + this.productCounter,
             docType: 'product',
             name,
             manufacturerId,
             date,
             price,
             quantity,
+            status : 'healthy',
         };
 
-	const productAsBytes = await Buffer.from(JSON.stringify(product));
+	    const productAsBytes = await Buffer.from(JSON.stringify(product));
         await ctx.stub.putState('product' + this.productCounter, productAsBytes);
         this.productCounter++;
         console.info('===============END : Create Product==============');
-	return productAsBytes;
+	    return productAsBytes;
     }
 
     async createUser(ctx, name, email, userType, address, password)
@@ -132,16 +133,17 @@ class Supply extends Contract {
     async queryAllUser(ctx)
     {
 	const users = [];
-        for(let i=0; i<this.userCounter; i++)
+    for(let i=0; i<this.userCounter; i++)
 	{
 	    const userAsBytes = await ctx.stub.getState('user' + i);
-            if(!userAsBytes || userAsBytes.length ===0)
-	    {
-		throw new Error(`No user registered`);
-	    }
-	    await users.push(userAsBytes);
+        if(!userAsBytes || userAsBytes.length ===0)
+        {
+            throw new Error(`${'user' + i} does not exist`);
+        }
+        users.push(userAsBytes.toString());
 	}
-        return users;
+    return users;
+    
     }
     async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
     {
