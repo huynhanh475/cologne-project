@@ -3,6 +3,7 @@ import { join } from 'path';
 import FabricCAServices from 'fabric-ca-client';
 import { Gateway, Wallets } from 'fabric-network';
 import dotenv from 'dotenv'
+import { userTypes } from '../utils/constants';
 dotenv.config()
 
 const manufacturerCcpPath = join(process.cwd(), process.env.MANUFACTURER_CONN);
@@ -40,7 +41,16 @@ function getConnectionMaterial(isManufacturer, isDeliverer, isRetailer) {
     return connectionMaterial;
 }
 
-export async function connect(isManufacturer, isDeliverer, isRetailer, userID) {
+export async function connect(userType, userID) {
+
+    const isManufacturer = userType === userTypes.manufacturer;
+    const isDeliverer = userType === userTypes.deliverer;
+    const isRetailer = userType === userTypes.retailer;
+
+    if (!isManufacturer && !isDeliverer && !isRetailer) {
+        return { status: 403, error: `User type ${userType} unknown.` };
+    }
+
     const gateway = new Gateway();
     try {
         const { walletPath, connection } = getConnectionMaterial(isManufacturer, isDeliverer, isRetailer);
@@ -71,7 +81,7 @@ export async function connect(isManufacturer, isDeliverer, isRetailer, userID) {
     }
 };
 
-export async function enrollAdmin(isManufacturer, isDeliverer, isRetailer) {
+export async function enrollAdmin(isManufacturer, isDeliverer, isRetailer, adminId) {
     try {
         const { walletPath, connection, orgMSPID, caURL } = getConnectionMaterial(isManufacturer, isDeliverer, isRetailer);
 
@@ -80,14 +90,14 @@ export async function enrollAdmin(isManufacturer, isDeliverer, isRetailer) {
 
         const wallet = await Wallets.newFileSystemWallet(walletPath);
 
-        const identity = await wallet.get('admin');
+        const identity = await wallet.get(adminId);
         if (identity) {
             console.log('An identity for the admin user "admin" already exists in the wallet');
             return;
         }
 
         const enrollment = await ca.enroll({
-            enrollmentID: process.env.ADMIN,
+            enrollmentID: adminId,
             enrollmentSecret: process.env.ADMIN_SECRET
         });
 
@@ -99,7 +109,7 @@ export async function enrollAdmin(isManufacturer, isDeliverer, isRetailer) {
             mspId: orgMSPID,
             type: 'X.509'
         }
-        await wallet.put(process.env.ADMIN, x509Identity);
+        await wallet.put(adminId, x509Identity);
         console.log('Successfully enrolled admin user "admin" and imported it into the wallet');
     }
     catch (error) {
@@ -108,7 +118,15 @@ export async function enrollAdmin(isManufacturer, isDeliverer, isRetailer) {
     }
 };
 
-export async function registerUser(isManufacturer, isDeliverer, isRetailer, userID) {
+export async function registerUser(loggedUserType, adminId, userID) {
+    const isManufacturer = loggedUserType === userTypes.manufacturer;
+    const isDeliverer = loggedUserType === userTypes.deliverer;
+    const isRetailer = loggedUserType === userTypes.retailer;
+
+    if (!isManufacturer && !isDeliverer && !isRetailer) {
+        return { status: 400, error: `User type ${loggedUserType} unknown.` };
+    }
+    
     try {
         const { walletPath, connection, orgMSPID, caURL } = getConnectionMaterial(isManufacturer, isDeliverer, isRetailer);
         const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -121,15 +139,15 @@ export async function registerUser(isManufacturer, isDeliverer, isRetailer, user
             return { status: 400, error: 'User identity already exists in the wallet.' };
         }
 
-        const adminIdentity = await wallet.get('admin');
+        const adminIdentity = await wallet.get(adminId);
         if (!adminIdentity) {
             console.log('An identity for the admin user "admin" does not exist in the wallet');
             console.log('Enrolls an admin before retrying');
-            return;
+            return { status : 500, error: "An identity for the admin user 'admin' does not exist in the wallet"};
         }
 
         const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
-        const adminUser = await provider.getUserContext(adminIdentity, 'admin');
+        const adminUser = await provider.getUserContext(adminIdentity, adminId);
 
         const secret = await ca.register({
             enrollmentID: userID,
@@ -166,12 +184,15 @@ export async function query(networkObj, ...funcAndArgs) {
 
         const result = await networkObj.contract.evaluateTransaction(...funcAndArgsStrings);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+        console.log(`Type: ${typeof result}`)
         networkObj.gateway.disconnect();
 
         return JSON.parse(result);
     }
     catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
+        console.log(error)
+        console.log(typeof error)
         if (networkObj.gateway) {
             networkObj.gateway.disconnect();
         }

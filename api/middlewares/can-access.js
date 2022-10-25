@@ -1,16 +1,20 @@
 import { forbidden, unauthorized } from '../utils/api-response.js';
 
-export default function canAccess (roles) {
+export default function canAccess (allowedRoles) {
     return (req,res,next) => {
-        const {loggedUserType} = req.body;
+        const {loggedUserType, loggedUserRole} = req.body;
 
-        if (!loggedUserType) {
+        if (!loggedUserType || !loggedUserRole) {
             return unauthorized(res, 'Unauthorised user');
         }
 
-        if (roles.includes(loggedUserType)) {
-            return next();
+        for (let i=0; i < allowedRoles.length; i++) {
+            let allowedRole = allowedRoles[i];
+            if (allowedRole === loggedUserType || allowedRole === loggedUserRole) {
+                return next();
+            }
         }
-        return forbidden(res, "User type forbidden");
+
+        return forbidden(res, "User type or role forbidden");
     }
 }

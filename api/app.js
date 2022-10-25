@@ -7,14 +7,13 @@ import router from "./routes/index.route.js";
 import * as network from "./fabric/network.js";
 
 async function main() {
-    await network.enrollAdmin(true, false, false);
-    await network.enrollAdmin(false, true, false);
-    await network.enrollAdmin(false, false, true);
+    await network.enrollAdmin(true, false, false, "admin0");
+    await network.enrollAdmin(false, true, false, "admin1");
+    await network.enrollAdmin(false, false, true, "admin2");
 
     // testing connection with the network
-    await network.registerUser(true, false, false, 'appUser');
-    const networkObj = await network.connect(true, false, false, 'appUser');
-    await network.query(networkObj, 'queryProduct', 'product0');
+    // const networkObj = await network.connect("manufacturer", 'admi0');
+    // await network.query(networkObj, 'queryUser', 'admin0')
 
     const app = express();
     app.use(morgan('combined'));
