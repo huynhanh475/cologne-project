@@ -38,7 +38,7 @@ class Supply extends Contract {
                 userType: 'manufacturer',
                 role:'admin',
                 address: '',
-                password: '',
+                password: 'adminpw',
             },
             {
                 name: 'retailerAdmin',
@@ -47,7 +47,7 @@ class Supply extends Contract {
                 userType: 'retailer',
                 role: 'admin',
                 address: '',
-                password: '',
+                password: 'adminpw',
             },
             {
                 name: 'delivererAdmin',
@@ -56,12 +56,12 @@ class Supply extends Contract {
                 userType: 'deliverer',
                 role: 'admin',
                 address: '',
-                password: '',
+                password: 'adminpw',
             },
         ];
 
-        for (let i = 0; i < products.length; i++) {
-            products[i].docType = 'user';
+        for (let i = 0; i < admins.length; i++) {
+            admins[i].docType = 'user';
             await ctx.stub.putState('admin' + i, Buffer.from(JSON.stringify(admins[i])));
             console.info('Added <--> ', admins[i]);
         }
@@ -73,7 +73,7 @@ class Supply extends Contract {
         const userEntity = await ctx.stub.getState(userId);
         if(!userEntity || userEntity.length === 0)
         {
-            throw new Error(`${userId} does not exist`);
+            return shim.error(`${userId} does not exist`);
         }
 
         //need hash password before
@@ -81,7 +81,7 @@ class Supply extends Contract {
         const userJson = await JSON.parse(await userEntity.toString());
         if(userJson.password !== password)
         {
-            return shim.error(`Wrong Password Provided`));
+            return shim.error(`Wrong Password Provided`);
         }
         else{
             return shim.success(userEntity.toString());
@@ -97,7 +97,7 @@ class Supply extends Contract {
         return shim.success(productAsBytes.toString());
     }
 
-    async createProduct (ctx, name,  manufacturerId, date, price, quantity)
+    async createProduct (ctx, name,  manufacturerId, price, quantity)
     {
         console.info('============= START : Create Product =============');
 
@@ -106,7 +106,7 @@ class Supply extends Contract {
             docType: 'product',
             name,
             manufacturerId,
-            date,
+            date: await this.getCurrentDate(),
             price,
             quantity,
             status : 'healthy',
@@ -170,7 +170,7 @@ class Supply extends Contract {
 
     //modify this to make sure fault product can not be ordered
     //BatchDates will be created after the batch order is approved
-    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
+    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity)
     {
         console.info('=============== Start : Register Batch =================');
 
@@ -188,16 +188,15 @@ class Supply extends Contract {
             delivererId: '',
             status:'pending-registration',
             markedFaultBy: '',
-            date: batchDay,
             quantity: quantity,
         };
 
         const batchDates = {
-            orderedDate: '',
+            orderedDate:await this.getCurrentDate(),
             sendToDelivererDate: '',
             sendToRetailerDate: '',
-            markedFaultDate: ''
-        }
+            markedFaultDate: '',
+        };
 
         const batchAsBytes = await Buffer.from(JSON.stringify(batch));
         await ctx.stub.putState('batch' + this.batchCounter, batchAsBytes);
@@ -217,7 +216,9 @@ class Supply extends Contract {
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'transfered-to-deliverer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
-        return shim.success('Batch transferred to deliverer');    
+
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(batchAsBytes.toString());    
     }
 
     //Utils function for updating batch=====================================================
@@ -240,7 +241,7 @@ class Supply extends Contract {
         var batchDatesId = 'batchDates';
         for(let i=5; i< batchId.length; i++)
         {
-            batchDatesId+= batchId[i];
+            batchDatesId = await batchDatesId + batchId[i];
         }
         return batchDatesId;
     }
@@ -256,6 +257,8 @@ class Supply extends Contract {
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'deliverer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
         return shim.success(batchAsBytes.toString());
         /*
         //interpolate batch dates id
@@ -289,6 +292,8 @@ class Supply extends Contract {
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'retailer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
         return shim.success(batchAsBytes.toString());
         //update batch dates
         /*
