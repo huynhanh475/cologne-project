@@ -1,11 +1,9 @@
 import {Router} from "express";
 import {roles} from "../utils/constants.js";
 import canAccess from "../middlewares/can-access.js"
-import auth from "../middlewares/auth.js";
 import * as controller from "../controllers/transact.controller.js";
 
 const transactRouter = Router();
-transactRouter.use("/", auth);
 
 transactRouter.post('/registerOrder', canAccess([roles.retailer]), controller.registerOrder);
 transactRouter.post('/approveOrder', canAccess([roles.manufacturer]), controller.approveOrder);
