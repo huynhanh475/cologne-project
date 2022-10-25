@@ -275,7 +275,7 @@ class Supply extends Contract {
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Transfer to retailer ==============');
     }
-    async getAllBatches(ctx)
+    async getAllBatches(ctx,userID)
     {
         const allResults = [];
         for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
@@ -287,8 +287,14 @@ class Supply extends Contract {
                 console.log(err);
                 record = strValue;
             }
-            if (record.docType == 'batch')
-            allResults.push(record);
+            var flag = false;
+            const user= await JSON.parse(await this.queryUser(ctx,userID));
+            if (user.userType=='deliverer'&&record.delivererId==userID)
+                flag=true;
+            if (user.userType=='retailer'&&record.retailerId==userID)
+                flag=true;
+            if (record.docType == 'batch'&&flag)
+                allResults.push(record);
         }
         console.info(allResults);
         return JSON.stringify(allResults);
