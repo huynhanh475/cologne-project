@@ -43,10 +43,21 @@ async function main() {
         // Evaluate the specified transaction.
         // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR4')
         // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
-        const result = await contract.evaluateTransaction('queryProduct', 'product1');
+        const result = await contract.evaluateTransaction('queryBatch', 'batch0');
+        //const result = await contract.evaluateTransaction('queryUser', 'user1');
+        //const result = await contract.evaluateTransaction('signIn', 'user1', '12345');
+        //const user = await contract.evaluateTransaction('createUser', 'Minh', 'minhdinh@gmail.com', 'retailer', 'no address', '12345');
+        
+        //const result = await contract.evaluateTransaction('queryAllUser');
+        //const result = await contract.evaluateTransaction('queryProduct', 'product1');
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
-
+        //console.log(users.toString());
         // Disconnect from the gateway.
+        //testing
+        await contract.evaluateTransaction('registerBatchOrder', 'product1','r1','m1','1','temp');
+        await contract.evaluateTransaction('approveBatchOrder', 'batch0');
+        await contract.evaluateTransaction('inviteDeliverer', 'batch0','d1');
+        await contract.evaluateTransaction('approveInvitation', 'batch0','accept');
         await gateway.disconnect();
         
     } catch (error) {

@@ -2,6 +2,9 @@ import { certifyAccessToken } from '../utils/authenticate.js';
 import { unauthorized } from '../utils/api-response.js';
 
 export default async (req, res, next) => {
+
+    if ( req.path == '/user/signin') return next();
+
     const accessToken = req.headers['x-access-token'];
     console.log(accessToken);
 
@@ -11,7 +14,7 @@ export default async (req, res, next) => {
 
     try {
         const result = await certifyAccessToken(accessToken);
-        req.body.id = result.id;
+        req.body.loggedUserId = result.id;
         req.body.loggedUserType = result.UserType;
         req.body.loggedUserName = result.Name;
         return next();
