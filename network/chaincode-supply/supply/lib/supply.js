@@ -26,24 +26,40 @@ class Supply extends Contract {
     productCounter = 0;
     userCounter = 0;
 
+
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        const products = [
+        const admins = [
             {
-                productId: 'product0',
-                name: 'Orange0',
-                manufacturerId: 'manufacturer0',
-                status: 'good',
-                date: '20/10/2022',
-                price: 10,
-                quantity: 1000,
+                name: 'manufacturerAdmin',
+                userId: 'admin0',
+                email: '',
+                userType: 'admin',
+                address: '',
+                password: '',
+            },
+            {
+                name: 'retailerAdmin',
+                userId: 'admin1',
+                email: '',
+                userType: 'admin',
+                address: '',
+                password: '',
+            },
+            {
+                name: 'delivererAdmin',
+                userId: 'admin2',
+                email: '',
+                userType: 'admin',
+                address: '',
+                password: '',
             },
         ];
 
         for (let i = 0; i < products.length; i++) {
-            products[i].docType = 'product';
-            await ctx.stub.putState('product' + i, Buffer.from(JSON.stringify(products[i])));
-            console.info('Added <--> ', products[i]);
+            products[i].docType = 'user';
+            await ctx.stub.putState('admin' + i, Buffer.from(JSON.stringify(admins[i])));
+            console.info('Added <--> ', admins[i]);
         }
         console.info('============= END : Initialize Ledger ===========');
     }
@@ -189,15 +205,41 @@ class Supply extends Contract {
 
     async transferToDeliverer (ctx, batchId)
     {
-        var batchAsBytes = await ctx.stub.getState(batchId);
+        const batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
             throw new Error(`${batchId}} does not exist`);
         }
-
-        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+    
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'transfered-to-deliverer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        }
+
+    //Utils function for updating batch=====================================================
+    async getCurrentDate()
+    {
+        let ts = Date.now();
+
+        let date_ob = new Date(ts);
+        let date = date_ob.getDate();
+        let month = date_ob.getMonth() + 1;
+        let year = date_ob.getFullYear();
+
+        // prints date & time in YYYY-MM-DD format
+        return (year + "-" + month + "-" + date);
     }
+
+    async getBatchDatesId(batchId)
+    {
+        //interpolate batch dates id
+        var batchDatesId = 'batchDates';
+        for(let i=5; i< batchId.length; i++)
+        {
+            batchDatesId+= batchId[i];
+        }
+        return batchDatesId;
+    }
+    //====== END ============================================================================
 
     async delivererConfirmTransfer (ctx, batchId)
     {
@@ -206,9 +248,28 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'deliverer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+
+        /*
+        //interpolate batch dates id
+        var batchDatesId = 'batchDates';
+        for(let i=5; i< batchId.length; i++)
+        {
+            batchDatesId+= batchId[i];
+        }
+        */
+        //update batchdates
+        const batchDatesId = this.getBatchDatesId(batchId);
+        const batchDatesAsBytes = await ctx.stub.getState(batchDatesId);
+        if (!batchDatesAsBytes || batchDatesAsBytes.length === 0) {
+            throw new Error(`${batchDatesId}} does not exist`);
+        }
+
+        const batchDatesAsJson = await JSON.parse(await batchDatesAsBytes.toString());
+        batchDatesAsJson.sendToDelivererDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDatesId, Buffer.from(JSON.stringify(batchDatesAsJson)));
     }
 
     async retailerConfirmTransfer (ctx, batchId)
@@ -218,9 +279,20 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'retailer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        
+        //update batch dates
+        const batchDatesId = this.getBatchDatesId(batchId);
+        const batchDatesAsBytes = await ctx.stub.getState(batchDatesId);
+        if (!batchDatesAsBytes || batchDatesAsBytes.length === 0) {
+            throw new Error(`${batchDatesId}} does not exist`);
+        }
+
+        const batchDatesAsJson = await JSON.parse(await batchDatesAsBytes.toString());
+        batchDatesAsJson.sendToRetailerDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDatesId, Buffer.from(JSON.stringify(batchDatesAsJson)));
     }
 
 
