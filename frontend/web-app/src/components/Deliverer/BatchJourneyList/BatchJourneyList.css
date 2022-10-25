@@ -1,10 +1,19 @@
 @import '~antd/dist/antd.css';
 
+.navbarcomponent {
+  position: relative;
+  z-index: 2;
+}
+
 .batchjourneytable {
-    height: 400px;
-    width: 80%;
-    padding-left: 280px;
-  }
+  height: 80vh;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  background-color: whitesmoke;
+  z-index: 1;
+}
   
   .batchjourneytable .datatableTitle {
     width: 100%;
@@ -48,24 +57,24 @@
     cursor: pointer;
   } 
 
-.filter_batch {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-top: 10px;
+.filter_batch_journey {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1%;
+  padding-top: 0.5%;
 }
   
   
-.filter_batch input{
-    margin-top: 20px;
-    width: 350px;
-    height: 10px;
-    border-radius: 20px;
-    font-size: 15px;
-    padding-left: 10px;
-    background-color: transparent;
-    border: 2px solid #01185e;
-    color: #013567;
-    font-family: 'Verdana', sans-serif;
+.filter_batch_journey input{
+  margin-top: 20px;
+  width: 30%;
+  height: 8%;
+  border-radius: 20px;
+  font-size: 15px;
+  padding-left: 10px;
+  background-color: transparent;
+  border: 2px solid #01185e;
+  color: #013567;
+  font-family: 'Verdana', sans-serif;
 }

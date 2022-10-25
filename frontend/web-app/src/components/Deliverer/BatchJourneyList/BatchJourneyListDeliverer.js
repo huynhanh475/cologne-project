@@ -55,8 +55,10 @@ function BatchJourneyListDeliverer() {
   ];
   return (
     <>
-      <Navbar/>
-      <div className='filter_batch'>
+      <div className="navbarcomponent">
+          <Navbar/>
+      </div>
+      <div className='filter_batch_journey'>
           <input
               type="text"
               placeholder="Search by Batch ID..."
@@ -67,7 +69,6 @@ function BatchJourneyListDeliverer() {
       <MarkFaultModal isFault={isFault} setIsFault={setIsFault} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID}/>
       <div className="batchjourneytable">
         <DataGrid
-          className="datagrid"
           rows={data}
           columns={BatchJourneyColumn.concat(actionColumn)}
           getRowId={(row) => row.batchID}

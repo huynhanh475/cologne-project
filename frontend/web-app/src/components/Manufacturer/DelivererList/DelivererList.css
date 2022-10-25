@@ -1,10 +1,19 @@
 @import '~antd/dist/antd.css';
 
+.navbarcomponent {
+  position: relative;
+  z-index: 2;
+}
+
 .deliverertable {
-    height: 400px;
-    width: 80%;
-    padding-left: 280px;
-  }
+  height: 80vh;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  background-color: whitesmoke;
+  z-index: 1;
+}
   
   .deliverertable .datatableTitle {
     width: 100%;
@@ -70,4 +79,26 @@
   font-size: 15px;
   margin-bottom: 1rem;
   font-weight: 500;
+}
+
+.filter_user {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1%;
+  padding-top: 0.5%;
+}
+
+
+.filter_user input{
+  margin-top: 20px;
+  width: 30%;
+  height: 8%;
+  border-radius: 20px;
+  font-size: 15px;
+  padding-left: 10px;
+  background-color: transparent;
+  border: 2px solid #01185e;
+  color: #013567;
+  font-family: 'Verdana', sans-serif;
 }

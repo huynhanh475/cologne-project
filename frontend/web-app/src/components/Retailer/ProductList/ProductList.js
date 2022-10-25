@@ -40,8 +40,10 @@ function ProductList() {
     ];
   return (
     <div>
-        <NavBar/>
-        <div className='filter_product'>
+        <div className="navbarcomponent">
+          <NavBar/>
+        </div>
+        <div className='filter_product_retailer'>
             <input
                 type="text"
                 placeholder="Search by Product ID..."
@@ -51,7 +53,6 @@ function ProductList() {
         <RegisterProductForm isRegister={isRegister} setIsRegister={setIsRegister} productID={productID} name={name} manufacturerID={manufacturerID} date={date} price={price}/>
         <div className="productlisttable">
             <DataGrid
-            className="datagrid"
             rows={data}
             columns={ProductColumn.concat(actionColumn)}
             getRowId={(row) => row.productID+row.manufacturerID}

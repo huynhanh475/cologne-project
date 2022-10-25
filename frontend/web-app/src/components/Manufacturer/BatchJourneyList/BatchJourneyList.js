@@ -57,8 +57,10 @@ function BatchJourneyList() {
   ];
   return (
     <>
-      <Navbar/>
-      <div className='filter_batch'>
+      <div className="navbarcomponent">
+        <Navbar/>
+      </div>
+      <div className='filter_batch_manufacturer'>
         <input
             type="text"
             placeholder="Search by Batch ID..."
@@ -67,9 +69,8 @@ function BatchJourneyList() {
       </div>
       <TransferModal isTransfer={isTransfer} setIsTransfer={setIsTransfer} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID} quantity={quantity}/>
       <MarkFaultModal isFault={isFault} setIsFault={setIsFault} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID}/>
-      <div className="batchjourneytable">
+      <div className="batchjourneylisttable">
         <DataGrid
-          className="datagrid"
           rows={data}
           columns={BatchJourneyColumn.concat(actionColumn)}
           getRowId={(row) => row.batchID}

@@ -4,7 +4,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import { DelivererColumn } from "./DelivererColumn";
 import { useState } from "react";
 import Navbar from '../NavBarManufacturer/NavBar';
-import FilterDeliverer from './FilterDeliverer';
 import DelivererForm from './DelivererForm';
 import record from './MOCK_DATA.json';
 
@@ -18,6 +17,7 @@ function DelivererList() {
 
   const data = record;
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [user, setUserID] = useState("");
   const [delivererID, setDelivererID] = useState("");
 
 
@@ -46,11 +46,18 @@ function DelivererList() {
   return (
     <div>
       <DelivererForm isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} delivererID={delivererID}/>
-      <Navbar/>
-      <FilterDeliverer isOpenModal={isOpenModal}/>
+      <div className="navbarcomponent">
+        <Navbar/>
+      </div>
+      <div className='filter_user'>
+        <input
+            type="text"
+            placeholder="Search by Deliverer ID..."
+            onChange={(e)=>{setUserID(e.target.value)}}
+        />
+      </div>
       <div className="deliverertable">
         <DataGrid
-          className="datagrid"
           rows={data}
           getRowId={(row) => row.delivererID}
           columns={DelivererColumn.concat(actionColumn)}

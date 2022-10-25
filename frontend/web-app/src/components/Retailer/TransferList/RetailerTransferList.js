@@ -60,10 +60,12 @@ function TransferList() {
 
   return (
     <div>
-      <NavBar/>
+      <div className="navbarcomponent">
+        <NavBar/>
+      </div>
       <ConfirmModal isConfirm={isConfirm} setIsConfirm={setIsConfirm} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID} date={date} quantity={quantity}/>
       <MarkFaultModal isMarkFault={isMarkFault} setIsMarkFault={setIsMarkFault} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID} date={date} quantity={quantity}/>
-      <div className='filter_batch'>
+      <div className='filter_batch_retailer'>
           <input
               type="text"
               placeholder="Search by Batch ID..."
@@ -72,7 +74,6 @@ function TransferList() {
       </div>
       <div className="transferlisttable">
           <DataGrid
-          className="datagrid"
           rows={data}
           columns={RetailerTransferColumn.concat(actionColumn)}
           getRowId={(row) => row.batchID}

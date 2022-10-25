@@ -1,9 +1,18 @@
 @import '~antd/dist/antd.css';
 
+.navbarcomponent {
+    position: relative;
+    z-index: 2;
+}
+
 .faultybatchtable {
-    height: 400px;
-    width: 80%;
-    padding-left: 280px;
+    height: 80vh;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    background-color: whitesmoke;
+    z-index: 1;
   }
   
   .faultybatchtable .datatableTitle {
@@ -22,19 +31,19 @@
             justify-content: space-between;
   }
   
-.filter_batch {
+.filter_batch_retailer {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
-    padding-top: 10px;
+    margin-bottom: 1%;
+    padding-top: 0.5%;
 }
   
   
-.filter_batch input{
+.filter_batch_retailer input{
     margin-top: 20px;
-    width: 350px;
-    height: 10px;
+    width: 30%;
+    height: 8%;
     border-radius: 20px;
     font-size: 15px;
     padding-left: 10px;

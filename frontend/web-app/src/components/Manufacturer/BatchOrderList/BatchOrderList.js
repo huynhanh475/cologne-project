@@ -32,15 +32,19 @@ function BatchOrderList() {
   ];
   return (
     <>
-      <Navbar/>
-      <div className='filter_batch'>
+      <div className='navbarcomponent'>
+        <Navbar/>
+      </div>
+      
+      <div className='filter_batch_order'>
         <input
             type="text"
             placeholder="Search by Batch ID..."
             onChange={(e)=>{setBatchID(e.target.value)}}
         />
       </div>
-      <div className="batchordertable">
+
+      <div className="batchorderlist">
         <DataGrid
           className="datagrid"
           rows={data}

@@ -4,12 +4,13 @@ import { DataGrid } from "@mui/x-data-grid";
 import { InvitationListColumn } from "./InvitationListColumn";
 import './InvitationList.css';
 import record from './MOCK_DATA (4).json';
-import FilterInvitationList from './FilterInvitationList';
 
 function InvitationList() {
 
     // const [data, setData] = useState([]);
     const data = record;
+    const [batchID, setBatchID] = useState("");
+    // query data dựa trên delivererID và status
 
     const actionColumn = [
         {
@@ -27,12 +28,19 @@ function InvitationList() {
         },
     ];
   return (
-    <div>
-        <Navbar/>
-        <FilterInvitationList/>
+    <>
+        <div className="navbarcomponent">
+            <Navbar/>
+        </div>
+        <div className='filter_batch_deliverer'>
+            <input
+                type="text"
+                placeholder="Search by Batch ID..."
+                onChange={(e)=>{setBatchID(e.target.value)}}
+            />
+        </div>
         <div className="invitationlisttable">
             <DataGrid
-            className="datagrid"
             rows={data}
             getRowId={(row) => row.batchID}
             columns={InvitationListColumn.concat(actionColumn)}
@@ -41,7 +49,7 @@ function InvitationList() {
             checkboxSelection
             />
         </div>
-    </div>
+    </>
   )
 }
 

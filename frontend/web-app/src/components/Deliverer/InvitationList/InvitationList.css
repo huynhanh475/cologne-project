@@ -1,10 +1,19 @@
 @import '~antd/dist/antd.css';
 
+.navbarcomponent {
+  position: relative;
+  z-index: 2;
+}
+
 .invitationlisttable {
-    height: 400px;
-    width: 80%;
-    padding-left: 280px;
-  }
+  height: 80vh;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  background-color: whitesmoke;
+  z-index: 1;
+}
   
   .invitationlisttable .datatableTitle {
     width: 100%;
@@ -48,19 +57,19 @@
     cursor: pointer;
   }
 
-.filter_batch {
+  .filter_batch_deliverer {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
-    padding-top: 10px;
-}
-  
-  
-.filter_batch input{
+    margin-bottom: 1%;
+    padding-top: 0.5%;
+  }
+    
+    
+  .filter_batch_deliverer input{
     margin-top: 20px;
-    width: 350px;
-    height: 10px;
+    width: 30%;
+    height: 8%;
     border-radius: 20px;
     font-size: 15px;
     padding-left: 10px;
@@ -68,6 +77,6 @@
     border: 2px solid #01185e;
     color: #013567;
     font-family: 'Verdana', sans-serif;
-}
+  }
 
   
