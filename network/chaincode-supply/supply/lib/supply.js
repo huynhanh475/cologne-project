@@ -333,23 +333,37 @@ class Supply extends Contract {
     {
         console.info('=============== Start : Approve Batch =================');
         const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         batch.status = 'approved';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        const product= await JSON.parse(await this.queryProduct(ctx,batch.productId));
+        product.quantity-=batch.quantity;
+        await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
         console.info('================= END : Batch Approval ==============');
+        return shim.success(JSON.stringify(batch));
     }
     async inviteDeliverer(ctx, batchId, delivererId)
     {
         console.info('=============== Start : Inviting deliverer =================');
         const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         batch.delivererId = delivererId;
         batch.status = 'pending-invite-to-deliverer'
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Inviting deliverer ==============');
+        return shim.success(JSON.stringify(batch));
     }
     async approveInvitation (ctx, batchId,action)
     {
         console.info('=============== Start : Approve Invitation =================');
         const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         if(action == 'approved')
         {
             batch.status = 'approve-invitation-by-deliverer';
@@ -362,11 +376,15 @@ class Supply extends Contract {
         }
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Approve Invitation ==============');
+        return shim.success(JSON.stringify(batch));    
     }
     async transferToRetailer (ctx, retailerId, batchId)
     {
         console.info('=============== Start : Transfer to retailer =================');
         const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         batch.status = 'transfered-to-retailer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
 
@@ -375,6 +393,7 @@ class Supply extends Contract {
         batchDates.sendToRetailerDate = this.getCurrentDate();
         await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDates)));
         console.info('================= END : Transfer to retailer ==============');
+        return shim.success(JSON.stringify(batch));
     }
     async getAllBatches(ctx,userID)
     {
@@ -403,6 +422,9 @@ class Supply extends Contract {
     async reportFaultBatch(ctx, batchId, userID)
     {
         const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         // batch.status = 'fault';
         // batch.markedFaultBy = userID;
         // await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
@@ -421,6 +443,7 @@ class Supply extends Contract {
             }
         }
         console.info('================= END : Report Fault ==============');
+        return shim.success(JSON.stringify(batch));
     }
     async queryFaultBatches(ctx)
     {
