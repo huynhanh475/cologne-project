@@ -3,7 +3,7 @@ import { join } from 'path';
 import FabricCAServices from 'fabric-ca-client';
 import { Gateway, Wallets } from 'fabric-network';
 import dotenv from 'dotenv'
-import { userTypes } from '../utils/constants';
+import { userTypes } from '../utils/constants.js';
 dotenv.config()
 
 const manufacturerCcpPath = join(process.cwd(), process.env.MANUFACTURER_CONN);
@@ -118,7 +118,7 @@ export async function enrollAdmin(isManufacturer, isDeliverer, isRetailer, admin
     }
 };
 
-export async function registerUser(loggedUserType, adminId, userID) {
+export async function registerUser(loggedUserType, userID) {
     const isManufacturer = loggedUserType === userTypes.manufacturer;
     const isDeliverer = loggedUserType === userTypes.deliverer;
     const isRetailer = loggedUserType === userTypes.retailer;
@@ -139,7 +139,7 @@ export async function registerUser(loggedUserType, adminId, userID) {
             return { status: 400, error: 'User identity already exists in the wallet.' };
         }
 
-        const adminIdentity = await wallet.get(adminId);
+        const adminIdentity = await wallet.get("admin");
         if (!adminIdentity) {
             console.log('An identity for the admin user "admin" does not exist in the wallet');
             console.log('Enrolls an admin before retrying');
@@ -147,7 +147,7 @@ export async function registerUser(loggedUserType, adminId, userID) {
         }
 
         const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
-        const adminUser = await provider.getUserContext(adminIdentity, adminId);
+        const adminUser = await provider.getUserContext(adminIdentity, "admin");
 
         const secret = await ca.register({
             enrollmentID: userID,
@@ -184,10 +184,14 @@ export async function query(networkObj, ...funcAndArgs) {
 
         const result = await networkObj.contract.evaluateTransaction(...funcAndArgsStrings);
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
-        console.log(`Type: ${typeof result}`)
         networkObj.gateway.disconnect();
 
-        return JSON.parse(result);
+        const jsonResult = JSON.parse(result);
+        console.log(jsonResult)
+        if (jsonResult.status === 200) {
+            return JSON.parse(jsonResult.payload);
+        }
+        return { status: 500, error: jsonResult.message };
     }
     catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
@@ -209,7 +213,12 @@ export async function invoke(networkObj, ...funcAndArgs) {
         console.log('Transaction has been submitted');
         networkObj.gateway.disconnect();
 
-        return JSON.parse(result);
+        const jsonResult = JSON.parse(result);
+        console.log(jsonResult)
+        if (jsonResult.status === 200) {
+            return JSON.parse(jsonResult.payload);
+        }
+        return { status: 500, error: jsonResult.message };
     }
     catch (error) {
         console.error(`Failed to submit transaction: ${error}`);
