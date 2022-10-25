@@ -28,22 +28,37 @@ class Supply extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        const products = [
+        const admins = [
             {
-                productId: 'product0',
-                name: 'Orange0',
-                manufacturerId: 'manufacturer0',
-                status: 'good',
-                date: '20/10/2022',
-                price: 10,
-                quantity: 1000,
+                name: 'manufacturerAdmin',
+                userId: 'admin0',
+                email: '',
+                userType: 'admin',
+                address: '',
+                password: '',
+            },
+            {
+                name: 'retailerAdmin',
+                userId: 'admin1',
+                email: '',
+                userType: 'admin',
+                address: '',
+                password: '',
+            },
+            {
+                name: 'delivererAdmin',
+                userId: 'admin2',
+                email: '',
+                userType: 'admin',
+                address: '',
+                password: '',
             },
         ];
 
         for (let i = 0; i < products.length; i++) {
-            products[i].docType = 'product';
-            await ctx.stub.putState('product' + i, Buffer.from(JSON.stringify(products[i])));
-            console.info('Added <--> ', products[i]);
+            products[i].docType = 'user';
+            await ctx.stub.putState('admin' + i, Buffer.from(JSON.stringify(admins[i])));
+            console.info('Added <--> ', admins[i]);
         }
         console.info('============= END : Initialize Ledger ===========');
     }
