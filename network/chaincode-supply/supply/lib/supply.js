@@ -26,6 +26,7 @@ class Supply extends Contract {
     productCounter = 0;
     userCounter = 0;
 
+
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
         const admins = [
@@ -203,14 +204,27 @@ class Supply extends Contract {
 
     async transferToDeliverer (ctx, batchId)
     {
-        var batchAsBytes = await ctx.stub.getState(batchId);
+        const batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
             throw new Error(`${batchId}} does not exist`);
         }
-
-        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+    
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'transfered-to-deliverer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        }
+
+    async getCurrentDate()
+    {
+        let ts = Date.now();
+
+        let date_ob = new Date(ts);
+        let date = date_ob.getDate();
+        let month = date_ob.getMonth() + 1;
+        let year = date_ob.getFullYear();
+
+        // prints date & time in YYYY-MM-DD format
+        return (year + "-" + month + "-" + date);
     }
 
     async delivererConfirmTransfer (ctx, batchId)
@@ -220,9 +234,26 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'deliverer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+
+        //interpolate batch dates id
+        var batchDatesId = 'batchDates';
+        for(let i=5; i< batchId.length; i++)
+        {
+            batchDatesId+= batchId[i];
+        }
+
+        //update batchdates
+        const batchDatesAsBytes = await ctx.stub.getState(batchDatesId);
+        if (!batchDatesAsBytes || batchDatesAsBytes.length === 0) {
+            throw new Error(`${batchDatesId}} does not exist`);
+        }
+
+        const batchDatesAsJson = await JSON.parse(await batchDatesAsBytes.toString());
+        batchDatesAsJson.sendToDelivererDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDatesId, Buffer.from(JSON.stringify(batchDatesAsJson)));
     }
 
     async retailerConfirmTransfer (ctx, batchId)
@@ -232,7 +263,7 @@ class Supply extends Contract {
             throw new Error(`${batchId}} does not exist`);
         }
 
-        const batchAsJson = await JSON.parse( await batchAsBytes.toString())
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'retailer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
     }
