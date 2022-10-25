@@ -212,6 +212,11 @@ class Supply extends Contract {
     
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'transfered-to-deliverer';
+        const batchDateID=this.getBatchDatesId(batchId);
+        const batchDatesAsBytes = await ctx.stub.getState(batchDateID);
+        const batchDatesAsJson = await JSON.parse( await batchDatesAsBytes.toString());
+        batchDatesAsJson.sendToDelivererDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDatesAsJson)));
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
         }
 
@@ -345,6 +350,11 @@ class Supply extends Contract {
         const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
         batch.status = 'transfered-to-retailer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+
+        const batchDateID= await this.getBatchDatesId(batchId);
+        const batchDates = await JSON.parse(await this.queryBatch(ctx,batchDateID));
+        batchDates.sendToRetailerDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDates)));
         console.info('================= END : Transfer to retailer ==============');
     }
     async getAllBatches(ctx,userID)
