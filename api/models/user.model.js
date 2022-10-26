@@ -1,56 +1,64 @@
-import { connect, invoke, registerUser } from '../fabric/network.js';
+import { connect, invoke, query, registerUser } from '../fabric/network.js';
 import { createModelRes } from '../utils/api-response.js';
 import { generateAccessToken } from '../utils/authenticate.js';
 
 
-export async function createUser(isManufacturer, isMiddlemen, isConsumer, information) {
-    const { id, userType, address, name, email, password } = information;
+export async function createUser(loggedUserType, information) {
+    const {loggedUserId, userType, address, name, email, password } = information;
 
     let networkObj;
-    networkObj = await connect(isManufacturer, isMiddlemen, isConsumer, id);
-    
+    console.log(loggedUserType)
+    networkObj = await connect(loggedUserType, loggedUserId);
+    if (networkObj.error) {
+        return createModelRes(networkObj.status, networkObj.error);
+    }
+
     let contractRes;
     contractRes = await invoke(networkObj, 'createUser', name, email, userType, address, password);
     console.log('5');
-    const walletRes = await registerUser(isManufacturer, isMiddlemen, isConsumer, contractRes.UserID);
+    if (contractRes.error) {
+        return createModelRes(contractRes.status, contractRes.error);
+    }
 
-    const error = walletRes.error || networkObj.error || contractRes.error;
-    if (error) {
-        const status = walletRes.status || networkObj.status || contractRes.status;
-        return createModelRes(status, error);
+    const walletRes = await registerUser(loggedUserType, contractRes.userId);
+    if (walletRes.error) {
+        return createModelRes(walletRes.status, walletRes.error);
     }
 
     return createModelRes(200, 'Success', contractRes);
 }
 
-export async function signIn(isManufacturer, isMiddlemen, isConsumer, information) {
+export async function signIn(loggedUserType, information) {
     const { id, password } = information;
+    
+    const networkObj = await connect(loggedUserType, id);
+    if (networkObj.error) {
+        return createModelRes(networkObj.status, networkObj.error);
+    }
 
-    const networkObj = await connect(isManufacturer, isMiddlemen, isConsumer, id);
     let contractRes;
     contractRes = await invoke(networkObj, 'signIn', id, password);
-    const error = networkObj.error || contractRes.error;
-    if (error) {
-        const status = networkObj.status || contractRes.status;
-        return createModelRes(status, error);
+    if (contractRes.error) {
+        return createModelRes(contractRes.status, contractRes.error);
     }
     console.log(contractRes);
-    const { Name, UserType } = contractRes;
-    const accessToken = generateAccessToken({ id, UserType, Name });
-    return createModelRes(200, 'Success', { id, UserType, Name, accessToken });
+    const { name, userType, role } = contractRes;
+    console.log(userType)
+    const accessToken = generateAccessToken({ id, userType, role, name });
+    return createModelRes(200, 'Success', { id, userType, role, name, accessToken });
 }
 
-export async function getAllUser(isManufacturer, isMiddlemen, isConsumer, information) {
-    const { id } = information;
+export async function getAllUser(loggedUserType, information) {
+    const { loggedUserId } = information;
 
-    const networkObj = await connect(true, false, false, 'admin');
+    const networkObj = await connect(loggedUserType, loggedUserId);
+    if (networkObj.error) {
+        return createModelRes(networkObj.status, networkObj.error);
+    }
 
-    const contractRes = await invoke(networkObj, 'queryAll', 'User');
-
-    const error = networkObj.error || contractRes.error;
-    if (error) {
-        const status = networkObj.status || contractRes.status;
-        return createModelRes(status, error);
+    const contractRes = await query(networkObj, 'queryAllUser');
+    if (contractRes.error) {
+        return createModelRes(contractRes.status, contractRes.error);
     }
 
     return createModelRes(200, 'Success', contractRes);

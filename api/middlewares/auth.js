@@ -15,8 +15,9 @@ export default async (req, res, next) => {
     try {
         const result = await certifyAccessToken(accessToken);
         req.body.loggedUserId = result.id;
-        req.body.loggedUserType = result.UserType;
-        req.body.loggedUserName = result.Name;
+        req.body.loggedUserType = result.userType;
+        req.body.loggedUserRole = result.role;
+        req.body.loggedUserName = result.name;
         return next();
     } catch (err) {
         return unauthorized(res, err.toString());
