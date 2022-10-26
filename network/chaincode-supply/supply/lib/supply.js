@@ -347,7 +347,7 @@ class Supply extends Contract {
     async inviteDeliverer(ctx, batchId, delivererId)
     {
         console.info('=============== Start : Inviting deliverer =================');
-        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
