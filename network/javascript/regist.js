@@ -26,7 +26,7 @@ async function regist(ca, walletId, mspId)
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        const userIdentity = await wallet.get('appUser');
+        const userIdentity = await wallet.get('randomuser1');
         if (userIdentity) {
             console.log('An identity for the user "appUser" already exists in the wallet');
             return;
@@ -47,11 +47,11 @@ async function regist(ca, walletId, mspId)
         // Register the user, enroll the user, and import the new identity into the wallet.
         const secret = await ca.register({
             //affiliation: 'org3.department1',org3 has no affiliation. If we want to specify this one, go to fabric-ca config file to add
-            enrollmentID: 'appUser',
+            enrollmentID: 'randomuser1',
             role: 'client'
         }, adminUser);
         const enrollment = await ca.enroll({
-            enrollmentID: 'appUser',
+            enrollmentID: 'randomuser1',
             enrollmentSecret: secret
         });
         const x509Identity = {

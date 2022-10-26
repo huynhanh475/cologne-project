@@ -37,7 +37,7 @@ popd
 
 ##Deploy chaincode on org1, org2
 pushd ./test-network
-./network.sh deployCC -ccn supply -ccp ../chaincode-supply/supply/ -ccl javascript -cci initLedger -c mychannel
+./network.sh deployCC -ccn supply -ccp ../chaincode-supply/supply/ -ccl javascript -cci initLedger -c mychannel #remove initLedger
 popd
 
 ##export path for org3

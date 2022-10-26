@@ -127,7 +127,7 @@ class Supply extends Contract {
         const user = {
             name: name,
             docType: 'user',
-            userId: 'user' + this.userCounter,
+            userId: 'user-' + this.userCounter,
             email: email,
             userType: userType,
             role: 'client',
@@ -135,7 +135,7 @@ class Supply extends Contract {
             password: password,
         };
         const userAsBytes = await Buffer.from(JSON.stringify(user));
-        await ctx.stub.putState('user' + this.userCounter, userAsBytes);
+        await ctx.stub.putState('user-' + this.userCounter, userAsBytes);
         this.userCounter++;
         console.info('================= END : Create User ===============');
         return shim.success(userAsBytes.toString());
