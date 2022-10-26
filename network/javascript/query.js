@@ -56,6 +56,11 @@ async function main() {
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         //console.log(users.toString());
         // Disconnect from the gateway.
+        //testing
+        await contract.evaluateTransaction('registerBatchOrder', 'product1','r1','m1','1','temp');
+        await contract.evaluateTransaction('approveBatchOrder', 'batch0');
+        await contract.evaluateTransaction('inviteDeliverer', 'batch0','d1');
+        await contract.evaluateTransaction('approveInvitation', 'batch0','accept');
         await gateway.disconnect();
         
     } catch (error) {
