@@ -21,7 +21,7 @@ export async function createUser(loggedUserType, information) {
     }
 
     const walletRes = await registerUser(loggedUserType, contractRes.userId);
-    if (walletRes.error) {
+    if (walletRes?.error) {
         return createModelRes(walletRes.status, walletRes.error);
     }
 

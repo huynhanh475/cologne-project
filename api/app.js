@@ -17,8 +17,9 @@ async function main() {
     await network.registerUser(userTypes.retailer, "admin3");
 
     // testing connection with the network
-    const networkObj = await network.connect("manufacturer", 'admin1');
-    await network.query(networkObj, 'queryUser', 'admin0')
+    // const networkObj = await network.connect("manufacturer", 'admin');
+    // const users = await network.query(networkObj, 'queryAllUser')
+    // console.log(users)
 
     const app = express();
     app.use(morgan('combined'));
