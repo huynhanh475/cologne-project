@@ -138,7 +138,7 @@ class Supply extends Contract {
         await ctx.stub.putState('user' + this.userCounter, userAsBytes);
         this.userCounter++;
         console.info('================= END : Create User ===============');
-        return shim.success(userAsBytes.toString());
+        return shim.success(JSON.stringify(user));
     }
 
     async queryUser(ctx, userId)
