@@ -127,7 +127,7 @@ class Supply extends Contract {
         const user = {
             name: name,
             docType: 'user',
-            userId: 'user' + this.userCounter,
+            userId: 'user-' + this.userCounter,
             email: email,
             userType: userType,
             role: 'client',
@@ -135,7 +135,7 @@ class Supply extends Contract {
             password: password,
         };
         const userAsBytes = await Buffer.from(JSON.stringify(user));
-        await ctx.stub.putState('user' + this.userCounter, userAsBytes);
+        await ctx.stub.putState('user-' + this.userCounter, userAsBytes);
         this.userCounter++;
         console.info('================= END : Create User ===============');
         return shim.success(userAsBytes.toString());
@@ -157,10 +157,10 @@ class Supply extends Contract {
 	const users = [];
     for(let i=0; i<this.userCounter; i++)
 	{
-	    const userAsBytes = await ctx.stub.getState('user' + i);
+	    const userAsBytes = await ctx.stub.getState('user-' + i);
         if(!userAsBytes || userAsBytes.length ===0)
         {
-            return shim.error(`${'user' + i} does not exist`);
+            return shim.error(`${'user-' + i} does not exist`);
         }
         users.push(userAsBytes.toString());
 	}
@@ -222,8 +222,8 @@ class Supply extends Contract {
         batchAsJson.status = 'transfered-to-deliverer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
 
-        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(batchAsBytes.toString());    
+        //batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(JSON.stringify(batchAsJson));    
     }
 
     //Utils function for updating batch=====================================================
@@ -263,8 +263,8 @@ class Supply extends Contract {
         batchAsJson.status = 'deliverer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
         
-        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(batchAsBytes.toString());
+        //batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(JSON.stringify(batchAsJson));
         /*
         //interpolate batch dates id
         var batchDatesId = 'batchDates';
@@ -298,8 +298,8 @@ class Supply extends Contract {
         batchAsJson.status = 'retailer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
 
-        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(batchAsBytes.toString());
+        //batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(JSON.stringify(batchAsJson));
         //update batch dates
         /*
         const batchDatesId = this.getBatchDatesId(batchId);
