@@ -162,9 +162,9 @@ class Supply extends Contract {
         {
             return shim.error(`${'user-' + i} does not exist`);
         }
-        users.push(userAsBytes.toString());
+        users.push(userAsBytes);
 	}
-    return shim.success(users);
+    return shim.success(`[${users.toString()}]`);
 
     }
 
@@ -192,19 +192,19 @@ class Supply extends Contract {
             delivererId: '',
             status:'pending-registration',
             markedFaultBy: '',
+            date: {
+                orderedDate:await this.getCurrentDate(),
+                sendToDelivererDate: '',
+                sendToRetailerDate: '',
+                markedFaultDate: '',
+            },
             quantity: quantity,
         };
 
-        const batchDates = {
-            orderedDate:await this.getCurrentDate(),
-            sendToDelivererDate: '',
-            sendToRetailerDate: '',
-            markedFaultDate: '',
-        };
 
         const batchAsBytes = await Buffer.from(JSON.stringify(batch));
         await ctx.stub.putState('batch' + this.batchCounter, batchAsBytes);
-        await ctx.stub.putState('batchDates' + this.batchCounter, Buffer.from(JSON.stringify(batchDates)));
+        //await ctx.stub.putState('batchDates' + this.batchCounter, Buffer.from(JSON.stringify(batchDates)));
         this.batchCounter++;
         console.info('================= END : Batch Registration ==============');
 	    return shim.success(batchAsBytes.toString());
@@ -238,7 +238,7 @@ class Supply extends Contract {
         // prints date & time in YYYY-MM-DD format
         return (year + "-" + month + "-" + date);
     }
-
+/*
     async getBatchDatesId(batchId)
     {
         //interpolate batch dates id
@@ -249,6 +249,7 @@ class Supply extends Contract {
         }
         return batchDatesId;
     }
+    */
     //====== END ============================================================================
 
     async delivererConfirmTransfer (ctx, batchId)
