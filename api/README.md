@@ -38,6 +38,7 @@
     }
 }
 ```
+
 ### Create user
 
 - Endpoint: `/user/creatUser`
