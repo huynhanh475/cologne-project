@@ -1,5 +1,5 @@
 import { connect, invoke } from '../fabric/network.js';
-import { createModelRes } from '../utils/apiResponse.js';
+import { createModelRes } from '../utils/api-response.js';
 
 export async function createProduct(loggedUserType, information) {
     const { loggedUserId ,name, price, quantity} = information;

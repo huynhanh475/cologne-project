@@ -1,6 +1,5 @@
 import * as model from '../models/product.model.js';
-import { unauthorized } from '../utils/api-response.js';
-import { badRequest, send } from '../utils/apiResponse.js';
+import { unauthorized, badRequest, send } from '../utils/api-response.js';
 
 export async function createProduct(req, res) {
     const { name, price, quantity , loggedUserType, loggedUserId } = req.body;
