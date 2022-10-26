@@ -7,5 +7,5 @@ import * as controller from "../controllers/batch.controller.js";
 const batchRouter = Router();
 
 batchRouter.get('/single', canAccess([roles.client]), controller.getSingleBatch);
-
+batchRouter.get('/all', canAccess([roles.client]), controller.getAllBatches);
 export default batchRouter;

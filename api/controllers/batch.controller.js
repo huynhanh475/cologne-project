@@ -12,3 +12,9 @@ export async function getSingleBatch(req, res){
     }
     return badRequest(res);
 }
+
+export async function getAllBatches(req, res){
+    const { loggedUserType, loggedUserId } = req.body;
+    const modelRes = await model.getSingleBatches(loggedUserType, { loggedUserId });
+    return send(res, modelRes);
+}
