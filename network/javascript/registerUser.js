@@ -27,7 +27,7 @@ async function main() {
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        const userIdentity = await wallet.get('user-1');
+        const userIdentity = await wallet.get('user-2');
         if (userIdentity) {
             console.log('An identity for the user "appUser" already exists in the wallet');
             return;
@@ -64,11 +64,11 @@ async function main() {
         // Register the user, enroll the user, and import the new identity into the wallet.
         const secret = await ca.register({
             //affiliation: 'org3.department1',org3 has no affiliation. If we want to specify this one, go to fabric-ca config file to add
-            enrollmentID: 'user-1',
+            enrollmentID: 'user-2',
             role: 'client'
         }, adminUser);
         const enrollment = await ca.enroll({
-            enrollmentID: 'user-1',
+            enrollmentID: 'user-2',
             enrollmentSecret: secret
         });
         const x509Identity = {
@@ -79,7 +79,7 @@ async function main() {
             mspId: 'Org1MSP',
             type: 'X.509',
         };
-        await wallet.put('user-1', x509Identity);
+        await wallet.put('user-2', x509Identity);
         console.log('Successfully registered and enrolled admin user "appUser" and imported it into the wallet');
 
     } catch (error) {
