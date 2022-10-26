@@ -55,12 +55,12 @@ async function main() {
 
         */
 
-        /*
+        
         await contract.submitTransaction('createProduct', 'Orange1', 'manufacturer1', '20', '500');
         await contract.submitTransaction('createProduct', 'Orange2', 'manufacturer1', '20', '500');
         await contract.submitTransaction('createProduct', 'Orange3', 'manufacturer1', '20', '500');
         await contract.submitTransaction('createProduct', 'Orange4', 'manufacturer1', '20', '500');
-        */
+        
         await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', 'manufacturer3','11');
         await contract.submitTransaction('registerBatchOrder', 'product1', 'retailer1', 'manufacturer3','11');
         await contract.submitTransaction('registerBatchOrder', 'product2', 'retailer1', 'manufacturer3','11');
