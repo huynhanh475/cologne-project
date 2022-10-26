@@ -32,37 +32,37 @@ class Supply extends Contract {
         console.info('============= START : Initialize Ledger ===========');
         const admins = [
             {
-                name: 'manufacturerAdmin',
-                userId: 'admin0',
-                email: '',
+                name: 'Manufacturer Admin',
+                userId: 'admin1',
+                email: 'admin1@org1.com',
                 userType: 'manufacturer',
                 role:'admin',
-                address: '',
+                address: 'Cologne',
+                password: 'adminpw',
+            },
+            {
+                name: 'Deliverer Admin',
+                userId: 'admin2',
+                email: 'admin2@org2.com',
+                userType: 'deliverer',
+                role: 'admin',
+                address: 'Berlin',
                 password: 'adminpw',
             },
             {
                 name: 'retailerAdmin',
-                userId: 'admin1',
-                email: '',
+                userId: 'admin3',
+                email: 'admin3@org3.com',
                 userType: 'retailer',
                 role: 'admin',
-                address: '',
-                password: 'adminpw',
-            },
-            {
-                name: 'delivererAdmin',
-                userId: 'admin2',
-                email: '',
-                userType: 'deliverer',
-                role: 'admin',
-                address: '',
+                address: 'Munich',
                 password: 'adminpw',
             },
         ];
 
         for (let i = 0; i < admins.length; i++) {
             admins[i].docType = 'user';
-            await ctx.stub.putState('admin' + i, Buffer.from(JSON.stringify(admins[i])));
+            await ctx.stub.putState(admins[i].userId, Buffer.from(JSON.stringify(admins[i])));
             console.info('Added <--> ', admins[i]);
         }
         console.info('============= END : Initialize Ledger ===========');
@@ -187,6 +187,7 @@ class Supply extends Contract {
         const batch = {
             batchId:'batch' + this.batchCounter,//uuid generator (?)
             productId: productId,
+            docType: 'batch',
             manufacturerId:manufacturerId,
             retailerId: retailerId,
             delivererId: '',
@@ -323,8 +324,106 @@ class Supply extends Contract {
         console.log(batchAsBytes.toString());
         return shim.success(batchAsBytes.toString());
     }
-
-    
+    async approveBatchOrder (ctx, batchId)
+    {
+        console.info('=============== Start : Approve Batch =================');
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        batch.status = 'approved';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Batch Approval ==============');
+    }
+    async inviteDeliverer(ctx, batchId, delivererId)
+    {
+        console.info('=============== Start : Inviting deliverer =================');
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        batch.delivererId = delivererId;
+        batch.status = 'pending-invite-to-deliverer'
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Inviting deliverer ==============');
+    }
+    async approveInvitation (ctx, batchId,action)
+    {
+        console.info('=============== Start : Approve Invitation =================');
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        if(action == 'approved')
+        {
+            batch.status = 'approve-invitation-by-deliverer';
+            console.log('Invitation approved');
+        }
+        else
+        {
+            batch.status='reject-invitation-by-deliverer'
+            console.log('Invitation rejected');
+        }
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Approve Invitation ==============');
+    }
+    async transferToRetailer (ctx, retailerId, batchId)
+    {
+        console.info('=============== Start : Transfer to retailer =================');
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        batch.status = 'transfered-to-retailer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Transfer to retailer ==============');
+    }
+    async getAllBatches(ctx)
+    {
+        const allResults = [];
+        for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            if (record.docType == 'batch')
+            allResults.push(record);
+        }
+        console.info(allResults);
+        return JSON.stringify(allResults);
+    }
+    async reportFaultBatch(ctx, batchId, userID)
+    {
+        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        // batch.status = 'fault';
+        // batch.markedFaultBy = userID;
+        // await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        const product = await JSON.parse(await this.queryProduct(ctx,batch.productId));
+        product.status = 'fault';
+        product.markedFaultBy = userID;
+        await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
+        const allResults=JSON.parse(this.getAllBatches(ctx));
+        for (let i in allResults)
+        {
+            if(allResults[i].productId == batch.productId)
+            {
+                allResults[i].status = 'fault';
+                allResults[i].markedFaultBy = userID;
+                await ctx.stub.putState(allResults[i].batchId, Buffer.from(JSON.stringify(allResults[i])));
+            }
+        }
+        console.info('================= END : Report Fault ==============');
+    }
+    async queryFaultBatches(ctx)
+    {
+        const allResults = [];
+        for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            if (record.docType == 'batch' && record.status == 'fault')
+            allResults.push(record);
+        }
+        console.info(allResults);
+        return JSON.stringify(allResults);
+    }
 /*
     async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
     async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
