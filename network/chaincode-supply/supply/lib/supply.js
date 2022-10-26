@@ -378,7 +378,7 @@ class Supply extends Contract {
         console.info('================= END : Approve Invitation ==============');
         return shim.success(JSON.stringify(batch));    
     }
-    async transferToRetailer (ctx, retailerId, batchId)
+    async transferToRetailer (ctx, batchId)
     {
         console.info('=============== Start : Transfer to retailer =================');
         const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
@@ -414,10 +414,11 @@ class Supply extends Contract {
             if (user.userType=='retailer'&&record.retailerId==userID)
                 flag=true;
             if (record.docType == 'batch'&&flag)
-                allResults.push(record);
+                allResults.push(strValue);
         }
         console.info(allResults);
-        return JSON.stringify(allResults);
+        return shim.success(allResults);
+        // return JSON.stringify(allResults);
     }
     async reportFaultBatch(ctx, batchId, userID)
     {
@@ -458,10 +459,11 @@ class Supply extends Contract {
                 record = strValue;
             }
             if (record.docType == 'batch' && record.status == 'fault')
-            allResults.push(record);
+            allResults.push(strValue);
         }
         console.info(allResults);
-        return JSON.stringify(allResults);
+        return shim.success(allResults);
+        // return JSON.stringify(allResults);
     }
 /*
     async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
