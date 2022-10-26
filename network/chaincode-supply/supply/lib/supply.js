@@ -209,7 +209,7 @@ class Supply extends Contract {
         }
         users.push(userAsBytes);
 	}
-    return shim.success(`[${users.toString()}] ${userCounter}`);
+    return shim.success(`[${users.toString()}]`);
 
     }
 
