@@ -15,6 +15,6 @@ export async function getSingleBatch(req, res){
 
 export async function getAllBatches(req, res){
     const { loggedUserType, loggedUserId } = req.body;
-    const modelRes = await model.getSingleBatches(loggedUserType, { loggedUserId });
+    const modelRes = await model.getAllBatches(loggedUserType, { loggedUserId });
     return send(res, modelRes);
 }
