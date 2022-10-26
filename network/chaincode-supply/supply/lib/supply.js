@@ -175,6 +175,10 @@ class Supply extends Contract {
         console.info('=============== Start : Register Batch =================');
 
         const productAsBytes = await ctx.stub.getState(productId);
+        if(!productAsBytes || productAsBytes.length ===0)
+        {
+            return shim.error(`Product ${productId} does not exist`);
+        }
         const productAsJson = await JSON.parse(productAsBytes.toString());
         if(productAsJson.status === 'fault')
         {
