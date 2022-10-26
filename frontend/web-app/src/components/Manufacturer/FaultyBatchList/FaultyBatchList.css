@@ -5,33 +5,22 @@
   z-index: 2;
 }
 
-.faultybatchmanufacturertable {
-  height: 80vh;
+.faultybatchmanufacturertable-container{
   display: flex;
-  position: relative;
-  align-items: center;
   justify-content: center;
-  background-color: whitesmoke;
+  margin: 0 auto;
+  background-color: white;
+  width: 80vw;
+  height: 80vh;
+  position: relative;
+  top: 5vh;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
+  margin-top: 2vh;
 }
   
-  .faultybatchmanufacturertable .datatableTitle {
-    width: 100%;
-    font-family: 'Verdana', sans-serif;
-    font-size: 100px;
-    color: rgb(0, 0, 0);
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
-  }
-  
-  .faultybatchmanufacturertable .cellAction {
+  .faultybatchmanufacturertable-container .cellAction {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -41,7 +30,7 @@
     gap: 15px;
   }
   
-  .faultybatchmanufacturertable .cellAction .viewButton {
+  .faultybatchmanufacturertable-container .cellAction .viewButton {
     padding: 2px 5px;
     border-radius: 5px;
     color: darkblue;
@@ -49,7 +38,7 @@
     cursor: pointer;
   }
   
-  .faultybatchmanufacturertable .cellAction .deleteButton {
+  .faultybatchmanufacturertable-container .cellAction .deleteButton {
     padding: 2px 5px;
     border-radius: 5px;
     color: crimson;
@@ -57,7 +46,7 @@
     cursor: pointer;
   } 
 
-  .filter_batch_manufacturer {
+  /* .filter_batch_manufacturer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -77,5 +66,5 @@
     border: 2px solid #01185e;
     color: #013567;
     font-family: 'Verdana', sans-serif;
-  }
+  } */
 

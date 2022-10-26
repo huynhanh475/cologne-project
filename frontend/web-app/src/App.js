@@ -13,6 +13,8 @@ import DelivererFaultyBatch from './components/Deliverer/FaultyBatchList/Deliver
 import ProductList from './components/Retailer/ProductList/ProductList';
 import RetailerFaultyBatch from './components/Retailer/FaultyBatchList/RetailerFaultyBatch';
 import RetailerTransferList from './components/Retailer/TransferList/RetailerTransferList';
+import CreateUserForm from './components/Admin/CreateUserForm/CreateUserForm';
+import UserList from './components/Admin/UserList/UserList';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
           <Route path="/retailer/productlist" element={<ProductList/>} />
           <Route path="/retailer/transferlist" element={<RetailerTransferList/>} />
           <Route path="/retailer/faultybatch" element={<RetailerFaultyBatch/>} />
+          <Route path="/admin/createuser" element={<CreateUserForm/>} />
+          <Route path="/admin/userlist" element={<UserList/>} />
         </Routes>
       </BrowserRouter>
     </>

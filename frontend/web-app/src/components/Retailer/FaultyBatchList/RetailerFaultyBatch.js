@@ -16,13 +16,6 @@ function RetailerFaultyBatchList() {
       <div className="navbarcomponent">
         <NavBar/>
       </div>
-      <div className='filter_batch_retailer'>
-        <input
-            type="text"
-            placeholder="Search by Batch ID..."
-            onChange={(e)=>{setBatchID(e.target.value)}}
-        />
-      </div>
       <div className="faultybatchtable">
           <DataGrid
           rows={data}
@@ -32,8 +25,7 @@ function RetailerFaultyBatchList() {
           rowsPerPageOptions={[9]}
           checkboxSelection
           />       
-
-    </div>
+      </div>
     </div>
   )
 }

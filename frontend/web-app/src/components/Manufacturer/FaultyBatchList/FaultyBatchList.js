@@ -18,14 +18,7 @@ function FaultyBatchList() {
         <div className="navbarcomponent">
           <Navbar/>
         </div>
-        <div className='filter_batch_manufacturer'>
-          <input
-              type="text"
-              placeholder="Search by Batch ID..."
-              onChange={(e)=>{setBatchID(e.target.value)}}
-          />
-        </div>
-        <div className="faultybatchmanufacturertable">
+        <div className="faultybatchmanufacturertable-container">
             <DataGrid
             rows={data}
             getRowId={(row) => row.batchID}

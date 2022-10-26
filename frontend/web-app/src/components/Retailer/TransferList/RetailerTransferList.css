@@ -6,13 +6,18 @@
 }
 
 .transferlisttable {
-  height: 80vh;
   display: flex;
-  position: relative;
-  align-items: center;
   justify-content: center;
-  background-color: whitesmoke;
+  margin: 0 auto;
+  background-color: white;
+  width: 80vw;
+  height: 80vh;
+  position: relative;
+  top: 5vh;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
+  margin-top: 2vh;
 }
   
   .transferlisttable .datatableTitle {
@@ -57,7 +62,7 @@
     cursor: pointer;
   } 
 
-.filter_batch_retailer {
+/* .filter_batch_retailer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -77,4 +82,4 @@
   border: 2px solid #01185e;
   color: #013567;
   font-family: 'Verdana', sans-serif;
-}
+} */

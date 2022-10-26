@@ -60,13 +60,6 @@ function BatchJourneyList() {
       <div className="navbarcomponent">
         <Navbar/>
       </div>
-      <div className='filter_batch_manufacturer'>
-        <input
-            type="text"
-            placeholder="Search by Batch ID..."
-            onChange={(e)=>{setBatchID(e.target.value)}}
-        />
-      </div>
       <TransferModal isTransfer={isTransfer} setIsTransfer={setIsTransfer} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID} quantity={quantity}/>
       <MarkFaultModal isFault={isFault} setIsFault={setIsFault} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID}/>
       <div className="batchjourneylisttable">

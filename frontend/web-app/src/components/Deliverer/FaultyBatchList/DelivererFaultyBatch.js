@@ -16,13 +16,13 @@ function DelivererFaultyBatch() {
           <div className="navbarcomponent">
             <Navbar/>
             </div>
-          <div className='filter_batch_deliverer'>
+          {/* <div className='filter_batch_deliverer'>
             <input
                 type="text"
                 placeholder="Search by Batch ID..."
                 onChange={(e)=>{setBatchID(e.target.value)}}
             />
-          </div>
+          </div> */}
           <div className="faultybatchtable-deliverer">
               <DataGrid
               rows={data}

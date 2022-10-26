@@ -49,13 +49,6 @@ function DelivererList() {
       <div className="navbarcomponent">
         <Navbar/>
       </div>
-      <div className='filter_user'>
-        <input
-            type="text"
-            placeholder="Search by Deliverer ID..."
-            onChange={(e)=>{setUserID(e.target.value)}}
-        />
-      </div>
       <div className="deliverertable">
         <DataGrid
           rows={data}

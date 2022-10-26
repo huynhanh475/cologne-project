@@ -35,18 +35,9 @@ function BatchOrderList() {
       <div className='navbarcomponent'>
         <Navbar/>
       </div>
-      
-      <div className='filter_batch_order'>
-        <input
-            type="text"
-            placeholder="Search by Batch ID..."
-            onChange={(e)=>{setBatchID(e.target.value)}}
-        />
-      </div>
 
       <div className="batchorderlist">
         <DataGrid
-          className="datagrid"
           rows={data}
           getRowId={(row) => row.retailerID}
           columns={BatchOrderColumn.concat(actionColumn)}

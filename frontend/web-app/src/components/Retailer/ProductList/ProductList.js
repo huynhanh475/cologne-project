@@ -43,13 +43,6 @@ function ProductList() {
         <div className="navbarcomponent">
           <NavBar/>
         </div>
-        <div className='filter_product_retailer'>
-            <input
-                type="text"
-                placeholder="Search by Product ID..."
-                onChange={(e)=>{setProductID(e.target.value)}}
-            />
-        </div>
         <RegisterProductForm isRegister={isRegister} setIsRegister={setIsRegister} productID={productID} name={name} manufacturerID={manufacturerID} date={date} price={price}/>
         <div className="productlisttable">
             <DataGrid
