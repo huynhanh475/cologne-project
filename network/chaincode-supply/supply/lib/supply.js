@@ -58,6 +58,33 @@ class Supply extends Contract {
                 address: 'Munich',
                 password: 'adminpw',
             },
+            // {
+            //     name: 'User 0',
+            //     userId: 'user-0',
+            //     email: 'user0@org3.com',
+            //     userType: 'retailer',
+            //     role: 'client',
+            //     address: 'Munich',
+            //     password: 'userpw',
+            // },
+            // {
+            //     name: 'User 1',
+            //     userId: 'user-1',
+            //     email: 'user1@org2.com',
+            //     userType: 'deliverer',
+            //     role: 'client',
+            //     address: 'Munich',
+            //     password: 'userpw',
+            // },
+            // {
+            //     name: 'User 2',
+            //     userId: 'user-2',
+            //     email: 'user2@org1.com',
+            //     userType: 'manufacturer',
+            //     role: 'client',
+            //     address: 'Munich',
+            //     password: 'userpw',
+            // },
         ];
 
         for (let i = 0; i < admins.length; i++) {
@@ -65,6 +92,7 @@ class Supply extends Contract {
             await ctx.stub.putState(admins[i].userId, Buffer.from(JSON.stringify(admins[i])));
             console.info('Added <--> ', admins[i]);
         }
+        // this.userCounter+=3;
         console.info('============= END : Initialize Ledger ===========');
     }
 
@@ -162,9 +190,9 @@ class Supply extends Contract {
         {
             return shim.error(`${'user-' + i} does not exist`);
         }
-        users.push(userAsBytes.toString());
+        users.push(userAsBytes);
 	}
-    return shim.success(users);
+    return shim.success(`[${users.toString()}]`);
 
     }
 
