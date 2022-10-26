@@ -1,5 +1,5 @@
-import {Router} from "express";
-import {roles} from "../utils/constants.js";
+import { Router } from "express";
+import { roles } from "../utils/constants.js";
 import canAccess from "../middlewares/can-access.js"
 import * as controller from "../controllers/transact.controller.js";
 
