@@ -87,11 +87,19 @@ class Supply extends Contract {
             // },
         ];
 
+        var counter = 
+         {
+            batchCounter: 0,
+            userCounter: 0,
+            productCounter: 0,
+         };
         for (let i = 0; i < admins.length; i++) {
             admins[i].docType = 'user';
             await ctx.stub.putState(admins[i].userId, Buffer.from(JSON.stringify(admins[i])));
             console.info('Added <--> ', admins[i]);
         }
+
+        await ctx.stub.putState('counters', Buffer.from(JSON.stringify(counter)));
         // this.userCounter+=3;
         console.info('============= END : Initialize Ledger ===========');
     }
@@ -129,8 +137,10 @@ class Supply extends Contract {
     {
         console.info('============= START : Create Product =============');
 
+        const currentCounter = await this.getCounterForRegister(ctx, 'product');
+
         const product = {
-            productId : 'product' + this.productCounter,
+            productId : 'product' + currentCounter,
             docType: 'product',
             name,
             manufacturerId,
@@ -140,10 +150,11 @@ class Supply extends Contract {
             status : 'healthy',
             markedFaultBy: '',
         };
+        
 
 	    const productAsBytes = await Buffer.from(JSON.stringify(product));
-        await ctx.stub.putState('product' + this.productCounter, productAsBytes);
-        this.productCounter++;
+        await ctx.stub.putState('product' + currentCounter, productAsBytes);
+
         console.info('===============END : Create Product==============');
 	    return shim.success(productAsBytes.toString());
     }
@@ -152,19 +163,22 @@ class Supply extends Contract {
     {
         console.info('============ START : Create User ================');
 
+        const currentCounter =await this.getCounterForRegister(ctx, 'user');
+
         const user = {
             name: name,
             docType: 'user',
-            userId: 'user-' + this.userCounter,
+            userId: 'user-' + currentCounter,
             email: email,
             userType: userType,
             role: 'client',
             address: address,
             password: password,
         };
+
         const userAsBytes = await Buffer.from(JSON.stringify(user));
-        await ctx.stub.putState('user-' + this.userCounter, userAsBytes);
-        this.userCounter++;
+        await ctx.stub.putState('user-' + currentCounter, userAsBytes);
+
         console.info('================= END : Create User ===============');
         return shim.success(userAsBytes.toString());
     }
@@ -183,7 +197,10 @@ class Supply extends Contract {
     async queryAllUser(ctx)
     {
 	const users = [];
-    for(let i=0; i<this.userCounter; i++)
+    
+    const userCounter = await this.getCounter(ctx, 'user');
+    //console.log(this.userCounter);
+    for(let i=0; i<userCounter; i++)
 	{
 	    const userAsBytes = await ctx.stub.getState('user-' + i);
         if(!userAsBytes || userAsBytes.length ===0)
@@ -192,7 +209,7 @@ class Supply extends Contract {
         }
         users.push(userAsBytes);
 	}
-    return shim.success(`[${users.toString()}]`);
+    return shim.success(`[${users.toString()}] ${userCounter}`);
 
     }
 
@@ -212,8 +229,11 @@ class Supply extends Contract {
         {
             return shim.error(`Product ${productId} could not be ordered as it is fault`);
         }
+
+        const currentCounter = await this.getCounterForRegister(ctx, 'batch');
+
         const batch = {
-            batchId:'batch' + this.batchCounter,//uuid generator (?)
+            batchId:'batch' + currentCounter,//uuid generator (?)
             productId: productId,
             docType: 'batch',
             manufacturerId:manufacturerId,
@@ -232,9 +252,8 @@ class Supply extends Contract {
 
 
         const batchAsBytes = await Buffer.from(JSON.stringify(batch));
-        await ctx.stub.putState('batch' + this.batchCounter, batchAsBytes);
+        await ctx.stub.putState('batch' + currentCounter, batchAsBytes);
         //await ctx.stub.putState('batchDates' + this.batchCounter, Buffer.from(JSON.stringify(batchDates)));
-        this.batchCounter++;
         console.info('================= END : Batch Registration ==============');
 	    return shim.success(batchAsBytes.toString());
     }
@@ -267,6 +286,55 @@ class Supply extends Contract {
         // prints date & time in YYYY-MM-DD format
         return (year + "-" + month + "-" + date);
     }
+
+    async getCounterForRegister(ctx, counterType)
+    {
+        var countersAsBytes = await ctx.stub.getState('counters');
+        var counterAsJson  = await JSON.parse(await countersAsBytes.toString());
+        let currentCounter = 0;
+
+        if(counterType === 'user')
+        {
+            currentCounter = parseInt(counterAsJson.userCounter);
+            counterAsJson.userCounter =  currentCounter + 1;
+        }
+        else if(counterType === 'batch')
+        {
+            currentCounter = parseInt(counterAsJson.batchCounter);
+            counterAsJson.batchCounter =  currentCounter + 1;
+        }
+        else if(counterType === 'product')
+        {
+            currentCounter = parseInt(counterAsJson.productCounter);
+            counterAsJson.productCounter =  currentCounter + 1;
+        }
+
+        await ctx.stub.putState('counters', Buffer.from(JSON.stringify(counterAsJson)));
+        return currentCounter;
+    }
+
+    async getCounter(ctx, counterType)
+    {
+        var countersAsBytes = await ctx.stub.getState('counters');
+        var counterAsJson  = await JSON.parse(await countersAsBytes.toString());
+        let currentCounter = 0;
+
+        if(counterType === 'user')
+        {
+            currentCounter = parseInt(counterAsJson.userCounter);
+        }
+        else if(counterType === 'batch')
+        {
+            currentCounter = parseInt(counterAsJson.batchCounter);
+        }
+        else if(counterType === 'product')
+        {
+            currentCounter = parseInt(counterAsJson.productCounter);
+        }
+
+        return currentCounter;
+    }
+
 /*
     async getBatchDatesId(batchId)
     {
