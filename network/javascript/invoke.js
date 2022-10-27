@@ -55,22 +55,28 @@ async function main() {
 
         */
 
-        
+        /*
         await contract.submitTransaction('createProduct', 'Orange1', 'manufacturer1', '20', '500');
         await contract.submitTransaction('createProduct', 'Orange2', 'manufacturer1', '20', '500');
         await contract.submitTransaction('createProduct', 'Orange3', 'manufacturer1', '20', '500');
         await contract.submitTransaction('createProduct', 'Orange4', 'manufacturer1', '20', '500');
+        */
+
+        //const result = await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', '4000')
         
-        await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', 'manufacturer3','11');
-        await contract.submitTransaction('registerBatchOrder', 'product1', 'retailer1', 'manufacturer3','11');
-        await contract.submitTransaction('registerBatchOrder', 'product2', 'retailer1', 'manufacturer3','11');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'retailer1', 'manufacturer3','11');
+        //const result = await contract.submitTransaction('markStatus', 'batch0', 'approve-invitation-by-deliverer');
+        //const result = await contract.submitTransaction('transferToDeliverer', 'batch0');
+        const result = await contract.submitTransaction('markBatchFault', 'batch0', 'retailer1');
+        //await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', 'manufacturer3','11');
+        //await contract.submitTransaction('registerBatchOrder', 'product1', 'retailer1', 'manufacturer3','11');
+        //await contract.submitTransaction('registerBatchOrder', 'product2', 'retailer1', 'manufacturer3','11');
+        //await contract.submitTransaction('registerBatchOrder', 'product3', 'retailer1', 'manufacturer3','11');
         //await contract.submitTransaction('transferToDeliverer', 'batch0');
         //const user = await contract.submitTransaction('createUser', 'MinhDinh', 'minhdinh@gmail.com', 'retailer', 'no address', '12345');
         //console.log(JSON.stringify(user));
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
         //const result =await contract.submitTransaction('signIn', 'user0', '12345');
-        //console.log(result.toString());
+        console.log(result.toString());
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
         console.log('Transaction has been submitted');
 
