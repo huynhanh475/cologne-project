@@ -496,7 +496,7 @@ class Supply extends Contract {
         console.info('================= END : Transfer to retailer ==============');
         return shim.success(JSON.stringify(batch));
     }
-    async getAllBatches(ctx,userID)
+    async getAllBatches(ctx,userID='all')
     {
         const allResults = [];
         for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
@@ -509,11 +509,15 @@ class Supply extends Contract {
                 record = strValue;
             }
             var flag = false;
-            const user= await JSON.parse(await (await this.queryUser(ctx,userID)).payload);
-            if (user.userType=='deliverer'&&record.delivererId==userID)
+            if (userID=='all')
                 flag=true;
-            if (user.userType=='retailer'&&record.retailerId==userID)
-                flag=true;
+            else{
+                const user= await JSON.parse(await (await this.queryUser(ctx,userID)).payload);
+                if (user.userType=='deliverer'&&record.delivererId==userID)
+                    flag=true;
+                if (user.userType=='retailer'&&record.retailerId==userID)
+                    flag=true;
+            }
             if (record.docType == 'batch'&&flag)
                 allResults.push(strValue);
         }
@@ -521,7 +525,7 @@ class Supply extends Contract {
         return shim.success(allResults);
         // return JSON.stringify(allResults);
     }
-    async reportFaultBatch(ctx, batchId, userID)
+    async markFaultBatch(ctx, batchId, userID)
     {
         const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
         if (!batch || batch.length === 0) {
@@ -534,7 +538,7 @@ class Supply extends Contract {
         product.status = 'fault';
         product.markedFaultBy = userID;
         await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
-        const allResults=JSON.parse(this.getAllBatches(ctx));
+        const allResults=JSON.parse(JSON.parse(this.getAllBatches(ctx)).payload);
         for (let i in allResults)
         {
             if(allResults[i].productId == batch.productId)
