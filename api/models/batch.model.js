@@ -27,11 +27,11 @@ export async function getAllBatches(userType, information) {
     return createModelRes(200, 'Success', contractRes);
 }
 
-export async function markFaultBatch(userType, information) {
+export async function reportBatchFault(userType, information) {
     const { loggedUserId, batchID } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await invoke(networkObj, 'markFaultBatch', batchID, loggedUserId);
+    const contractRes = await invoke(networkObj, 'reportBatchFault', batchID, loggedUserId);
     const error = networkObj.error || contractRes.error;
     if(error){
         const status = networkObj.status || contractRes.status;

@@ -8,6 +8,6 @@ const batchRouter = Router();
 
 batchRouter.get('/single', controller.getSingleBatch);
 batchRouter.get('/all', controller.getAllBatches);
-batchRouter.post('/report', controller.markFaultBatch);
+batchRouter.post('/report', controller.reportBatchFault);
 batchRouter.get('/query', controller.queryFaultBatches);
 export default batchRouter;
