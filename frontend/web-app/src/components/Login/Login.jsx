@@ -24,21 +24,54 @@ function Login() {
     //     console.log("e value: " + e.target.value);
     // }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const item = { id, password, userType };
         console.log(item);
-        fetch("http://localhost:8090/user/signin", {
+        const response = await fetch("http://localhost:8090/user/signin", {
             method: 'POST',
             headers: { 'Content-Type': "application/json" },
-            body: JSON.stringify(item)
-        }).then(response => {
-            if (response.ok) {
-                console.log("ok");
-                navigate("/admin/createuser");
-            }
+            body: JSON.stringify(item),
 
         })
+        if (response.ok){
+            console.log(response.status);
+            var rawData = await response.text();
+            var jsonData = JSON.parse(rawData);
+            const role = jsonData["data"]["role"];
+            console.log("Data: " + rawData);
+            console.log("Role: " + role);
+            switch(role){
+                case 'admin':
+                    switch(userType){
+                        case("manufacturer"):
+                            navigate('/admin/createuser');
+                            break;
+                        case("deliverer"):
+                            navigate('/admin/createuser');
+                            break;
+                        case("retailer"):
+                            navigate('/admin/createuser');
+                            break;
+                    };
+                    break;
+                case 'client':
+                    switch(userType){
+                        case("manufacturer"):
+                            navigate('/manufacturer/productform');
+                            break;
+                        case("deliverer"):
+                            navigate('/deliverer/invitationlist');
+                            break;
+                        case("retailer"):
+                            navigate('/retailer/productlist');
+                            break
+                    };
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     const handleChange = (e) => {
