@@ -26,3 +26,16 @@ export async function getAllBatches(userType, information) {
     }
     return createModelRes(200, 'Success', contractRes);
 }
+
+export async function reportFaultBatch(userType, information) {
+    const { loggedUserId, batchID } = information;
+    const networkObj = await connect(userType, loggedUserId);
+
+    const contractRes = await invoke(networkObj, 'reportFaultBatch', batchID, loggedUserId);
+    const error = networkObj.error || contractRes.error;
+    if(error){
+        const status = networkObj.status || contractRes.status;
+        return createModelRes(status, error);
+    }
+    return createModelRes(200, 'Success', contractRes);
+}
