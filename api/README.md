@@ -77,7 +77,7 @@
 
 ### Get all user
 
-- Endpoint: `/user/all`
+- Endpoint: `/user`
 - Method: Get
 - Chaincode: `queryUsers`
 - Body: None
@@ -125,22 +125,99 @@
 
 - Endpoint: `/product`
 - Method: Get
-- Chaincode: `queryProducts`
-- Params: role
+- Chaincode: `queryAllProduct`
+- Body: none
+- Response: list products
+  - If user is a `manufacturer`: return list products that belong to that manufacturer
+  - If user is a `retailer`: return list all products that are healthy and available
+
+```json
+{
+    "message": "Success",
+    "data": [
+        {
+            "date": "2022-10-27",
+            "docType": "product",
+            "manufacturerId": "admin1",
+            "markedFaultBy": "",
+            "name": "Green Apple - 0312",
+            "price": 129000,
+            "productId": "product0",
+            "quantity": 5000,
+            "status": "healthy"
+        },
+        {
+            "date": "2022-10-27",
+            "docType": "product",
+            "manufacturerId": "user-0",
+            "markedFaultBy": "",
+            "name": "Red Apple - 1298",
+            "price": 110000,
+            "productId": "product1",
+            "quantity": 6000,
+            "status": "healthy"
+        }
+    ]
+}
+```
+
+### Get a product by ID
+
+- Endpoint: `/product/:productId`
+- Method: Get
+- Chaincode: `queryProduct`
+- Params: `productId`
+- Body: none
+- Response: product entity
+
+```json
+{
+    "message": "Success",
+    "data": {
+        "date": "2022-10-27",
+        "docType": "product",
+        "manufacturerId": "admin1",
+        "markedFaultBy": "",
+        "name": "Green Apple - 0312",
+        "price": "129000",
+        "productId": "product0",
+        "quantity": "5000",
+        "status": "healthy"
+    }
+}
+```
 
 ### Create a new product
 
 - Endpoint: `/product`
 - Method: Post
 - Chaincode: `createProduct`
-- Params: role
 - Body:
 
 ```json
 {
-    "name": "name",
-    "price": 200000,
-    "quantity": 1000
+    "name": "Red Apple - 1298",
+    "price": 110000,
+    "quantity": 6000
+}
+```
+
+- Reponse: product entity
+
+```json
+{
+    "message": "Success",
+    "data": {
+        "productId": "product1",
+        "docType": "product",
+        "name": "Red Apple - 1298",
+        "manufacturerId": "user-0",
+        "date": "2022-10-27",
+        "price": 110000,
+        "quantity": 6000,
+        "status": "healthy",
+        "markedFaultBy": ""
+    }
 }
 ```
 
