@@ -32,30 +32,30 @@ class Supply extends Contract {
         console.info('============= START : Initialize Ledger ===========');
         const admins = [
             {
-                name: 'manufacturerAdmin',
-                userId: 'admin0',
-                email: '',
+                name: 'Manufacturer Admin',
+                userId: 'admin1',
+                email: 'admin@org1.com',
                 userType: 'manufacturer',
                 role:'admin',
-                address: '',
+                address: 'Cologne',
                 password: 'adminpw',
             },
             {
-                name: 'retailerAdmin',
-                userId: 'admin1',
-                email: '',
-                userType: 'retailer',
-                role: 'admin',
-                address: '',
-                password: 'adminpw',
-            },
-            {
-                name: 'delivererAdmin',
+                name: 'Deliverer Admin',
                 userId: 'admin2',
-                email: '',
+                email: 'admin@org2.com',
                 userType: 'deliverer',
                 role: 'admin',
-                address: '',
+                address: 'Berlin',
+                password: 'adminpw',
+            },
+            {
+                name: 'Retailer Admin',
+                userId: 'admin3',
+                email: 'admin@org3.com',
+                userType: 'retailer',
+                role: 'admin',
+                address: 'Munich',
                 password: 'adminpw',
             },
         ];
@@ -68,12 +68,11 @@ class Supply extends Contract {
          };
         for (let i = 0; i < admins.length; i++) {
             admins[i].docType = 'user';
-            await ctx.stub.putState('admin' + i, Buffer.from(JSON.stringify(admins[i])));
+            await ctx.stub.putState(admins[i].userId, Buffer.from(JSON.stringify(admins[i])));
             console.info('Added <--> ', admins[i]);
         }
 
         await ctx.stub.putState('counters', Buffer.from(JSON.stringify(counter)));
-        // this.userCounter+=3;
         console.info('============= END : Initialize Ledger ===========');
     }
 
@@ -185,20 +184,29 @@ class Supply extends Contract {
     return shim.success(`[${users.toString()}]`);
     }
 
-    async queryAllProduct(ctx)
+    async queryAllProduct(ctx, manufacturerId)
     {
+        let filterFunc;
+        if (!manufacturerId) {
+            filterFunc = (product) => (product.status !== "fault" && product.quantity != 0);
+        } else filterFunc = (product) => (product.manufacturerId === manufacturerId);
+
         const products = [];
         const productCounter = await this.getCounter(ctx, 'product');
 
-        for(let i=0; i < productCounter; i++)
-        {
+        for(let i=0; i < productCounter; i++) {
             const productAsBytes = await ctx.stub.getState('product' + i);
-            if(!productAsBytes || productAsBytes.length === 0)
-            {
+            // return error if product not exist
+            if (!productAsBytes || productAsBytes.length === 0) {
                 return shim.error(`${'product' + i} does not exist`);
             }
-            products.push(productAsBytes);
+            // check if product satisfy filter
+            const productAsJson = await JSON.parse(productAsBytes.toString());
+            if (filterFunc(productAsJson)) {
+                products.push(productAsBytes);
+            }
         }
+        
         return shim.success(`[${products.toString()}]`);
     }
 
