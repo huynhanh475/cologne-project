@@ -294,7 +294,7 @@ class Supply extends Contract {
     }
 
     //Function to update batch status = 'transferred-to-deliverer'
-    async transferToDeliverer (ctx, batchId)
+    async transferToDeliverer (ctx, batchId, userId)
     {
         const batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
@@ -302,7 +302,7 @@ class Supply extends Contract {
         }
     
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        if(batchAsJson.status === 'approve-invitation-by-deliverer')
+        if(batchAsJson.status === 'approve-invitation-by-deliverer' && batchAsJson.manufacturerId === userId)
         {
             batchAsJson.status = 'transferred-to-deliverer';
             batchAsJson.date.sendToDelivererDate = await this.getCurrentDate();
@@ -393,7 +393,7 @@ class Supply extends Contract {
     //====== END ============================================================================
 
     //Function to update the status of batch to 'deliverer-confirm-transfer'
-    async delivererConfirmTransfer (ctx, batchId)
+    async delivererConfirmTransfer (ctx, batchId, userId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
@@ -401,7 +401,7 @@ class Supply extends Contract {
         }
 
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        if(batchAsJson.status === 'transferred-to-deliverer')
+        if(batchAsJson.status === 'transferred-to-deliverer' && batchAsJson.delivererId === userId)
         {
             batchAsJson.status = 'deliverer-confirm-transfer';
         }
@@ -417,7 +417,7 @@ class Supply extends Contract {
     }
 
     //Function to update the status of batch to 'retailer-confirm-transfer'
-    async retailerConfirmTransfer (ctx, batchId)
+    async retailerConfirmTransfer (ctx, batchId, userId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
@@ -425,7 +425,7 @@ class Supply extends Contract {
         }
 
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        if(batchAsJson.status === 'transferred-to-retailer')
+        if(batchAsJson.status === 'transferred-to-retailer' && batchAsJson.retailerId === userId)
         {
             batchAsJson.status = 'retailer-confirm-transfer';
         }
