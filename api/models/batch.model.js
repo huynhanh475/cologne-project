@@ -39,3 +39,15 @@ export async function reportFaultBatch(userType, information) {
     }
     return createModelRes(200, 'Success', contractRes);
 }
+
+export async function queryFaultBatches(userType, information) {
+    const { loggedUserId } = information;
+    const networkObj = await connect(userType, loggedUserId);
+
+    const contractRes = await invoke(networkObj, 'queryFaultBatches');
+    const error = networkObj.error || contractRes.error;
+    if(error){
+        const status = networkObj.status || contractRes.status;
+        return createModelRes(status, error);
+    }
+}
