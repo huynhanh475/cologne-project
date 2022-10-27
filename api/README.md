@@ -77,7 +77,7 @@
 
 ### Get all user
 
-- Endpoint: `/user/all`
+- Endpoint: `/user`
 - Method: Get
 - Chaincode: `queryUsers`
 - Body: None
