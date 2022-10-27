@@ -12,6 +12,7 @@
 
 const { Contract } = require('fabric-contract-api');
 const shim = require('fabric-shim');
+const crypto = require('crypto');
 
 /*Data models
  * User{Name, User_ID, Email, User_Type, Address, Password}
@@ -38,7 +39,7 @@ class Supply extends Contract {
                 userType: 'manufacturer',
                 role:'admin',
                 address: '',
-                password: 'adminpw',
+                password: await this.hashPassword('adminpw'),
             },
             {
                 name: 'delivererAdmin',
@@ -47,7 +48,7 @@ class Supply extends Contract {
                 userType: 'deliverer',
                 role: 'admin',
                 address: '',
-                password: 'adminpw',
+                password: await this.hashPassword('adminpw'),
             },
             {
                 name: 'retailerAdmin',
@@ -56,7 +57,7 @@ class Supply extends Contract {
                 userType: 'retailer',
                 role: 'admin',
                 address: '',
-                password: 'adminpw',
+                password: await this.hashPassword('adminpw'),
             },
         ];
 
@@ -88,7 +89,7 @@ class Supply extends Contract {
         //need hash password before
         // if hashed(password) == password
         const userJson = await JSON.parse(await userEntity.toString());
-        if(userJson.password !== password)
+        if(userJson.password !== await this.hashPassword(password))
         {
             return shim.error(`Wrong Password Provided`);
         }
@@ -146,7 +147,7 @@ class Supply extends Contract {
             userType: userType,
             role: 'client',
             address: address,
-            password: password,
+            password: await this.hashPassword(password),
         };
 
         const userAsBytes = await Buffer.from(JSON.stringify(user));
@@ -317,6 +318,11 @@ class Supply extends Contract {
     }
 
     //Utils function for updating batch=====================================================
+    async hashPassword(password)
+    {
+        return crypto.createHash('sha256', 'cologne').update(password).digest('hex');
+    }
+
     async getCurrentDate()
     {
         let ts = Date.now();

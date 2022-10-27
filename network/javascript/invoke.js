@@ -65,7 +65,7 @@ async function main() {
         //const result = await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', '400')
         
         //const result = await contract.submitTransaction('markStatus', 'batch0', 'approve-invitation-by-deliverer');
-        const result = await contract.submitTransaction('transferToDeliverer', 'batch0', 'manufacturer1');
+        //const result = await contract.submitTransaction('transferToDeliverer', 'batch0', 'manufacturer1');
        // const result = await contract.submitTransaction('markBatchFault', 'batch0', 'retailer1');
         //await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', 'manufacturer3','11');
         //await contract.submitTransaction('registerBatchOrder', 'product1', 'retailer1', 'manufacturer3','11');
@@ -76,6 +76,9 @@ async function main() {
         //console.log(JSON.stringify(user));
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
         //const result =await contract.submitTransaction('signIn', 'user0', '12345');
+
+        const result = await contract.submitTransaction('signIn', 'user-0', '12345');
+        //const result = await contract.submitTransaction('createUser', 'MinhDinh', 'minhdinh@gmail.com', 'retailer', 'no address', '12345');
         console.log(result.toString());
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
         console.log('Transaction has been submitted');
