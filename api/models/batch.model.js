@@ -1,11 +1,11 @@
-import { connect, invoke } from '../fabric/network.js';
+import { connect, invoke, query } from '../fabric/network.js';
 import { createModelRes } from '../utils/api-response.js';
 
 export async function getSingleBatch(userType, information) {
     const { loggedUserId, batchID } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await invoke(networkObj, 'queryBatch', batchID);
+    const contractRes = await query(networkObj, 'queryBatch', batchID);
     const error = networkObj.error || contractRes.error;
     if (error) {
         const status = networkObj.status || contractRes.status;
@@ -18,7 +18,7 @@ export async function getAllBatches(userType, information) {
     const { loggedUserId } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await invoke(networkObj, 'getAllBatches', loggedUserId);
+    const contractRes = await query(networkObj, 'getAllBatches', loggedUserId);
     const error = networkObj.error || contractRes.error;
     if (error) {
         const status = networkObj.status || contractRes.status;
@@ -27,11 +27,11 @@ export async function getAllBatches(userType, information) {
     return createModelRes(200, 'Success', contractRes);
 }
 
-export async function reportFaultBatch(userType, information) {
+export async function markFaultBatch(userType, information) {
     const { loggedUserId, batchID } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await invoke(networkObj, 'reportFaultBatch', batchID, loggedUserId);
+    const contractRes = await invoke(networkObj, 'markFaultBatch', batchID, loggedUserId);
     const error = networkObj.error || contractRes.error;
     if(error){
         const status = networkObj.status || contractRes.status;
@@ -44,7 +44,7 @@ export async function queryFaultBatches(userType, information) {
     const { loggedUserId } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await invoke(networkObj, 'queryFaultBatches');
+    const contractRes = await query(networkObj, 'markFaultBatch');
     const error = networkObj.error || contractRes.error;
     if(error){
         const status = networkObj.status || contractRes.status;
