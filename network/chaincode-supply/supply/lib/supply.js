@@ -430,6 +430,8 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.status!=='pending-registration')
+            return shim.error('Batch is not registered');
         batch.status = 'approved';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         const product= await JSON.parse(await (await this.queryProduct(ctx,batch.productId)).payload);
@@ -445,6 +447,8 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.status!=='approved')
+            return shim.error('Batch is not approved');
         batch.delivererId = delivererId;
         batch.status = 'pending-invite-to-deliverer'
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
@@ -458,6 +462,8 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.status!=='pending-invite-to-deliverer')
+            return shim.error('Deliverer is not invited');
         if(action == 'approved')
         {
             batch.status = 'approve-invitation-by-deliverer';
@@ -479,17 +485,18 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.status!=='deliverer-confirm-transfer')
+            return shim.error('Batch is not confirmed by retailer');
         batch.status = 'transfered-to-retailer';
+        batch.date.sendToRetailerDate=await this.getCurrentDate();
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
 
-        const batchDateID= await this.getBatchDatesId(batchId);
-        const batchDates = await JSON.parse(await (await this.queryBatch(ctx,batchDateID)).payload);
         batchDates.sendToRetailerDate = this.getCurrentDate();
         await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDates)));
         console.info('================= END : Transfer to retailer ==============');
         return shim.success(JSON.stringify(batch));
     }
-    async getAllBatches(ctx,userID)
+    async getAllBatches(ctx,userID='all')
     {
         const allResults = [];
         for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
@@ -502,11 +509,15 @@ class Supply extends Contract {
                 record = strValue;
             }
             var flag = false;
-            const user= await JSON.parse(await (await this.queryUser(ctx,userID)).payload);
-            if (user.userType=='deliverer'&&record.delivererId==userID)
+            if (userID=='all')
                 flag=true;
-            if (user.userType=='retailer'&&record.retailerId==userID)
-                flag=true;
+            else{
+                const user= await JSON.parse(await (await this.queryUser(ctx,userID)).payload);
+                if (user.userType=='deliverer'&&record.delivererId==userID)
+                    flag=true;
+                if (user.userType=='retailer'&&record.retailerId==userID)
+                    flag=true;
+            }
             if (record.docType == 'batch'&&flag)
                 allResults.push(strValue);
         }
@@ -514,7 +525,7 @@ class Supply extends Contract {
         return shim.success(allResults);
         // return JSON.stringify(allResults);
     }
-    async reportFaultBatch(ctx, batchId, userID)
+    async markFaultBatch(ctx, batchId, userID)
     {
         const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
         if (!batch || batch.length === 0) {
@@ -527,7 +538,7 @@ class Supply extends Contract {
         product.status = 'fault';
         product.markedFaultBy = userID;
         await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
-        const allResults=JSON.parse(this.getAllBatches(ctx));
+        const allResults=JSON.parse(JSON.parse(this.getAllBatches(ctx)).payload);
         for (let i in allResults)
         {
             if(allResults[i].productId == batch.productId)
