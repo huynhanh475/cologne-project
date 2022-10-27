@@ -180,7 +180,7 @@ class Supply extends Contract {
         {
             return shim.error(`${'user' + i} does not exist`);
         }
-        users.push(userAsBytes.toString());
+        users.push(userAsBytes);
 	}
     return shim.success(`[${users.toString()}]`);
     }
