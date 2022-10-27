@@ -259,6 +259,8 @@
 }
 ```
 
+- Response: batch order entity
+
 ### Manufacturer replies the order of the retailer
 
 - Endpoint: `/transact/approveOrder`
@@ -270,15 +272,14 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerID",
-    "status": "acceptManu/declineManu"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Manufacturer invites/adds the deliverer
 
-- Endpoint: `/transact/invite`
+- Endpoint: `/transact/inviteDeliverer`
 - Method: Put
 - Chaincode: `inviteDeliverer`
 - Params: role
@@ -287,15 +288,15 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
     "delivererID": "delivererOne"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Deliverer replies the invitation from the manufacturer
 
-- Endpoint: `/transact/reply`
+- Endpoint: `/transact/replyInvitation`
 - Method: Put
 - Chaincode: `approveInvitation`
 - Params: role
@@ -304,16 +305,15 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "acceptDeli/declineDeli"
+    "action" : "approved/disapproved"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Manufacturer transfers the batch to the deliverer
 
-- Endpoint: `/transact/confirm`
+- Endpoint: `/transact/transferToDeliverer`
 - Method: Put
 - Chaincode: `transferToDeliverer`
 - Params: role
@@ -322,16 +322,14 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "unblock"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Deliverer confirms that the batch has been received
 
-- Endpoint: `/transact/receive`
+- Endpoint: `/transact/confirmTransfer`
 - Method: Put
 - Chaincode: `delivererConfirmTransfer`
 - Params: role
@@ -340,16 +338,14 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "delivering"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Deliverer transfers the batch to the retailer
 
-- Endpoint: `/transact/arrive`
+- Endpoint: `/transact/transferToRetailer`
 - Method: Put
 - Chaincode: `transferToRetailer`
 - Params: role
@@ -358,16 +354,14 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "delivered"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Retailer confirms that the batch has been received
 
-- Endpoint: `/transact/done`
+- Endpoint: `/transact/receiveProduct`
 - Method: Put
 - Chaincode: `retailerConfirmTransfer`
 - Params: role
@@ -376,9 +370,7 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "done"
 }
 ```
+
+- Response: status (200 for success; otherwise, fail)
