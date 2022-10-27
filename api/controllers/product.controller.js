@@ -1,5 +1,6 @@
 import * as model from '../models/product.model.js';
 import { unauthorized, badRequest, send } from '../utils/api-response.js';
+import { userTypes } from '../utils/constants.js';
 
 export async function createProduct(req, res) {
     const { name, price, quantity , loggedUserType, loggedUserId } = req.body;
@@ -35,7 +36,8 @@ export async function getAllProducts(req, res) {
         return unauthorized(res);
     }
 
-    const modelRes = await model.getAllProducts(loggedUserId, { loggedUserId });
+    const manufacturerId = loggedUserType === userTypes.manufacturer ? loggedUserId : "";
+    const modelRes = await model.getAllProducts(loggedUserType, { loggedUserId, manufacturerId });
 
     return send(res, modelRes);
 }

@@ -34,7 +34,7 @@ class Supply extends Contract {
             {
                 name: 'Manufacturer Admin',
                 userId: 'admin1',
-                email: 'admin1@org1.com',
+                email: 'admin@org1.com',
                 userType: 'manufacturer',
                 role:'admin',
                 address: 'Cologne',
@@ -43,48 +43,21 @@ class Supply extends Contract {
             {
                 name: 'Deliverer Admin',
                 userId: 'admin2',
-                email: 'admin2@org2.com',
+                email: 'admin@org2.com',
                 userType: 'deliverer',
                 role: 'admin',
                 address: 'Berlin',
                 password: 'adminpw',
             },
             {
-                name: 'retailerAdmin',
+                name: 'Retailer Admin',
                 userId: 'admin3',
-                email: 'admin3@org3.com',
+                email: 'admin@org3.com',
                 userType: 'retailer',
                 role: 'admin',
                 address: 'Munich',
                 password: 'adminpw',
             },
-            // {
-            //     name: 'User 0',
-            //     userId: 'user-0',
-            //     email: 'user0@org3.com',
-            //     userType: 'retailer',
-            //     role: 'client',
-            //     address: 'Munich',
-            //     password: 'userpw',
-            // },
-            // {
-            //     name: 'User 1',
-            //     userId: 'user-1',
-            //     email: 'user1@org2.com',
-            //     userType: 'deliverer',
-            //     role: 'client',
-            //     address: 'Munich',
-            //     password: 'userpw',
-            // },
-            // {
-            //     name: 'User 2',
-            //     userId: 'user-2',
-            //     email: 'user2@org1.com',
-            //     userType: 'manufacturer',
-            //     role: 'client',
-            //     address: 'Munich',
-            //     password: 'userpw',
-            // },
         ];
 
         var counter = 
@@ -100,7 +73,6 @@ class Supply extends Contract {
         }
 
         await ctx.stub.putState('counters', Buffer.from(JSON.stringify(counter)));
-        // this.userCounter+=3;
         console.info('============= END : Initialize Ledger ===========');
     }
 
@@ -180,7 +152,7 @@ class Supply extends Contract {
         await ctx.stub.putState('user-' + currentCounter, userAsBytes);
 
         console.info('================= END : Create User ===============');
-        return shim.success(userAsBytes.toString());
+        return shim.success(JSON.stringify(user));
     }
 
     async queryUser(ctx, userId)
@@ -202,15 +174,40 @@ class Supply extends Contract {
     //console.log(this.userCounter);
     for(let i=0; i<userCounter; i++)
 	{
-	    const userAsBytes = await ctx.stub.getState('user-' + i);
+	    const userAsBytes = await ctx.stub.getState('user' + i);
         if(!userAsBytes || userAsBytes.length ===0)
         {
-            return shim.error(`${'user-' + i} does not exist`);
+            return shim.error(`${'user' + i} does not exist`);
         }
-        users.push(userAsBytes);
+        users.push(userAsBytes.toString());
 	}
     return shim.success(`[${users.toString()}]`);
+    }
 
+    async queryAllProduct(ctx, manufacturerId)
+    {
+        let filterFunc;
+        if (!manufacturerId) {
+            filterFunc = (product) => (product.status !== "fault" && product.quantity != 0);
+        } else filterFunc = (product) => (product.manufacturerId === manufacturerId);
+
+        const products = [];
+        const productCounter = await this.getCounter(ctx, 'product');
+
+        for(let i=0; i < productCounter; i++) {
+            const productAsBytes = await ctx.stub.getState('product' + i);
+            // return error if product not exist
+            if (!productAsBytes || productAsBytes.length === 0) {
+                return shim.error(`${'product' + i} does not exist`);
+            }
+            // check if product satisfy filter
+            const productAsJson = await JSON.parse(productAsBytes.toString());
+            if (filterFunc(productAsJson)) {
+                products.push(productAsBytes);
+            }
+        }
+        
+        return shim.success(`[${products.toString()}]`);
     }
 
     //modify this to make sure fault product can not be ordered
@@ -267,10 +264,15 @@ class Supply extends Contract {
     
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
         batchAsJson.status = 'transfered-to-deliverer';
+        const batchDateID=this.getBatchDatesId(batchId);
+        const batchDatesAsBytes = await ctx.stub.getState(batchDateID);
+        const batchDatesAsJson = await JSON.parse( await batchDatesAsBytes.toString());
+        batchDatesAsJson.sendToDelivererDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDatesAsJson)));
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
 
-        //batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(JSON.stringify(batchAsJson));    
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(batchAsBytes.toString());    
     }
 
     //Utils function for updating batch=====================================================
@@ -360,8 +362,8 @@ class Supply extends Contract {
         batchAsJson.status = 'deliverer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
         
-        //batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(JSON.stringify(batchAsJson));
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(batchAsBytes.toString());
         /*
         //interpolate batch dates id
         var batchDatesId = 'batchDates';
@@ -395,8 +397,8 @@ class Supply extends Contract {
         batchAsJson.status = 'retailer-confirm-transfer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
 
-        //batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(JSON.stringify(batchAsJson));
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(batchAsBytes.toString());
         //update batch dates
         /*
         const batchDatesId = this.getBatchDatesId(batchId);
@@ -424,24 +426,38 @@ class Supply extends Contract {
     async approveBatchOrder (ctx, batchId)
     {
         console.info('=============== Start : Approve Batch =================');
-        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         batch.status = 'approved';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        const product= await JSON.parse(await (await this.queryProduct(ctx,batch.productId)).payload);
+        product.quantity-=batch.quantity;
+        await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
         console.info('================= END : Batch Approval ==============');
+        return shim.success(JSON.stringify(batch));
     }
     async inviteDeliverer(ctx, batchId, delivererId)
     {
         console.info('=============== Start : Inviting deliverer =================');
-        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         batch.delivererId = delivererId;
         batch.status = 'pending-invite-to-deliverer'
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Inviting deliverer ==============');
+        return shim.success(JSON.stringify(batch));
     }
     async approveInvitation (ctx, batchId,action)
     {
         console.info('=============== Start : Approve Invitation =================');
-        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         if(action == 'approved')
         {
             batch.status = 'approve-invitation-by-deliverer';
@@ -454,16 +470,26 @@ class Supply extends Contract {
         }
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Approve Invitation ==============');
+        return shim.success(JSON.stringify(batch));    
     }
-    async transferToRetailer (ctx, retailerId, batchId)
+    async transferToRetailer (ctx, batchId)
     {
         console.info('=============== Start : Transfer to retailer =================');
-        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         batch.status = 'transfered-to-retailer';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+
+        const batchDateID= await this.getBatchDatesId(batchId);
+        const batchDates = await JSON.parse(await (await this.queryBatch(ctx,batchDateID)).payload);
+        batchDates.sendToRetailerDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDates)));
         console.info('================= END : Transfer to retailer ==============');
+        return shim.success(JSON.stringify(batch));
     }
-    async getAllBatches(ctx)
+    async getAllBatches(ctx,userID)
     {
         const allResults = [];
         for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
@@ -475,19 +501,29 @@ class Supply extends Contract {
                 console.log(err);
                 record = strValue;
             }
-            if (record.docType == 'batch')
-            allResults.push(record);
+            var flag = false;
+            const user= await JSON.parse(await (await this.queryUser(ctx,userID)).payload);
+            if (user.userType=='deliverer'&&record.delivererId==userID)
+                flag=true;
+            if (user.userType=='retailer'&&record.retailerId==userID)
+                flag=true;
+            if (record.docType == 'batch'&&flag)
+                allResults.push(strValue);
         }
         console.info(allResults);
-        return JSON.stringify(allResults);
+        return shim.success(allResults);
+        // return JSON.stringify(allResults);
     }
     async reportFaultBatch(ctx, batchId, userID)
     {
-        const batch = await JSON.parse(await this.queryBatch(ctx,batchId));
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
         // batch.status = 'fault';
         // batch.markedFaultBy = userID;
         // await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
-        const product = await JSON.parse(await this.queryProduct(ctx,batch.productId));
+        const product = await JSON.parse(await (await this.queryProduct(ctx,batch.productId)).payload);
         product.status = 'fault';
         product.markedFaultBy = userID;
         await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
@@ -502,6 +538,7 @@ class Supply extends Contract {
             }
         }
         console.info('================= END : Report Fault ==============');
+        return shim.success(JSON.stringify(batch));
     }
     async queryFaultBatches(ctx)
     {
@@ -516,10 +553,11 @@ class Supply extends Contract {
                 record = strValue;
             }
             if (record.docType == 'batch' && record.status == 'fault')
-            allResults.push(record);
+            allResults.push(strValue);
         }
         console.info(allResults);
-        return JSON.stringify(allResults);
+        return shim.success(allResults);
+        // return JSON.stringify(allResults);
     }
 /*
     async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
