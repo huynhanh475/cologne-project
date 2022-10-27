@@ -114,11 +114,11 @@ class Supply extends Contract {
         const product = {
             productId : 'product' + currentCounter,
             docType: 'product',
-            name,
-            manufacturerId,
+            name:name,
+            manufacturerId: manufacturerId,
             date: await this.getCurrentDate(),
-            price,
-            quantity,
+            price:price,
+            quantity: quantity,
             status : 'healthy',
             markedFaultBy: '',
         };
@@ -179,7 +179,7 @@ class Supply extends Contract {
         {
             return shim.error(`${'user' + i} does not exist`);
         }
-        users.push(userAsBytes.toString());
+        users.push(userAsBytes);
 	}
     return shim.success(`[${users.toString()}]`);
     }
@@ -212,7 +212,7 @@ class Supply extends Contract {
 
     //modify this to make sure fault product can not be ordered
     //BatchDates will be created after the batch order is approved
-    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity)
+    async registerBatchOrder (ctx, productId, retailerId, quantity)
     {
         console.info('=============== Start : Register Batch =================');
 
@@ -227,13 +227,19 @@ class Supply extends Contract {
             return shim.error(`Product ${productId} could not be ordered as it is fault`);
         }
 
+        const remainingQuantity = parseInt(productAsJson.quantity);
+        if(remainingQuantity === 0 || remainingQuantity < parseInt(quantity))
+        {
+            return shim.error(`Not enough quantity`);
+        }
+
         const currentCounter = await this.getCounterForRegister(ctx, 'batch');
 
         const batch = {
             batchId:'batch' + currentCounter,//uuid generator (?)
             productId: productId,
             docType: 'batch',
-            manufacturerId:manufacturerId,
+            manufacturerId: productAsJson.manufacturerId,
             retailerId: retailerId,
             delivererId: '',
             status:'pending-registration',
@@ -255,6 +261,47 @@ class Supply extends Contract {
 	    return shim.success(batchAsBytes.toString());
     }
 
+    //Function to mark batch status = 'fault'
+    async markBatchFault(ctx, batchId, markedBy)
+    {
+        const batchAsBytes = await ctx.stub.getState(batchId);
+        if(!batchAsBytes || batchAsBytes.length === 0)
+        {
+            return shim.error(`${batchId} does not exist`);
+        }
+
+        const batchAsJson = await JSON.parse(await batchAsBytes.toString());
+
+        //mark fault
+        batchAsJson.status = 'fault';
+        batchAsJson.date.markedFaultDate = await this.getCurrentDate();
+        batchAsJson.markedFaultBy = markedBy;
+
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        return shim.success(JSON.stringify(batchAsJson));
+    }
+
+    //Function to change status of batch, for testing only, remove in official version
+    async markStatus(ctx, batchId, status)
+    {
+        const batchAsBytes = await ctx.stub.getState(batchId);
+        if(!batchAsBytes || batchAsBytes.length === 0)
+        {
+            return shim.error(`${batchId} does not exist`);
+        }
+
+        const batchAsJson = await JSON.parse(await batchAsBytes.toString());
+
+        //mark fault
+
+
+        batchAsJson.status = status;
+
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        return shim.success(JSON.stringify(batchAsJson));
+    }
+
+    //Function to update batch status = 'transferred-to-deliverer'
     async transferToDeliverer (ctx, batchId)
     {
         const batchAsBytes = await ctx.stub.getState(batchId);
@@ -263,16 +310,18 @@ class Supply extends Contract {
         }
     
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        batchAsJson.status = 'transfered-to-deliverer';
-        const batchDateID=this.getBatchDatesId(batchId);
-        const batchDatesAsBytes = await ctx.stub.getState(batchDateID);
-        const batchDatesAsJson = await JSON.parse( await batchDatesAsBytes.toString());
-        batchDatesAsJson.sendToDelivererDate = this.getCurrentDate();
-        await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDatesAsJson)));
-        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        if(batchAsJson.status === 'approve-invitation-by-deliverer')
+        {
+            batchAsJson.status = 'transferred-to-deliverer';
+            batchAsJson.date.sendToDelivererDate = await this.getCurrentDate();
+        }
+        else
+        {
+            return shim.error(`Unable to deliver ${batchId} to deliverer`);
+        }
 
-        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(batchAsBytes.toString());    
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        return shim.success(JSON.stringify(batchAsJson));    
     }
 
     //Utils function for updating batch=====================================================
@@ -337,7 +386,7 @@ class Supply extends Contract {
         return currentCounter;
     }
 
-/*
+
     async getBatchDatesId(batchId)
     {
         //interpolate batch dates id
@@ -348,9 +397,10 @@ class Supply extends Contract {
         }
         return batchDatesId;
     }
-    */
+    
     //====== END ============================================================================
 
+    //Function to update the status of batch to 'deliverer-confirm-transfer'
     async delivererConfirmTransfer (ctx, batchId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
@@ -359,33 +409,22 @@ class Supply extends Contract {
         }
 
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        batchAsJson.status = 'deliverer-confirm-transfer';
+        if(batchAsJson.status === 'transferred-to-deliverer')
+        {
+            batchAsJson.status = 'deliverer-confirm-transfer';
+        }
+        else
+        {
+            return shim.error(`Unable to confirm ${batchId}`)
+        }
+
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
         
-        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(batchAsBytes.toString());
-        /*
-        //interpolate batch dates id
-        var batchDatesId = 'batchDates';
-        for(let i=5; i< batchId.length; i++)
-        {
-            batchDatesId+= batchId[i];
-        }
-        */
-        //update batchdates
-        /* 
-        const batchDatesId = this.getBatchDatesId(batchId);
-        const batchDatesAsBytes = await ctx.stub.getState(batchDatesId);
-        if (!batchDatesAsBytes || batchDatesAsBytes.length === 0) {
-            throw new Error(`${batchDatesId}} does not exist`);
-        }
-
-        const batchDatesAsJson = await JSON.parse(await batchDatesAsBytes.toString());
-        batchDatesAsJson.sendToDelivererDate = this.getCurrentDate();
-        await ctx.stub.putState(batchDatesId, Buffer.from(JSON.stringify(batchDatesAsJson)));
-        */
+        //batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(JSON.stringify(batchAsJson));
     }
 
+    //Function to update the status of batch to 'retailer-confirm-transfer'
     async retailerConfirmTransfer (ctx, batchId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
@@ -394,23 +433,19 @@ class Supply extends Contract {
         }
 
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        batchAsJson.status = 'retailer-confirm-transfer';
-        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
-
-        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
-        return shim.success(batchAsBytes.toString());
-        //update batch dates
-        /*
-        const batchDatesId = this.getBatchDatesId(batchId);
-        const batchDatesAsBytes = await ctx.stub.getState(batchDatesId);
-        if (!batchDatesAsBytes || batchDatesAsBytes.length === 0) {
-            throw new Error(`${batchDatesId}} does not exist`);
+        if(batchAsJson.status === 'transferred-to-retailer')
+        {
+            batchAsJson.status = 'retailer-confirm-transfer';
+        }
+        else
+        {
+            return shim.error(`Unable to confirm ${batchId}`)
         }
 
-        const batchDatesAsJson = await JSON.parse(await batchDatesAsBytes.toString());
-        batchDatesAsJson.sendToRetailerDate = this.getCurrentDate();
-        await ctx.stub.putState(batchDatesId, Buffer.from(JSON.stringify(batchDatesAsJson)));
-        */
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+        
+        //batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(JSON.stringify(batchAsJson));
     }
 
 
@@ -423,6 +458,9 @@ class Supply extends Contract {
         console.log(batchAsBytes.toString());
         return shim.success(batchAsBytes.toString());
     }
+
+    //========================================================= Chuong's Chaincode (for review and debug) =====================================================================
+
     async approveBatchOrder (ctx, batchId, userID)
     {
         console.info('=============== Start : Approve Batch =================');
@@ -442,6 +480,7 @@ class Supply extends Contract {
         console.info('================= END : Batch Approval ==============');
         return shim.success(JSON.stringify(batch));
     }
+    
     async inviteDeliverer(ctx, batchId, delivererId, userID)
     {
         console.info('=============== Start : Inviting deliverer =================');
@@ -459,6 +498,7 @@ class Supply extends Contract {
         console.info('================= END : Inviting deliverer ==============');
         return shim.success(JSON.stringify(batch));
     }
+
     async approveInvitation (ctx, batchId,action, userID)
     {
         console.info('=============== Start : Approve Invitation =================');
@@ -484,6 +524,7 @@ class Supply extends Contract {
         console.info('================= END : Approve Invitation ==============');
         return shim.success(JSON.stringify(batch));    
     }
+
     async transferToRetailer (ctx, batchId,userID)
     {
         console.info('=============== Start : Transfer to retailer =================');
@@ -536,7 +577,8 @@ class Supply extends Contract {
         return shim.success(`[${allResults.toString()}]`);
         // return JSON.stringify(allResults);
     }
-    async markFaultBatch(ctx, batchId, userID)
+
+    async reportFaultBatch(ctx, batchId, userID)
     {
         const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
         if (!batch || batch.length === 0) {
@@ -562,6 +604,7 @@ class Supply extends Contract {
         console.info('================= END : Report Fault ==============');
         return shim.success(JSON.stringify(batch));
     }
+
     async queryFaultBatches(ctx)
     {
         const allResults = [];
