@@ -210,7 +210,23 @@ class Supply extends Contract {
         users.push(userAsBytes);
 	}
     return shim.success(`[${users.toString()}]`);
+    }
 
+    async queryAllProduct(ctx)
+    {
+        const products = [];
+        const productCounter = await this.getCounter(ctx, 'product');
+
+        for(let i=0; i < productCounter; i++)
+        {
+            const productAsBytes = await ctx.stub.getState('product' + i);
+            if(!productAsBytes || productAsBytes.length === 0)
+            {
+                return shim.error(`${'product' + i} does not exist`);
+            }
+            products.push(productAsBytes);
+        }
+        return shim.success(`[${products.toString()}]`);
     }
 
     //modify this to make sure fault product can not be ordered
