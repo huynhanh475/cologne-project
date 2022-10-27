@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import login from '../../components/images/login.jpg';
 import Cologne from '../../components/images/Cologne.png'
@@ -7,13 +8,28 @@ function Login() {
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSubmit = (event) => {
-        // let item = {id, password};
-        // let result = await fetch("localhost:3000/user/signin",{
+    const navigate = useNavigate();
 
-        // });
-        // event.preventDefault();
+    useEffect(()=>{
+        if (localStorage.getItem('user-info')){
+            navigate("/admin/createuser");
+        }
+    },[])
+    async function handleSubmit(){
+        let item = {id, password};
+        let result = await fetch("localhost:3000/user/signin",{
+            method: 'POST',
+            headers:{
+                "Content-Type":"application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(item)
+        });
+        result = await result.json();
+        localStorage.setItem("user-info",JSON.stringify(result));
+        navigate("/admin/createuser");
     }
+
 
     return (
         <div className="main-login">
@@ -25,14 +41,14 @@ function Login() {
                     <div className='title'>Welcome Back!</div>
                     <h2>Please sign in to use the system</h2>
                     <form onSubmit={handleSubmit}>
-                        <label for="id">User ID</label>
+                        <label htmlFor="id">User ID</label>
                         <input
                             id="id"
                             value={id}
                             onChange={(e) => setId(e.target.value)}
                             placeholder="Enter user ID" />
 
-                        <label for="password">Password</label>
+                        <label htmlFor="password">Password</label>
                         <input type="password"
                             id="pass"
                             value={password}
