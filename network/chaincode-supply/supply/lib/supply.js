@@ -423,13 +423,15 @@ class Supply extends Contract {
         console.log(batchAsBytes.toString());
         return shim.success(batchAsBytes.toString());
     }
-    async approveBatchOrder (ctx, batchId)
+    async approveBatchOrder (ctx, batchId, userID)
     {
         console.info('=============== Start : Approve Batch =================');
         const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.manufacturerId!==userID)
+            return shim.error("Wrong manufacturer");
         if (batch.status!=='pending-registration')
             return shim.error('Batch is not registered');
         batch.status = 'approved';
@@ -440,7 +442,7 @@ class Supply extends Contract {
         console.info('================= END : Batch Approval ==============');
         return shim.success(JSON.stringify(batch));
     }
-    async inviteDeliverer(ctx, batchId, delivererId)
+    async inviteDeliverer(ctx, batchId, delivererId, userID)
     {
         console.info('=============== Start : Inviting deliverer =================');
         const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
@@ -449,13 +451,15 @@ class Supply extends Contract {
         }
         if (batch.status!=='approved')
             return shim.error('Batch is not approved');
+        if (batch.manufacturerId!==userID)
+            return shim.error("Wrong manufacturer");
         batch.delivererId = delivererId;
         batch.status = 'pending-invite-to-deliverer'
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         console.info('================= END : Inviting deliverer ==============');
         return shim.success(JSON.stringify(batch));
     }
-    async approveInvitation (ctx, batchId,action)
+    async approveInvitation (ctx, batchId,action, userID)
     {
         console.info('=============== Start : Approve Invitation =================');
         const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
@@ -464,6 +468,8 @@ class Supply extends Contract {
         }
         if (batch.status!=='pending-invite-to-deliverer')
             return shim.error('Deliverer is not invited');
+        if (batch.delivererId!==userID)
+            return shim.error("Wrong deliverer");
         if(action == 'approved')
         {
             batch.status = 'approve-invitation-by-deliverer';
@@ -478,7 +484,7 @@ class Supply extends Contract {
         console.info('================= END : Approve Invitation ==============');
         return shim.success(JSON.stringify(batch));    
     }
-    async transferToRetailer (ctx, batchId)
+    async transferToRetailer (ctx, batchId,userID)
     {
         console.info('=============== Start : Transfer to retailer =================');
         const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
@@ -487,6 +493,8 @@ class Supply extends Contract {
         }
         if (batch.status!=='deliverer-confirm-transfer')
             return shim.error('Batch is not confirmed by retailer');
+        if (batch.retailerId!==userID) 
+            return shim.error('Wrong deliverer');
         batch.status = 'transfered-to-retailer';
         batch.date.sendToRetailerDate=await this.getCurrentDate();
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
@@ -500,7 +508,8 @@ class Supply extends Contract {
     {
         const allResults = [];
         for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
-            const strValue = Buffer.from(value).toString('utf8');
+            const elem=Buffer.from(value);
+            const strValue = elem.toString('utf8');
             let record;
             try {
                 record = JSON.parse(strValue);
@@ -517,12 +526,14 @@ class Supply extends Contract {
                     flag=true;
                 if (user.userType=='retailer'&&record.retailerId==userID)
                     flag=true;
+                if (user.userType=='manufacturer'&&record.manufacturerId==userID)
+                    flag=true;
             }
             if (record.docType == 'batch'&&flag)
-                allResults.push(strValue);
+                allResults.push(elem);
         }
         console.info(allResults);
-        return shim.success(allResults);
+        return shim.success(`[${allResults.toString()}]`);
         // return JSON.stringify(allResults);
     }
     async markFaultBatch(ctx, batchId, userID)
@@ -555,7 +566,8 @@ class Supply extends Contract {
     {
         const allResults = [];
         for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
-            const strValue = Buffer.from(value).toString('utf8');
+            const elem = Buffer.from(value);
+            const strValue = elem.toString('utf8');
             let record;
             try {
                 record = JSON.parse(strValue);
@@ -564,10 +576,10 @@ class Supply extends Contract {
                 record = strValue;
             }
             if (record.docType == 'batch' && record.status == 'fault')
-            allResults.push(strValue);
+            allResults.push(elem);
         }
         console.info(allResults);
-        return shim.success(allResults);
+        return shim.success(`[${allResults.toString()}]`);
         // return JSON.stringify(allResults);
     }
 /*
