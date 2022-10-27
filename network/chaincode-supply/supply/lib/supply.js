@@ -430,6 +430,8 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.status!=='pending-registration')
+            return shim.error('Batch is not registered');
         batch.status = 'approved';
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
         const product= await JSON.parse(await (await this.queryProduct(ctx,batch.productId)).payload);
@@ -445,6 +447,8 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.status!=='approved')
+            return shim.error('Batch is not approved');
         batch.delivererId = delivererId;
         batch.status = 'pending-invite-to-deliverer'
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
@@ -458,6 +462,8 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.status!=='pending-invite-to-deliverer')
+            return shim.error('Deliverer is not invited');
         if(action == 'approved')
         {
             batch.status = 'approve-invitation-by-deliverer';
@@ -479,11 +485,12 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
+        if (batch.status!=='deliverer-confirm-transfer')
+            return shim.error('Batch is not confirmed by retailer');
         batch.status = 'transfered-to-retailer';
+        batch.date.sendToRetailerDate=await this.getCurrentDate();
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
 
-        const batchDateID= await this.getBatchDatesId(batchId);
-        const batchDates = await JSON.parse(await (await this.queryBatch(ctx,batchDateID)).payload);
         batchDates.sendToRetailerDate = this.getCurrentDate();
         await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDates)));
         console.info('================= END : Transfer to retailer ==============');
