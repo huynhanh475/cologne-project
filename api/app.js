@@ -5,16 +5,29 @@ import express from 'express';
 import morgan from 'morgan';
 import router from "./routes/index.route.js";
 import * as network from "./fabric/network.js";
+import { userTypes } from "./utils/constants.js";
 
 async function main() {
-    await network.enrollAdmin(true, false, false);
-    await network.enrollAdmin(false, true, false);
-    await network.enrollAdmin(false, false, true);
+    Promise.all([
+        network.enrollAdmin(true, false, false, "admin"),
+        network.enrollAdmin(false, true, false, "admin"),
+        network.enrollAdmin(false, false, true, "admin"),
+    ])
+    .then(() => Promise.all([
+        network.registerUser(userTypes.manufacturer, "admin1"),
+        network.registerUser(userTypes.deliverer, "admin2"),
+        network.registerUser(userTypes.retailer, "admin3"),
+    ]).then( async () => {
+            const networkObj = await network.connect(userTypes.retailer, 'admin')
+            const users = await network.query(networkObj, 'queryUser', "admin1")
+            console.log(users)
+        })
+    )
 
     // testing connection with the network
-    await network.registerUser(true, false, false, 'appUser');
-    const networkObj = await network.connect(true, false, false, 'appUser');
-    await network.query(networkObj, 'queryProduct', 'product0');
+    // const networkObj = await network.connect(userTypes.retailer, 'admin')
+    // const users = await network.query(networkObj, 'queryAllUser')
+    // console.log(users)
 
     const app = express();
     app.use(morgan('combined'));

@@ -11,155 +11,480 @@
 'use strict';
 
 const { Contract } = require('fabric-contract-api');
+const shim = require('fabric-shim');
 
 /*Data models
  * User{Name, User_ID, Email, User_Type, Address, Password}
  * BatchDates{ManufactureDate, OrderedDate, SendToDelivererDate, SendToRetailerDate}
  * Product{Product_ID, Name, Manufacturer_ID, Status, Date, Price, Quantity}
  * Batch{Batch_ID, Product_ID, Manufacturer_ID, Retailer_ID, Deliverer_ID, Status, Date, Quantity}
+ * 
 */
 
 class Supply extends Contract {
 
-    static batchCounter = 0;
+    batchCounter = 0;
+    productCounter = 0;
+    userCounter = 0;
+
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        const products = [
+        const admins = [
             {
-                productId: 'product0',
-                name: 'Orange0',
-                manufacturerId: 'manufacturer0',
-                status: 'good',
-                date: '20/10/2022',
-                price: 10,
-                quantity: 1000,
+                name: 'manufacturerAdmin',
+                userId: 'admin0',
+                email: '',
+                userType: 'manufacturer',
+                role:'admin',
+                address: '',
+                password: 'adminpw',
+            },
+            {
+                name: 'retailerAdmin',
+                userId: 'admin1',
+                email: '',
+                userType: 'retailer',
+                role: 'admin',
+                address: '',
+                password: 'adminpw',
+            },
+            {
+                name: 'delivererAdmin',
+                userId: 'admin2',
+                email: '',
+                userType: 'deliverer',
+                role: 'admin',
+                address: '',
+                password: 'adminpw',
             },
         ];
 
-        for (let i = 0; i < products.length; i++) {
-            products[i].docType = 'product';
-            await ctx.stub.putState('product' + i, Buffer.from(JSON.stringify(products[i])));
-            console.info('Added <--> ', products[i]);
+        var counter = 
+         {
+            batchCounter: 0,
+            userCounter: 0,
+            productCounter: 0,
+         };
+        for (let i = 0; i < admins.length; i++) {
+            admins[i].docType = 'user';
+            await ctx.stub.putState('admin' + i, Buffer.from(JSON.stringify(admins[i])));
+            console.info('Added <--> ', admins[i]);
         }
+
+        await ctx.stub.putState('counters', Buffer.from(JSON.stringify(counter)));
+        // this.userCounter+=3;
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    async signIn(userId, password)
+    async signIn(ctx, userId, password)
     {
-        const userEntity = ctx.stub.getState(userId);
+        const userEntity = await ctx.stub.getState(userId);
         if(!userEntity || userEntity.length === 0)
         {
-            throw new Error(`${userId} does not exist`);
+            return shim.error(`${userId} does not exist`);
         }
 
         //need hash password before
         // if hashed(password) == password
-        if(userEntity.password !== password)
+        const userJson = await JSON.parse(await userEntity.toString());
+        if(userJson.password !== password)
         {
-            throw new Error(`Wrong password provided`);
-        } 
+            return shim.error(`Wrong Password Provided`);
+        }
         else{
-            return userEntity;
+            return shim.success(userEntity.toString());
         }
     }
 
     async queryProduct(ctx, productId) {
         const productAsBytes = await ctx.stub.getState(productId); // get the car from chaincode state
         if (!productAsBytes || productAsBytes.length === 0) {
-            throw new Error(`${productId} does not exist`);
+            return shim.error(`${productId} does not exist`);
         }
         console.log(productAsBytes.toString());
-        return productAsBytes.toString();
+        return shim.success(productAsBytes.toString());
     }
 
-    async createProduct (ctx, productId, name,  manufacturerId, date, price, quantity)
+    async createProduct (ctx, name,  manufacturerId, price, quantity)
     {
         console.info('============= START : Create Product =============');
 
+        const currentCounter = await this.getCounterForRegister(ctx, 'product');
+
         const product = {
-            productId,
+            productId : 'product' + currentCounter,
             docType: 'product',
-            name, 
+            name,
             manufacturerId,
-            date, 
+            date: await this.getCurrentDate(),
             price,
             quantity,
+            status : 'healthy',
+            markedFaultBy: '',
         };
+        
 
-        await ctx.stub.putState(productId, Buffer.from(JSON.stringify(product)));
+	    const productAsBytes = await Buffer.from(JSON.stringify(product));
+        await ctx.stub.putState('product' + currentCounter, productAsBytes);
+
         console.info('===============END : Create Product==============');
+	    return shim.success(productAsBytes.toString());
     }
 
-    async createUser(name, userId, email, userType, address, password)
+    async createUser(ctx, name, email, userType, address, password)
     {
         console.info('============ START : Create User ================');
+
+        const currentCounter =await this.getCounterForRegister(ctx, 'user');
 
         const user = {
             name: name,
             docType: 'user',
-            userId: userId,
+            userId: 'user-' + currentCounter,
             email: email,
             userType: userType,
+            role: 'client',
             address: address,
             password: password,
         };
 
-        await ctx.stub.putState(userId, Buffer.from(JSON.stringify(user)));
+        const userAsBytes = await Buffer.from(JSON.stringify(user));
+        await ctx.stub.putState('user-' + currentCounter, userAsBytes);
+
         console.info('================= END : Create User ===============');
+        return shim.success(JSON.stringify(user));
     }
 
-    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity, batchDay)
+    async queryUser(ctx, userId)
+    {
+        const userAsBytes = await ctx.stub.getState(userId);
+        if(!userAsBytes || userAsBytes.length === 0)
+        {
+            return shim.error(`${userId} does not exist`);
+        }
+        console.log(userAsBytes.toString());
+        return shim.success(userAsBytes.toString());
+    }
+
+    async queryAllUser(ctx)
+    {
+	const users = [];
+    
+    const userCounter = await this.getCounter(ctx, 'user');
+    //console.log(this.userCounter);
+    for(let i=0; i<userCounter; i++)
+	{
+	    const userAsBytes = await ctx.stub.getState('user' + i);
+        if(!userAsBytes || userAsBytes.length ===0)
+        {
+            return shim.error(`${'user' + i} does not exist`);
+        }
+        users.push(userAsBytes.toString());
+	}
+    return shim.success(`[${users.toString()}]`);
+    }
+
+    async queryAllProduct(ctx)
+    {
+        const products = [];
+        const productCounter = await this.getCounter(ctx, 'product');
+
+        for(let i=0; i < productCounter; i++)
+        {
+            const productAsBytes = await ctx.stub.getState('product' + i);
+            if(!productAsBytes || productAsBytes.length === 0)
+            {
+                return shim.error(`${'product' + i} does not exist`);
+            }
+            products.push(productAsBytes);
+        }
+        return shim.success(`[${products.toString()}]`);
+    }
+
+    //modify this to make sure fault product can not be ordered
+    //BatchDates will be created after the batch order is approved
+    async registerBatchOrder (ctx, productId, retailerId,  manufacturerId, quantity)
     {
         console.info('=============== Start : Register Batch =================');
 
+        const productAsBytes = await ctx.stub.getState(productId);
+        if(!productAsBytes || productAsBytes.length ===0)
+        {
+            return shim.error(`Product ${productId} does not exist`);
+        }
+        const productAsJson = await JSON.parse(productAsBytes.toString());
+        if(productAsJson.status === 'fault')
+        {
+            return shim.error(`Product ${productId} could not be ordered as it is fault`);
+        }
+
+        const currentCounter = await this.getCounterForRegister(ctx, 'batch');
+
         const batch = {
-            batchId:'batch' + batchCounter,//uuid generator (?)
+            batchId:'batch' + currentCounter,//uuid generator (?)
             productId: productId,
+            docType: 'batch',
             manufacturerId:manufacturerId,
             retailerId: retailerId,
             delivererId: '',
             status:'pending-registration',
-            date: batchDay,
+            markedFaultBy: '',
+            date: {
+                orderedDate:await this.getCurrentDate(),
+                sendToDelivererDate: '',
+                sendToRetailerDate: '',
+                markedFaultDate: '',
+            },
             quantity: quantity,
         };
 
-        await ctx.stub.putState('batch' + batchCounter, Buffer.from(JSON.stringify(batch)));
-        batchCounter++;
+
+        const batchAsBytes = await Buffer.from(JSON.stringify(batch));
+        await ctx.stub.putState('batch' + currentCounter, batchAsBytes);
+        //await ctx.stub.putState('batchDates' + this.batchCounter, Buffer.from(JSON.stringify(batchDates)));
         console.info('================= END : Batch Registration ==============');
+	    return shim.success(batchAsBytes.toString());
     }
 
     async transferToDeliverer (ctx, batchId)
     {
+        const batchAsBytes = await ctx.stub.getState(batchId);
+        if (!batchAsBytes || batchAsBytes.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
+    
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
+        batchAsJson.status = 'transfered-to-deliverer';
+        const batchDateID=this.getBatchDatesId(batchId);
+        const batchDatesAsBytes = await ctx.stub.getState(batchDateID);
+        const batchDatesAsJson = await JSON.parse( await batchDatesAsBytes.toString());
+        batchDatesAsJson.sendToDelivererDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDatesAsJson)));
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(batchAsBytes.toString());    
+    }
+
+    //Utils function for updating batch=====================================================
+    async getCurrentDate()
+    {
+        let ts = Date.now();
+
+        let date_ob = new Date(ts);
+        let date = date_ob.getDate();
+        let month = date_ob.getMonth() + 1;
+        let year = date_ob.getFullYear();
+
+        // prints date & time in YYYY-MM-DD format
+        return (year + "-" + month + "-" + date);
+    }
+
+    async getCounterForRegister(ctx, counterType)
+    {
+        var countersAsBytes = await ctx.stub.getState('counters');
+        var counterAsJson  = await JSON.parse(await countersAsBytes.toString());
+        let currentCounter = 0;
+
+        if(counterType === 'user')
+        {
+            currentCounter = parseInt(counterAsJson.userCounter);
+            counterAsJson.userCounter =  currentCounter + 1;
+        }
+        else if(counterType === 'batch')
+        {
+            currentCounter = parseInt(counterAsJson.batchCounter);
+            counterAsJson.batchCounter =  currentCounter + 1;
+        }
+        else if(counterType === 'product')
+        {
+            currentCounter = parseInt(counterAsJson.productCounter);
+            counterAsJson.productCounter =  currentCounter + 1;
+        }
+
+        await ctx.stub.putState('counters', Buffer.from(JSON.stringify(counterAsJson)));
+        return currentCounter;
+    }
+
+    async getCounter(ctx, counterType)
+    {
+        var countersAsBytes = await ctx.stub.getState('counters');
+        var counterAsJson  = await JSON.parse(await countersAsBytes.toString());
+        let currentCounter = 0;
+
+        if(counterType === 'user')
+        {
+            currentCounter = parseInt(counterAsJson.userCounter);
+        }
+        else if(counterType === 'batch')
+        {
+            currentCounter = parseInt(counterAsJson.batchCounter);
+        }
+        else if(counterType === 'product')
+        {
+            currentCounter = parseInt(counterAsJson.productCounter);
+        }
+
+        return currentCounter;
+    }
+
+/*
+    async getBatchDatesId(batchId)
+    {
+        //interpolate batch dates id
+        var batchDatesId = 'batchDates';
+        for(let i=5; i< batchId.length; i++)
+        {
+            batchDatesId = await batchDatesId + batchId[i];
+        }
+        return batchDatesId;
+    }
+    */
+    //====== END ============================================================================
+
+    async delivererConfirmTransfer (ctx, batchId)
+    {
         var batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
-            throw new Error(`${batchId}} does not exist`);
+            return shim.error(`${batchId}} does not exist`);
         }
+
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
+        batchAsJson.status = 'deliverer-confirm-transfer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
         
-        batchAsBytes.status = 'transfered-to-deliverer';
-        await ctx.stub.putState(batchId, batchAsBytes);
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(batchAsBytes.toString());
+        /*
+        //interpolate batch dates id
+        var batchDatesId = 'batchDates';
+        for(let i=5; i< batchId.length; i++)
+        {
+            batchDatesId+= batchId[i];
+        }
+        */
+        //update batchdates
+        /* 
+        const batchDatesId = this.getBatchDatesId(batchId);
+        const batchDatesAsBytes = await ctx.stub.getState(batchDatesId);
+        if (!batchDatesAsBytes || batchDatesAsBytes.length === 0) {
+            throw new Error(`${batchDatesId}} does not exist`);
+        }
+
+        const batchDatesAsJson = await JSON.parse(await batchDatesAsBytes.toString());
+        batchDatesAsJson.sendToDelivererDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDatesId, Buffer.from(JSON.stringify(batchDatesAsJson)));
+        */
     }
-/*
-    async createCar(ctx, carNumber, make, model, color, owner) {
-        console.info('============= START : Create Car ===========');
 
-        const car = {
-            color,
-            docType: 'car',
-            make,
-            model,
-            owner,
-        };
+    async retailerConfirmTransfer (ctx, batchId)
+    {
+        var batchAsBytes = await ctx.stub.getState(batchId);
+        if (!batchAsBytes || batchAsBytes.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
 
-        await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
-        console.info('============= END : Create Car ===========');
+        const batchAsJson = await JSON.parse( await batchAsBytes.toString());
+        batchAsJson.status = 'retailer-confirm-transfer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
+
+        batchAsBytes =await Buffer.from(JSON.stringify(batchAsJson));
+        return shim.success(batchAsBytes.toString());
+        //update batch dates
+        /*
+        const batchDatesId = this.getBatchDatesId(batchId);
+        const batchDatesAsBytes = await ctx.stub.getState(batchDatesId);
+        if (!batchDatesAsBytes || batchDatesAsBytes.length === 0) {
+            throw new Error(`${batchDatesId}} does not exist`);
+        }
+
+        const batchDatesAsJson = await JSON.parse(await batchDatesAsBytes.toString());
+        batchDatesAsJson.sendToRetailerDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDatesId, Buffer.from(JSON.stringify(batchDatesAsJson)));
+        */
     }
 
-    async queryAllCars(ctx) {
-        const startKey = '';
-        const endKey = '';
+
+    async queryBatch(ctx, batchId)
+    {
+        var batchAsBytes = await ctx.stub.getState(batchId);
+        if (!batchAsBytes || batchAsBytes.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
+        console.log(batchAsBytes.toString());
+        return shim.success(batchAsBytes.toString());
+    }
+    async approveBatchOrder (ctx, batchId)
+    {
+        console.info('=============== Start : Approve Batch =================');
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
+        batch.status = 'approved';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        const product= await JSON.parse(await (await this.queryProduct(ctx,batch.productId)).payload);
+        product.quantity-=batch.quantity;
+        await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
+        console.info('================= END : Batch Approval ==============');
+        return shim.success(JSON.stringify(batch));
+    }
+    async inviteDeliverer(ctx, batchId, delivererId)
+    {
+        console.info('=============== Start : Inviting deliverer =================');
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
+        batch.delivererId = delivererId;
+        batch.status = 'pending-invite-to-deliverer'
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Inviting deliverer ==============');
+        return shim.success(JSON.stringify(batch));
+    }
+    async approveInvitation (ctx, batchId,action)
+    {
+        console.info('=============== Start : Approve Invitation =================');
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
+        if(action == 'approved')
+        {
+            batch.status = 'approve-invitation-by-deliverer';
+            console.log('Invitation approved');
+        }
+        else
+        {
+            batch.status='reject-invitation-by-deliverer'
+            console.log('Invitation rejected');
+        }
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        console.info('================= END : Approve Invitation ==============');
+        return shim.success(JSON.stringify(batch));    
+    }
+    async transferToRetailer (ctx, batchId)
+    {
+        console.info('=============== Start : Transfer to retailer =================');
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
+        }
+        batch.status = 'transfered-to-retailer';
+        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+
+        const batchDateID= await this.getBatchDatesId(batchId);
+        const batchDates = await JSON.parse(await (await this.queryBatch(ctx,batchDateID)).payload);
+        batchDates.sendToRetailerDate = this.getCurrentDate();
+        await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDates)));
+        console.info('================= END : Transfer to retailer ==============');
+        return shim.success(JSON.stringify(batch));
+    }
+    async getAllBatches(ctx,userID)
+    {
         const allResults = [];
-        for await (const {key, value} of ctx.stub.getStateByRange(startKey, endKey)) {
+        for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
             const strValue = Buffer.from(value).toString('utf8');
             let record;
             try {
@@ -168,26 +493,64 @@ class Supply extends Contract {
                 console.log(err);
                 record = strValue;
             }
-            allResults.push({ Key: key, Record: record });
+            var flag = false;
+            const user= await JSON.parse(await (await this.queryUser(ctx,userID)).payload);
+            if (user.userType=='deliverer'&&record.delivererId==userID)
+                flag=true;
+            if (user.userType=='retailer'&&record.retailerId==userID)
+                flag=true;
+            if (record.docType == 'batch'&&flag)
+                allResults.push(strValue);
         }
         console.info(allResults);
-        return JSON.stringify(allResults);
+        return shim.success(allResults);
+        // return JSON.stringify(allResults);
     }
-
-    async changeCarOwner(ctx, carNumber, newOwner) {
-        console.info('============= START : changeCarOwner ===========');
-
-        const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
-        if (!carAsBytes || carAsBytes.length === 0) {
-            throw new Error(`${carNumber} does not exist`);
+    async reportFaultBatch(ctx, batchId, userID)
+    {
+        const batch = await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        if (!batch || batch.length === 0) {
+            return shim.error(`${batchId}} does not exist`);
         }
-        const car = JSON.parse(carAsBytes.toString());
-        car.owner = newOwner;
-
-        await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
-        console.info('============= END : changeCarOwner ===========');
+        // batch.status = 'fault';
+        // batch.markedFaultBy = userID;
+        // await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        const product = await JSON.parse(await (await this.queryProduct(ctx,batch.productId)).payload);
+        product.status = 'fault';
+        product.markedFaultBy = userID;
+        await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
+        const allResults=JSON.parse(this.getAllBatches(ctx));
+        for (let i in allResults)
+        {
+            if(allResults[i].productId == batch.productId)
+            {
+                allResults[i].status = 'fault';
+                allResults[i].markedFaultBy = userID;
+                await ctx.stub.putState(allResults[i].batchId, Buffer.from(JSON.stringify(allResults[i])));
+            }
+        }
+        console.info('================= END : Report Fault ==============');
+        return shim.success(JSON.stringify(batch));
     }
-*/
+    async queryFaultBatches(ctx)
+    {
+        const allResults = [];
+        for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            if (record.docType == 'batch' && record.status == 'fault')
+            allResults.push(strValue);
+        }
+        console.info(allResults);
+        return shim.success(allResults);
+        // return JSON.stringify(allResults);
+    }
 /*
     async createProduct (ctx,product_ID, name,  manufacturer_ID, date, price, quantity)
     async registerBatchOrder (ctx,product_ID, name,  manufacturer_ID, quantity, BatchDay,) 
