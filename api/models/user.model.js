@@ -13,15 +13,14 @@ export async function createUser(loggedUserType, information) {
         return createModelRes(networkObj.status, networkObj.error);
     }
 
-    let contractRes;
-    contractRes = await invoke(networkObj, 'createUser', name, email, userType, address, password);
+    const contractRes = await invoke(networkObj, 'createUser', name, email, userType, address, password);
     console.log('5');
     if (contractRes.error) {
         return createModelRes(contractRes.status, contractRes.error);
     }
 
     const walletRes = await registerUser(loggedUserType, contractRes.userId);
-    if (walletRes.error) {
+    if (walletRes?.error) {
         return createModelRes(walletRes.status, walletRes.error);
     }
 

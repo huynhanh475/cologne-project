@@ -8,17 +8,26 @@ import * as network from "./fabric/network.js";
 import { userTypes } from "./utils/constants.js";
 
 async function main() {
-    await network.enrollAdmin(true, false, false, "admin");
-    await network.enrollAdmin(false, true, false, "admin");
-    await network.enrollAdmin(false, false, true, "admin");
-
-    await network.registerUser(userTypes.manufacturer, "admin1");
-    await network.registerUser(userTypes.deliverer, "admin2");
-    await network.registerUser(userTypes.retailer, "admin3");
+    Promise.all([
+        network.enrollAdmin(true, false, false, "admin"),
+        network.enrollAdmin(false, true, false, "admin"),
+        network.enrollAdmin(false, false, true, "admin"),
+    ])
+    .then(() => Promise.all([
+        network.registerUser(userTypes.manufacturer, "admin1"),
+        network.registerUser(userTypes.deliverer, "admin2"),
+        network.registerUser(userTypes.retailer, "admin3"),
+    ]).then( async () => {
+            const networkObj = await network.connect(userTypes.retailer, 'admin')
+            const users = await network.query(networkObj, 'queryUser', "admin1")
+            console.log(users)
+        })
+    )
 
     // testing connection with the network
-    const networkObj = await network.connect("manufacturer", 'admin1');
-    await network.query(networkObj, 'queryUser', 'admin0')
+    // const networkObj = await network.connect(userTypes.retailer, 'admin')
+    // const users = await network.query(networkObj, 'queryAllUser')
+    // console.log(users)
 
     const app = express();
     app.use(morgan('combined'));
