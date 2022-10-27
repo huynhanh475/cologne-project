@@ -33,19 +33,10 @@ class Supply extends Contract {
         const admins = [
             {
                 name: 'manufacturerAdmin',
-                userId: 'admin0',
+                userId: 'admin1',
                 email: '',
                 userType: 'manufacturer',
                 role:'admin',
-                address: '',
-                password: 'adminpw',
-            },
-            {
-                name: 'retailerAdmin',
-                userId: 'admin1',
-                email: '',
-                userType: 'retailer',
-                role: 'admin',
                 address: '',
                 password: 'adminpw',
             },
@@ -54,6 +45,15 @@ class Supply extends Contract {
                 userId: 'admin2',
                 email: '',
                 userType: 'deliverer',
+                role: 'admin',
+                address: '',
+                password: 'adminpw',
+            },
+            {
+                name: 'retailerAdmin',
+                userId: 'admin3',
+                email: '',
+                userType: 'retailer',
                 role: 'admin',
                 address: '',
                 password: 'adminpw',
@@ -68,7 +68,7 @@ class Supply extends Contract {
          };
         for (let i = 0; i < admins.length; i++) {
             admins[i].docType = 'user';
-            await ctx.stub.putState('admin' + i, Buffer.from(JSON.stringify(admins[i])));
+            await ctx.stub.putState('admin' + (i + 1), Buffer.from(JSON.stringify(admins[i])));
             console.info('Added <--> ', admins[i]);
         }
 
