@@ -14,52 +14,108 @@
 - Endpoint: `/user/signin`
 - Method: Post
 - Chaincode: `signIn`
-- Params: role
 - Body:
 
 ```json
 {
-    "id" : "user-id",
-    "password" : "user-password",
+    "id" : "admin2",
+    "password" : "adminpw",
+    "userType" : "deliverer"
 }
 ```
 
 - Response: user entity, access token
 
+```json
+{
+    "message": "Success",
+    "data": {
+        "id": "admin2",
+        "userType": "deliverer",
+        "role": "admin",
+        "name": "Deliverer Admin",
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluMiIsInVzZXJUeXBlIjoiZGVsaXZlcmVyIiwicm9sZSI6ImFkbWluIiwibmFtZSI6IkRlbGl2ZXJlciBBZG1pbiIsImlhdCI6MTY2Njc1Mzk0MSwiZXhwIjoxNjY3MzU4NzQxfQ.GWwhAvfuEkMVUza7AUvFZy7xrqHwHQh9u67IKIqa-q0"
+    }
+}
+```
+
 ### Create user
 
-- Endpoint: `/user/register`
+- Endpoint: `/user/creatUser`
 - Method: Post
-- Chaincode: `registerUser`
-- Params: role
+- Chaincode: `createUser`
+- Header `"x-access-token" : "<accessToken>"`
 - Body:
 
 ```json
 {
-    "name": "name",
-    "email": "email",
-    "userType": "role (manufacturer, deliverer, retailer)",
-    "address": "address",
-    "password": "password",
+    "userType": "deliverer",
+    "address": "berlin",
+    "email": "man1@example.com",
+    "name": "Deliverer 3",
+    "password": "password123"
 }
 ```
 
 - Response: user entity
+
+```json
+{
+    "message": "Success",
+    "data": {
+        "name": "Deliverer 3",
+        "docType": "user",
+        "userId": "user-3",
+        "email": "man1@example.com",
+        "userType": "deliverer",
+        "role": "client",
+        "address": "berlin",
+        "password": "password123"
+    }
+}
+```
 
 ### Get all user
 
 - Endpoint: `/user/all`
 - Method: Get
 - Chaincode: `queryUsers`
-- Params: role
 - Body: None
 - Response: list user entity
+
+```json
+{
+    "message": "Success",
+    "data": [
+        {
+            "address": "berlin",
+            "docType": "user",
+            "email": "man1@example.com",
+            "name": "Deliverer 3",
+            "password": "password123",
+            "role": "client",
+            "userId": "user-0",
+            "userType": "deliverer"
+        },
+        {
+            "address": "berlin",
+            "docType": "user",
+            "email": "man1@example.com",
+            "name": "Manufacturer 1",
+            "password": "password123",
+            "role": "client",
+            "userId": "user-1",
+            "userType": "manufacturer"
+        }
+    ]
+}
+```
 
 ### Get all users of a type
 
 - Endpoint: `/user/:userType`
 - Method: Get
-- Chaincode: `queryUsers`
+- Chaincode: `queryAllUsers`
 - Body: None
 - Response: list user entity
 

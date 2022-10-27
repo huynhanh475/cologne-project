@@ -17,7 +17,7 @@ export async function createUser(req, res) {
         return badRequest(res);
     }
 
-    let modelRes = await model.createUser(loggedUserType, {  loggedUserId, userType, address, name, email, password });
+    const modelRes = await model.createUser(loggedUserType, {  loggedUserId, userType, address, name, email, password });
     
     return send(res, modelRes);
 }
@@ -29,7 +29,7 @@ export async function signIn(req, res) {
         return badRequest(res);
     }
 
-    let modelRes = await model.signIn(userType, {userType, id, password });
+    const modelRes = await model.signIn(userType, {userType, id, password });
 
     return send(res, modelRes);
 }
@@ -38,7 +38,7 @@ export async function signIn(req, res) {
 export async function getAllUser(req, res) {
     const { loggedUserType, loggedUserId } = req.body;
 
-    let modelRes = await model.getAllUser(loggedUserType, {loggedUserId});
+    const modelRes = await model.getAllUser(loggedUserType, {loggedUserId});
 
     return send(res, modelRes);
 }

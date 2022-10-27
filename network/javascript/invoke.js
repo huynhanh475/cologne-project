@@ -44,15 +44,33 @@ async function main() {
         // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR12', 'Dave')
         //await contract.submitTransaction('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom');
         //ctx, product_ID, name,  manufacturer_ID, date, price, quantity
+        //await contract.submitTransaction('createProduct', 'Orange1', 'manufacturer1', '20', '500');
+        //const result = await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', 'manufacturer3','11');
+
+        /*
+        await contract.submitTransaction('createUser', 'Minh', 'minhdinh@gmail.com', 'manufacturer', 'no address', '12345');
+        await contract.submitTransaction('createUser', 'Minh1', 'minhdinh@gmail.com', 'retailer', 'no address', '12345');
+        await contract.submitTransaction('createUser', 'Minh2', 'minhdinh@gmail.com', 'deliverer', 'no address', '12345');
+        await contract.submitTransaction('createUser', 'Minh3', 'minhdinh@gmail.com', 'deliverer', 'no address', '12345');
+
+        */
+
+        
         await contract.submitTransaction('createProduct', 'Orange1', 'manufacturer1', '20', '500');
-        const result = await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', 'manufacturer3','11');
-        //await contract.submitTransaction('createUser', 'Minh', 'minhdinh@gmail.com', 'manufacturer', 'no address', '12345');
+        await contract.submitTransaction('createProduct', 'Orange2', 'manufacturer1', '20', '500');
+        await contract.submitTransaction('createProduct', 'Orange3', 'manufacturer1', '20', '500');
+        await contract.submitTransaction('createProduct', 'Orange4', 'manufacturer1', '20', '500');
+        
+        await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', 'manufacturer3','11');
+        await contract.submitTransaction('registerBatchOrder', 'product1', 'retailer1', 'manufacturer3','11');
+        await contract.submitTransaction('registerBatchOrder', 'product2', 'retailer1', 'manufacturer3','11');
+        await contract.submitTransaction('registerBatchOrder', 'product3', 'retailer1', 'manufacturer3','11');
         //await contract.submitTransaction('transferToDeliverer', 'batch0');
         //const user = await contract.submitTransaction('createUser', 'MinhDinh', 'minhdinh@gmail.com', 'retailer', 'no address', '12345');
         //console.log(JSON.stringify(user));
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
         //const result =await contract.submitTransaction('signIn', 'user0', '12345');
-        console.log(result.toString());
+        //console.log(result.toString());
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
         console.log('Transaction has been submitted');
 
