@@ -2,11 +2,11 @@ import * as model from '../models/batch.model.js';
 import { badRequest, send } from '../utils/api-response.js';
 
 export async function getSingleBatch(req, res) {
-    const { loggedUserType, loggedUserId, batchID } = req.body;
-    if (!batchID)
+    const { loggedUserType, loggedUserId, batchId } = req.body;
+    if (!batchId)
         return badRequest(res);
 
-    const modelRes = await model.getSingleBatch(loggedUserType, { loggedUserId, batchID });
+    const modelRes = await model.getSingleBatch(loggedUserType, { loggedUserId, batchId });
     return send(res, modelRes);
 }
 
@@ -17,8 +17,8 @@ export async function getAllBatches(req, res) {
 }
 
 export async function reportBatchFault(req, res) {
-    const { loggedUserType, loggedUserId, batchID } = req.body;
-    const modelRes = await model.reportBatchFault(loggedUserType, { loggedUserId, batchID });
+    const { loggedUserType, loggedUserId, batchId } = req.body;
+    const modelRes = await model.reportBatchFault(loggedUserType, { loggedUserId, batchId });
     return send(res, modelRes);
 }
 

@@ -2,10 +2,10 @@ import { connect, invoke, query } from '../fabric/network.js';
 import { createModelRes } from '../utils/api-response.js';
 
 export async function getSingleBatch(userType, information) {
-    const { loggedUserId, batchID } = information;
+    const { loggedUserId, batchId } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await query(networkObj, 'queryBatch', batchID);
+    const contractRes = await query(networkObj, 'queryBatch', batchId);
     const error = networkObj.error || contractRes.error;
     if (error) {
         const status = networkObj.status || contractRes.status;
@@ -28,10 +28,10 @@ export async function getAllBatches(userType, information) {
 }
 
 export async function reportBatchFault(userType, information) {
-    const { loggedUserId, batchID } = information;
+    const { loggedUserId, batchId } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await invoke(networkObj, 'reportBatchFault', batchID, loggedUserId);
+    const contractRes = await invoke(networkObj, 'reportBatchFault', batchId, loggedUserId);
     const error = networkObj.error || contractRes.error;
     if(error){
         const status = networkObj.status || contractRes.status;
