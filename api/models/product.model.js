@@ -15,6 +15,9 @@ export async function createProduct(loggedUserType, information) {
         return createModelRes(contractRes.status, contractRes.error);
     }
 
+    contractRes.quantity = Number(contractRes.quantity);
+    contractRes.price = Number(contractRes.price);
+
     return createModelRes(200, 'Success', contractRes);
 }
 
@@ -35,16 +38,21 @@ export async function getProductById( loggedUserType, information ) {
 }
 
 export async function getAllProducts( loggedUserType, information ) {
-    const { loggedUserId } = information;
+    const { loggedUserId, manufacturerId } = information;
 
     const networkObj = await connect(loggedUserType, loggedUserId);
     if (networkObj.error) {
         return createModelRes(networkObj.status, networkObj.error);
     }
     
-    const contractRes = await invoke(networkObj, 'queryAll', 'Product');
+    const contractRes = await invoke(networkObj, 'queryAllProduct', manufacturerId);
     if (contractRes.error) {
         return createModelRes(contractRes.status, contractRes.error);
+    }
+
+    for (let i=0; i < contractRes.length; i++) {
+        contractRes[i].quantity = Number(contractRes[i].quantity);
+        contractRes[i].price = Number(contractRes[i].price);
     }
 
     return createModelRes(200, 'Success', contractRes);
