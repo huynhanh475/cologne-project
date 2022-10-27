@@ -4,11 +4,15 @@ import login from '../../components/images/login.jpg';
 import Cologne from '../../components/images/Cologne.png'
 
 function Login() {
-    const [userID, setUserID] = useState("");
+    const [id, setId] = useState("");
     const [password, setPassword] = useState("");
 
     const handleSubmit = (event) => {
-        event.preventDefault();
+        // let item = {id, password};
+        // let result = await fetch("localhost:3000/user/signin",{
+
+        // });
+        // event.preventDefault();
     }
 
     return (
@@ -21,11 +25,11 @@ function Login() {
                     <div className='title'>Welcome Back!</div>
                     <h2>Please sign in to use the system</h2>
                     <form onSubmit={handleSubmit}>
-                        <label for="userID">User ID</label>
+                        <label for="id">User ID</label>
                         <input
-                            id="userID"
-                            value={userID}
-                            onChange={(e) => setUserID(e.target.value)}
+                            id="id"
+                            value={id}
+                            onChange={(e) => setId(e.target.value)}
                             placeholder="Enter user ID" />
 
                         <label for="password">Password</label>
@@ -38,6 +42,7 @@ function Login() {
                         <button
                             type="submit"
                             id="button_login"
+                            onClick={handleSubmit}
                         >
                             Sign in
                         </button>
