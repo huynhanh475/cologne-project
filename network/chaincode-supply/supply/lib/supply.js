@@ -493,7 +493,7 @@ class Supply extends Contract {
         }
         if (batch.status!=='deliverer-confirm-transfer')
             return shim.error('Batch is not confirmed by retailer');
-        if (batch.retailerId!==userID) 
+        if (batch.delivererId!==userID) 
             return shim.error('Wrong deliverer');
         batch.status = 'transfered-to-retailer';
         batch.date.sendToRetailerDate=await this.getCurrentDate();
