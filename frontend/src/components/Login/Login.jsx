@@ -4,6 +4,8 @@ import './Login.css';
 import login from '../images/login.jpg';
 import Cologne from '../images/Cologne.png'
 import { roles, userTypes } from '../../utils/constants';
+import { request } from '../../utils/request';
+import { onLogInSuccess } from '../../utils/auth';
 
 function Login() {
     const options = [
@@ -29,44 +31,54 @@ function Login() {
         e.preventDefault();
         const item = { id, password, userType };
         console.log(item);
-        const response = await fetch("http://localhost:8090/user/signin", {
-            method: 'POST',
-            headers: { 'Content-Type': "application/json" },
-            body: JSON.stringify(item),
+        // const response = await fetch("http://localhost:8090/user/signin", {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': "application/json" },
+        //     body: JSON.stringify(item),
 
-        })
+        // })
+        const params = {
+            method : "POST",
+            url: "/user/signin",
+            body: item,
+            headers: { 'Content-Type': "application/json" },
+        }
+
+        const response = await request(params);
         if (response.ok){
             console.log(response.status);
             var rawData = await response.text();
             var jsonData = JSON.parse(rawData);
-            const role = jsonData["data"]["role"];
+            const user = jsonData["data"]["user"];
             const token = jsonData["data"]["accessToken"];
+            const role = user.role;
+
             console.log("Data: " + rawData);
-            console.log("Role: " + role);
-            localStorage.setItem('id', id);
-            localStorage.setItem('role', role);
-            localStorage.setItem('userType', userType);
-            localStorage.setItem('x-access-token',token);
+            console.log("Role: " + user);
+
+            let route;
             switch(role){
                 case roles.admin:
-                    navigate('/admin/createuser');
+                    route = '/admin/createuser';
                     break;
                 case roles.client:
                     switch(userType){
                         case(userTypes.manufacturer):
-                            navigate('/manufacturer/productform');
+                            route = '/manufacturer/productform';
                             break;
                         case(userTypes.deliverer):
-                            navigate('/deliverer/invitationlist');
+                            route = '/deliverer/invitationlist';
                             break;
                         case(userTypes.retailer):
-                            navigate('/retailer/productlist');
+                            route = '/retailer/productlist';
                             break
                     };
                     break;
                 default:
                     break;
             }
+            console.log(`Route ${route}`)
+            onLogInSuccess(jsonData.data, route)
         }
     }
 
