@@ -2,12 +2,12 @@ import * as model from '../models/transact.model.js';
 import { badRequest, send } from '../utils/api-response.js';
 
 export async function registerOrder(req, res) {
-    const { loggedUserType, loggedUserId, productId, manufacturerId, quantity } = req.body;
+    const { loggedUserType, loggedUserId, productId, quantity } = req.body;
 
-    if (!productId || !manufacturerId || !quantity)
+    if (!productId || !quantity)
         return badRequest(res);
 
-    const modelRes = await model.registerOrder(loggedUserType, { productId, manufacturerId, loggedUserId, quantity });
+    const modelRes = await model.registerOrder(loggedUserType, { productId, loggedUserId, quantity });
     return send(res, modelRes);
 }
 

@@ -536,12 +536,12 @@ class Supply extends Contract {
             return shim.error('Batch is not confirmed by retailer');
         if (batch.delivererId!==userID) 
             return shim.error('Wrong deliverer');
-        batch.status = 'transfered-to-retailer';
+        batch.status = 'transferred-to-retailer';
         batch.date.sendToRetailerDate=await this.getCurrentDate();
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
 
-        batchDates.sendToRetailerDate = this.getCurrentDate();
-        await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDates)));
+        //batch.sendToRetailerDate = this.getCurrentDate();
+        //await ctx.stub.putState(batchDateID, Buffer.from(JSON.stringify(batchDates)));
         console.info('================= END : Transfer to retailer ==============');
         return shim.success(JSON.stringify(batch));
     }

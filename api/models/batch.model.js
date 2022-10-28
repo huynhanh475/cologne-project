@@ -31,7 +31,7 @@ export async function reportBatchFault(userType, information) {
     const { loggedUserId, batchId } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await invoke(networkObj, 'reportBatchFault', batchId, loggedUserId);
+    const contractRes = await invoke(networkObj, 'reportFaultBatch', batchId, loggedUserId);
     const error = networkObj.error || contractRes.error;
     if(error){
         const status = networkObj.status || contractRes.status;
