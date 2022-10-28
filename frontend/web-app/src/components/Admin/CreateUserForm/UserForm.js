@@ -2,14 +2,52 @@ import React, {useState} from 'react';
 import './CreateUserForm.css';
 import Cologne from '../../images/Cologne.png';
 import login from '../../images/login.jpg';
-import {Button} from 'antd';
+import {Button, Modal} from 'antd';
 
 function UserForm() {
-    const [passwordShown, setPasswordShown] = useState(false);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [address, setAddress] = useState("");
+    const [isLoading, setIsLoading] = useState("false");
+
+    const clearField= () => {
+        setName("");
+        setEmail("");
+        setPassword("");
+        setAddress("");
+    }
+
+    const handleOnClick = async(e) => {
+        e.preventDefault();
+        const userType = localStorage.getItem("userType");
+        const token = localStorage.getItem("x-access-token");
+        const item = {userType, address, email, name, password};
+        console.log(item);
+        setIsLoading(true);
+        const response = await fetch("http://localhost:8090/user/createUser", {
+            method: 'POST',
+            headers: { 'Content-Type': "application/json" , 'x-access-token': token},
+            body: JSON.stringify(item),
+        }) 
+        if (response.ok){
+            setIsLoading(false);
+            console.log(response.status);
+            Modal.success({
+                content: "Create user successfully!",
+            });
+            document.getElementById("create-user").reset();
+            clearField();
+        }
+        else{
+            setIsLoading(false);
+            console.log(response.status);
+            Modal.error({
+                title: 'Create user unsuccessfully',
+                content: 'Please fill in the required information',
+            });
+        }
+    }
 
     return (
         <div className="create-user-background">
@@ -20,12 +58,12 @@ function UserForm() {
                 </div>
 
                 <div className="container-2">
-                    <div className="create-user-info">
+                    <form className="create-user-info" id ="create-user">
                         <div className="create-user-title">Create user</div>
                         <div className="personal-info">Personal Information</div>
                         <div className="line"></div>
                         <div className="label">Name</div>
-                        <input className="label-input" onChange={(e)=>{setName(e.target.value); console.log(name)}}/>
+                        <input className="label-input" onChange={(e)=>{setName(e.target.value)}}/>
                         <div className="label">Email</div>
                         <input className="label-input" onChange={(e)=>{setEmail(e.target.value)}} type="email"/>
                         <div className="label">Address</div>
@@ -47,10 +85,10 @@ function UserForm() {
                                 <option value="client">Client</option>
                             </select>
                         </div> */}
-                        <div className="submit-button">
+                        <div className="submit-button" onClick={handleOnClick}>
                             <Button type="primary" htmlType="submit">Submit</Button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

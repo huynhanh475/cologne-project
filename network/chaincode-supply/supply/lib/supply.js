@@ -58,6 +58,15 @@ class Supply extends Contract {
                 address: 'Munich',
                 password: 'adminpw',
             },
+            {
+                name: 'retailerAdmin',
+                userId: 'admin3',
+                email: '',
+                userType: 'retailer',
+                role: 'admin',
+                address: '',
+                password: 'adminpw',
+            },
         ];
 
         var counter = 
@@ -68,7 +77,7 @@ class Supply extends Contract {
          };
         for (let i = 0; i < admins.length; i++) {
             admins[i].docType = 'user';
-            await ctx.stub.putState(admins[i].userId, Buffer.from(JSON.stringify(admins[i])));
+            await ctx.stub.putState('admin' + (i + 1), Buffer.from(JSON.stringify(admins[i])));
             console.info('Added <--> ', admins[i]);
         }
 
