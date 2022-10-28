@@ -265,6 +265,12 @@ class Supply extends Contract {
 
         const batchAsJson = await JSON.parse(await batchAsBytes.toString());
 
+        //check docType
+        if(batchAsJson.docType !== 'batch')
+        {
+            return shim.error(`Batch invalid type`);
+        }
+
         //mark fault
         batchAsJson.status = 'fault';
         batchAsJson.date.markedFaultDate = await this.getCurrentDate();
@@ -455,6 +461,67 @@ class Supply extends Contract {
         }
         console.log(batchAsBytes.toString());
         return shim.success(batchAsBytes.toString());
+    }
+
+
+    async markBatchOfProductFault(ctx, productId, manufacturerId)
+    {
+        //set fault status to all batches containing that product
+        //Get the number of batches
+        const currentCounter = await this.getCounter(ctx, 'batch');
+        for(let i = 0; i < currentCounter; i++)
+        {
+            const batchAsBytes = await ctx.stub.getState('batch' + i);
+            if(!batchAsBytes || batchAsBytes.length ===0)
+            {
+                return shim.error(`${'batch' + i} does not exist`);
+            }
+
+            const batchAsJson = await JSON.parse(await batchAsBytes.toString());
+
+            //check batch's productId
+            if(batchAsJson.productId === productId)
+            {
+                batchAsJson.status = 'fault';
+                batchAsJson.date.markedFaultDate = await this.getCurrentDate();
+                batchAsJson.markedFaultBy = manufacturerId;
+            }
+            //put the record back to the db
+            await ctx.stub.putState('batch'+i, Buffer.from(JSON.stringify(batchAsJson)));
+        }
+        return shim.success(`All fault batches are marked`);
+    }
+
+    async markProductFault(ctx, productId, manufacturerId)
+    {
+        const productAsBytes = await ctx.stub.getState(productId);
+        if(!productAsBytes || productAsBytes.length === 0)
+        {
+            return shim.error(`${productId} does not exist`);
+        }
+
+        //parse product to json
+        const productAsJson = await JSON.parse(await productAsBytes.toString());
+
+        //check docType
+        if(productAsJson.docType !== 'product')
+        {
+            return shim.error(`Invalid product type`);
+        }
+
+        //check manufacturer
+        if(productAsJson.manufacturerId !== manufacturerId)
+        {
+            return shim.error(`Invalid manufacturer`);
+        }
+
+        //set fault status
+        productAsJson.status = 'fault';
+        productAsJson.markedFaultBy = manufacturerId;
+
+        //mark fault batches
+        await this.markBatchOfProductFault(ctx, productId, manufacturerId);
+        return shim.success(JSON.stringify(productAsJson));
     }
 
     //========================================================= Chuong's Chaincode (for review and debug) =====================================================================
