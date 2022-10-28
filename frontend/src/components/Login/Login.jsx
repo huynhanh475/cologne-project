@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import login from '../../components/images/login.jpg';
-import Cologne from '../../components/images/Cologne.png'
+import login from '../images/login.jpg';
+import Cologne from '../images/Cologne.png'
+import { roles, userTypes } from '../../utils/constants';
 
 function Login() {
     const options = [
@@ -47,28 +48,18 @@ function Login() {
             localStorage.setItem('userType', userType);
             localStorage.setItem('x-access-token',token);
             switch(role){
-                case 'admin':
-                    switch(userType){
-                        case("manufacturer"):
-                            navigate('/admin/createuser');
-                            break;
-                        case("deliverer"):
-                            navigate('/admin/createuser');
-                            break;
-                        case("retailer"):
-                            navigate('/admin/createuser');
-                            break;
-                    };
+                case roles.admin:
+                    navigate('/admin/createuser');
                     break;
-                case 'client':
+                case roles.client:
                     switch(userType){
-                        case("manufacturer"):
+                        case(userTypes.manufacturer):
                             navigate('/manufacturer/productform');
                             break;
-                        case("deliverer"):
+                        case(userTypes.deliverer):
                             navigate('/deliverer/invitationlist');
                             break;
-                        case("retailer"):
+                        case(userTypes.retailer):
                             navigate('/retailer/productlist');
                             break
                     };
