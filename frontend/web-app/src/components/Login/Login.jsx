@@ -39,8 +39,13 @@ function Login() {
             var rawData = await response.text();
             var jsonData = JSON.parse(rawData);
             const role = jsonData["data"]["role"];
+            const token = jsonData["data"]["accessToken"];
             console.log("Data: " + rawData);
             console.log("Role: " + role);
+            localStorage.setItem('id', id);
+            localStorage.setItem('role', role);
+            localStorage.setItem('userType', userType);
+            localStorage.setItem('x-access-token',token);
             switch(role){
                 case 'admin':
                     switch(userType){
