@@ -1,10 +1,5 @@
 @import '~antd/dist/antd.css';
 
-.navbarcomponent {
-  position: relative;
-  z-index: 2;
-}
-
 .create-product-background{
     width: 100vw;
     height: 100vh;
@@ -17,9 +12,9 @@
     margin: 0 auto;
     background-color: #FFF7F1;
     width: 56vw;
-    height: 75vh;
+    height: 65vh;
     position: relative;
-    top: 8vh;
+    top: 10vh;
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 }
@@ -34,7 +29,7 @@
 }
 
 .logo-create-product{
-    width: 18%;
+    width: 16%;
     height: 13%;
     display: block;
     position: absolute;
@@ -70,7 +65,7 @@
     height: 90%;
     background-color: transparent;
     margin: 0 auto;
-    top: 1.5rem;
+    top: 3rem;
 }
 
 .create-product-title{
@@ -101,12 +96,12 @@
     font-size: 13px;
     line-height: 34px;
     color: #8C98A9;
-    margin-top: 2%;
+    margin-top: 5%;
 }
 
 .label-input-create-product{
     font-weight: 400;
-    height: 5%;
+    height: 8%;
     width: 100%;
     position: relative;
     border-color: whitesmoke;
@@ -118,7 +113,7 @@
 
 .submit-button-create-product{
     padding-left: 35%;
-    padding-top: 8%;
+    padding-top: 10%;
 }
 
 
