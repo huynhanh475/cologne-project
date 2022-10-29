@@ -3,21 +3,13 @@ import { badRequest, createModelRes, send } from '../utils/api-response.js';
 import { roles, userTypes } from '../utils/constants.js';
 
 export async function createUser(req, res) {
-    const {loggedUserType, loggedUserId, userType, address, name, email, password } = req.body;
+    const {loggedUserType, loggedUserId, address, name, email, password } = req.body;
 
-    if ((!loggedUserType || !loggedUserId || !userType || !address || !name  || !email || !password )) {
+    if ((!loggedUserType || !loggedUserId || !address || !name  || !email || !password )) {
         return badRequest(res);
     }
 
-    const isManufacturer = userType === userTypes.manufacturer;
-    const isDeliverer = userType === userTypes.deliverer;
-    const isRetailer = userType === userTypes.retailer;
-
-    if (!isManufacturer && !isDeliverer && !isRetailer) {
-        return badRequest(res);
-    }
-
-    const modelRes = await model.createUser(loggedUserType, {  loggedUserId, userType, address, name, email, password });
+    const modelRes = await model.createUser(loggedUserType, {  loggedUserId, address, name, email, password });
     
     return send(res, modelRes);
 }
@@ -38,7 +30,15 @@ export async function signIn(req, res) {
 export async function getAllUser(req, res) {
     const { loggedUserType, loggedUserId } = req.body;
 
-    const modelRes = await model.getAllUser(loggedUserType, {loggedUserId});
+    const modelRes = await model.getAllUser(loggedUserType, {loggedUserId, userType : loggedUserType});
+
+    return send(res, modelRes);
+}
+
+export async function getDeliverer(req, res) {
+    const { loggedUserType, loggedUserId } = req.body;
+
+    const modelRes = await model.getAllUser(loggedUserType, {loggedUserId, userType : userTypes.deliverer});
 
     return send(res, modelRes);
 }

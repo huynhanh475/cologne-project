@@ -47,7 +47,7 @@ async function main() {
         //await contract.submitTransaction('createProduct', 'Orange1', 'manufacturer1', '20', '500');
         //const result = await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1', 'manufacturer3','11');
 
-        /*
+        
         await contract.submitTransaction('createUser', 'Minh', 'minhdinh@gmail.com', 'manufacturer', 'no address', '12345');
         await contract.submitTransaction('createUser', 'Minh1', 'minhdinh@gmail.com', 'retailer', 'no address', '12345');
         await contract.submitTransaction('createUser', 'Minh2', 'minhdinh@gmail.com', 'deliverer', 'no address', '12345');

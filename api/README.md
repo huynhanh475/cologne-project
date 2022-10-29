@@ -49,7 +49,6 @@
 
 ```json
 {
-    "userType": "deliverer",
     "address": "berlin",
     "email": "man1@example.com",
     "name": "Deliverer 3",
@@ -77,11 +76,11 @@
 
 ### Get all user
 
-- Endpoint: `/user/all`
+- Endpoint: `/user`
 - Method: Get
-- Chaincode: `queryUsers`
+- Chaincode: `queryUser`
 - Body: None
-- Response: list user entity
+- Response: list of users that have same userType with the authorized user
 
 ```json
 {
@@ -90,8 +89,8 @@
         {
             "address": "berlin",
             "docType": "user",
-            "email": "man1@example.com",
-            "name": "Deliverer 3",
+            "email": "del1@example.com",
+            "name": "Deliverer 1",
             "password": "password123",
             "role": "client",
             "userId": "user-0",
@@ -100,24 +99,44 @@
         {
             "address": "berlin",
             "docType": "user",
-            "email": "man1@example.com",
-            "name": "Manufacturer 1",
+            "email": "del2@example.com",
+            "name": "Deliverer 2",
             "password": "password123",
             "role": "client",
             "userId": "user-1",
-            "userType": "manufacturer"
+            "userType": "deliverer"
         }
     ]
 }
 ```
 
-### Get all users of a type
+### Get all deliverers
 
-- Endpoint: `/user/:userType`
+This is a special use only manufacturers can access
+
+- Endpoint: `/user/deliverer`
 - Method: Get
-- Chaincode: `queryAllUsers`
+- Chaincode: `queryAllUser`
 - Body: None
-- Response: list user entity
+- Response: list of deliverers
+
+```json
+{
+    "message": "Success",
+    "data": [
+        {
+            "address": "Munich",
+            "docType": "user",
+            "email": "user@coop.com",
+            "name": "Coop Markt",
+            "password": "password123",
+            "role": "client",
+            "userId": "user-0",
+            "userType": "deliverer"
+        }
+    ]
+}
+```
 
 ## Product Management
 
@@ -125,22 +144,99 @@
 
 - Endpoint: `/product`
 - Method: Get
-- Chaincode: `queryProducts`
-- Params: role
+- Chaincode: `queryAllProduct`
+- Body: none
+- Response: list products
+  - If user is a `manufacturer`: return list products that belong to that manufacturer
+  - If user is a `retailer`: return list all products that are healthy and available
+
+```json
+{
+    "message": "Success",
+    "data": [
+        {
+            "date": "2022-10-27",
+            "docType": "product",
+            "manufacturerId": "admin1",
+            "markedFaultBy": "",
+            "name": "Green Apple - 0312",
+            "price": 129000,
+            "productId": "product0",
+            "quantity": 5000,
+            "status": "healthy"
+        },
+        {
+            "date": "2022-10-27",
+            "docType": "product",
+            "manufacturerId": "user-0",
+            "markedFaultBy": "",
+            "name": "Red Apple - 1298",
+            "price": 110000,
+            "productId": "product1",
+            "quantity": 6000,
+            "status": "healthy"
+        }
+    ]
+}
+```
+
+### Get a product by ID
+
+- Endpoint: `/product/:productId`
+- Method: Get
+- Chaincode: `queryProduct`
+- Params: `productId`
+- Body: none
+- Response: product entity
+
+```json
+{
+    "message": "Success",
+    "data": {
+        "date": "2022-10-27",
+        "docType": "product",
+        "manufacturerId": "admin1",
+        "markedFaultBy": "",
+        "name": "Green Apple - 0312",
+        "price": "129000",
+        "productId": "product0",
+        "quantity": "5000",
+        "status": "healthy"
+    }
+}
+```
 
 ### Create a new product
 
 - Endpoint: `/product`
 - Method: Post
 - Chaincode: `createProduct`
-- Params: role
 - Body:
 
 ```json
 {
-    "name": "name",
-    "price": 200000,
-    "quantity": 1000
+    "name": "Red Apple - 1298",
+    "price": 110000,
+    "quantity": 6000
+}
+```
+
+- Reponse: product entity
+
+```json
+{
+    "message": "Success",
+    "data": {
+        "productId": "product1",
+        "docType": "product",
+        "name": "Red Apple - 1298",
+        "manufacturerId": "user-0",
+        "date": "2022-10-27",
+        "price": 110000,
+        "quantity": 6000,
+        "status": "healthy",
+        "markedFaultBy": ""
+    }
 }
 ```
 
@@ -182,6 +278,8 @@
 }
 ```
 
+- Response: batch order entity
+
 ### Manufacturer replies the order of the retailer
 
 - Endpoint: `/transact/approveOrder`
@@ -193,15 +291,14 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerID",
-    "status": "acceptManu/declineManu"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Manufacturer invites/adds the deliverer
 
-- Endpoint: `/transact/invite`
+- Endpoint: `/transact/inviteDeliverer`
 - Method: Put
 - Chaincode: `inviteDeliverer`
 - Params: role
@@ -210,15 +307,15 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
     "delivererID": "delivererOne"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Deliverer replies the invitation from the manufacturer
 
-- Endpoint: `/transact/reply`
+- Endpoint: `/transact/replyInvitation`
 - Method: Put
 - Chaincode: `approveInvitation`
 - Params: role
@@ -227,16 +324,15 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "acceptDeli/declineDeli"
+    "action" : "approved/disapproved"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Manufacturer transfers the batch to the deliverer
 
-- Endpoint: `/transact/confirm`
+- Endpoint: `/transact/transferToDeliverer`
 - Method: Put
 - Chaincode: `transferToDeliverer`
 - Params: role
@@ -245,16 +341,14 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "unblock"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Deliverer confirms that the batch has been received
 
-- Endpoint: `/transact/receive`
+- Endpoint: `/transact/confirmTransfer`
 - Method: Put
 - Chaincode: `delivererConfirmTransfer`
 - Params: role
@@ -263,16 +357,14 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "delivering"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Deliverer transfers the batch to the retailer
 
-- Endpoint: `/transact/arrive`
+- Endpoint: `/transact/transferToRetailer`
 - Method: Put
 - Chaincode: `transferToRetailer`
 - Params: role
@@ -281,16 +373,14 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "delivered"
 }
 ```
 
+- Response: status (200 for success; otherwise, fail)
+
 ### Retailer confirms that the batch has been received
 
-- Endpoint: `/transact/done`
+- Endpoint: `/transact/receiveProduct`
 - Method: Put
 - Chaincode: `retailerConfirmTransfer`
 - Params: role
@@ -299,9 +389,7 @@
 ```json
 {
     "batchID": "batchOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne",
-    "status": "done"
 }
 ```
+
+- Response: status (200 for success; otherwise, fail)
