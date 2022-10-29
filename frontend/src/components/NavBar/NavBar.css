@@ -5,6 +5,7 @@
     justify-content: start;
     align-items: center;
     position: relative;
+    z-index: 5;
   }
   
   .menu-bars-container {
