@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import "./UserList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { UserListColumn } from "./UserListColumn";
-import record from './MOCK_DATA (7).json';
 import { request } from '../../../utils/request';
 
 function UserList() {
     const [data, setData] = useState([]);
-    // const data = record;
     const token = localStorage.getItem("AUTH_DATA");
     const params = {
         method: "GET",
