@@ -1,10 +1,5 @@
 @import '~antd/dist/antd.css';
 
-.navbarcomponent {
-    position: relative;
-    z-index: 2;
-}
-
 .faultybatchtable {
     display: flex;
     justify-content: center;

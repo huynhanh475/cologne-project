@@ -5,7 +5,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import './RetailerTransferList.css';
 import ConfirmModal from './ConfirmModal';
 import MarkFaultModal from './MarkFaultModal';
-import NavBar from '../NavBarRetailer/NavBar';
 
 function TransferList() {
   const data = record;
@@ -60,9 +59,6 @@ function TransferList() {
 
   return (
     <div>
-      <div className="navbarcomponent">
-        <NavBar/>
-      </div>
       <ConfirmModal isConfirm={isConfirm} setIsConfirm={setIsConfirm} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID} date={date} quantity={quantity}/>
       <MarkFaultModal isMarkFault={isMarkFault} setIsMarkFault={setIsMarkFault} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID} date={date} quantity={quantity}/>
       <div className="transferlisttable">

@@ -14,8 +14,10 @@ export const isLoggedIn = () => {
  * @returns true if exists, false if undefined | null
  */
 export const onLogInSuccess = (data, route) => {
-    window.localStorage.setItem("AUTH_DATA", data.accessToken);
-    window.localStorage.setItem("USER_DATA", data.user);
+    window.localStorage.setItem("AUTH_DATA", data["accessToken"]);
+    window.localStorage.setItem("USER_DATA", JSON.stringify(data["user"]));
+    console.log("Access token: " + data["accessToken"]);
+    console.log("User data: " + JSON.stringify(data["user"]));
     window.location.href = route;
 };
 

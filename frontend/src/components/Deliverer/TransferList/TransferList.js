@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import Navbar from '../NavBarDeliverer/NavBar';
 import { DataGrid } from "@mui/x-data-grid";
 import { TransferListColumn } from './TransferListColumn';
 import './TransferList.css';
@@ -25,9 +24,6 @@ function TransferList() {
     ];
   return (
     <>
-        <div className="navbarcomponent">
-            <Navbar/>
-        </div>
         <div className="transferlisttable-deliverer">
             <DataGrid
             rows={data}

@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import Navbar from '../NavBarDeliverer/NavBar';
 import { DataGrid } from "@mui/x-data-grid";
 import { InvitationListColumn } from "./InvitationListColumn";
 import './InvitationList.css';
@@ -29,9 +28,6 @@ function InvitationList() {
     ];
   return (
     <>
-        <div className="navbarcomponent">
-            <Navbar/>
-        </div>
         <div className="invitationlisttable">
             <DataGrid
             rows={data}

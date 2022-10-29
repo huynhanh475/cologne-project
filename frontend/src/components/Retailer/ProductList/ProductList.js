@@ -4,7 +4,6 @@ import record from './MOCK_DATA (5).json';
 import { DataGrid } from "@mui/x-data-grid";
 import { ProductColumn } from "./ProductColumn";
 import RegisterProductForm from './RegisterProductForm';
-import NavBar from '../NavBarRetailer/NavBar';
 
 function ProductList() {
     const data = record;
@@ -40,9 +39,6 @@ function ProductList() {
     ];
   return (
     <div>
-        <div className="navbarcomponent">
-          <NavBar/>
-        </div>
         <RegisterProductForm isRegister={isRegister} setIsRegister={setIsRegister} productID={productID} name={name} manufacturerID={manufacturerID} date={date} price={price}/>
         <div className="productlisttable">
             <DataGrid

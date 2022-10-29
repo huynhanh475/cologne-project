@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import './FaultyBatchList.css';
 import { DataGrid } from "@mui/x-data-grid";
 import {FaultyBatchColumn} from './FaultyBatchColumn';
-import NavBar from '../NavBarRetailer/NavBar';
 
 function RetailerFaultyBatchList() {
   const [batchID, setBatchID] = useState("");
@@ -13,9 +12,6 @@ function RetailerFaultyBatchList() {
   {"batchID":"9216159e-8f51-426e-8a43-081a732251ac","productID":"d9c49443-afb4-4d90-8963-7d4d590752a0","manufacturerID":"9283a919-1b8e-45db-84e3-eb14115b3a12","retailerID":"d6afd855-cf53-4a36-920c-248586760523","delivererID":"5dcb6020-2f36-4f18-87b9-59d74bc4aa93","date":"6/17/2022","quantity":"81-024-0342"}]
   return (
     <div>
-      <div className="navbarcomponent">
-        <NavBar/>
-      </div>
       <div className="faultybatchtable">
           <DataGrid
           rows={data}

@@ -5,7 +5,7 @@ import login from '../images/login.jpg';
 import Cologne from '../images/Cologne.png'
 import { roles, userTypes } from '../../utils/constants';
 import { request } from '../../utils/request';
-import { onLogInSuccess } from '../../utils/auth';
+import { onLogInSuccess, getUser } from '../../utils/auth';
 
 function Login() {
     const options = [
@@ -52,10 +52,6 @@ function Login() {
             const user = jsonData["data"]["user"];
             const token = jsonData["data"]["accessToken"];
             const role = user.role;
-
-            console.log("Data: " + rawData);
-            console.log("Role: " + user);
-
             let route;
             switch(role){
                 case roles.admin:
@@ -78,7 +74,8 @@ function Login() {
                     break;
             }
             console.log(`Route ${route}`)
-            onLogInSuccess(jsonData.data, route)
+            onLogInSuccess(jsonData["data"], route)
+            // console.log("Role: " + jsonData.data.role)
         }
     }
 

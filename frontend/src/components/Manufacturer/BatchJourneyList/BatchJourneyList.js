@@ -2,7 +2,6 @@ import React, {useState} from 'react'
 import "./BatchJourneyList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { BatchJourneyColumn } from "./BatchJourneyColumn";
-import Navbar from '../NavBarManufacturer/NavBar';
 import record from './MOCK_DATA (3).json';
 import TransferModal from './TransferModal';
 import MarkFaultModal from './MarkFaultModal';
@@ -57,9 +56,6 @@ function BatchJourneyList() {
   ];
   return (
     <>
-      <div className="navbarcomponent">
-        <Navbar/>
-      </div>
       <TransferModal isTransfer={isTransfer} setIsTransfer={setIsTransfer} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID} quantity={quantity}/>
       <MarkFaultModal isFault={isFault} setIsFault={setIsFault} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID}/>
       <div className="batchjourneylisttable">

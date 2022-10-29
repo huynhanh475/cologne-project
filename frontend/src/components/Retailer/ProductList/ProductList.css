@@ -1,9 +1,5 @@
 @import '~antd/dist/antd.css';
 
-.navbarcomponent {
-    position: relative;
-    z-index: 2;
-}
 
 .productlisttable {
     display: flex;

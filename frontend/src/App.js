@@ -15,11 +15,15 @@ import RetailerFaultyBatch from './components/Retailer/FaultyBatchList/RetailerF
 import RetailerTransferList from './components/Retailer/TransferList/RetailerTransferList';
 import CreateUserForm from './components/Admin/CreateUserForm/CreateUserForm';
 import UserList from './components/Admin/UserList/UserList';
+import Navbar from './components/NavBar/NavBar';
 
 function App() {
   return (
     <>
       <BrowserRouter>
+        <div className = "navbarcomponent">
+          <Navbar/>
+        </div>
         <Routes>
           <Route path="/" element={<Login/>}/>
           <Route path="/manufacturer/productform" element={<ProductForm/>} />

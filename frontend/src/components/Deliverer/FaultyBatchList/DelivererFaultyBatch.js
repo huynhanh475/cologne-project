@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import "./FaultyBatchList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaultyBatchColumn } from "./FaultyBatchColumn";
-import Navbar from '../NavBarDeliverer/NavBar';
 
 function DelivererFaultyBatch() {
     const [batchID, setBatchID] = useState("");
@@ -13,16 +12,6 @@ function DelivererFaultyBatch() {
   
     return (
       <div> 
-          <div className="navbarcomponent">
-            <Navbar/>
-            </div>
-          {/* <div className='filter_batch_deliverer'>
-            <input
-                type="text"
-                placeholder="Search by Batch ID..."
-                onChange={(e)=>{setBatchID(e.target.value)}}
-            />
-          </div> */}
           <div className="faultybatchtable-deliverer">
               <DataGrid
               rows={data}

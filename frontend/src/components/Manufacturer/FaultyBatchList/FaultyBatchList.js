@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import "./FaultyBatchList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaultyBatchColumn } from "./FaultyBatchColumn";
-import Navbar from '../NavBarManufacturer/NavBar';
 
 function FaultyBatchList() {
   // const [data, setData] = useState([]);
@@ -15,9 +14,6 @@ function FaultyBatchList() {
 
   return (
     <div> 
-        <div className="navbarcomponent">
-          <Navbar/>
-        </div>
         <div className="faultybatchmanufacturertable-container">
             <DataGrid
             rows={data}

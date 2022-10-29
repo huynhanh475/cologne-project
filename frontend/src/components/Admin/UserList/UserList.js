@@ -5,15 +5,10 @@ import { UserListColumn } from "./UserListColumn";
 import Navbar from '../NavbarAdmin/Navbar';
 import record from './MOCK_DATA (7).json';
 function UserList() {
-    const [email, setEmail] = useState("");
     const data = record;
   
     return (
       <div> 
-          <div className="navbarcomponent">
-            <Navbar/>
-          </div>
-
           <div className="user-list-container">
               <DataGrid
               rows={data}

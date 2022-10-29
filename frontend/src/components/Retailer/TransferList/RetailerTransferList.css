@@ -1,10 +1,5 @@
 @import '~antd/dist/antd.css';
 
-.navbarcomponent {
-  position: relative;
-  z-index: 2;
-}
-
 .transferlisttable {
   display: flex;
   justify-content: center;

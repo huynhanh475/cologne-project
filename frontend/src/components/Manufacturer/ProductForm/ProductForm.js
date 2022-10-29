@@ -3,7 +3,6 @@ import Cologne from '../../images/Cologne.png';
 import login from '../../images/login.jpg';
 import {Button} from 'antd';
 import './ProductForm.css'
-import Navbar from '../NavBarManufacturer/NavBar';
 
 function ProductForm() {
 
@@ -16,9 +15,6 @@ function ProductForm() {
 
   return (
     <div>
-      <div className="navbarcomponent">
-        <Navbar/>
-      </div>
       <div className="create-product-background">
         <div className="create-product-container">
           <div className="container-create-product">

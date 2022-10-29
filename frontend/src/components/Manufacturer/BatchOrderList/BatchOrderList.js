@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import "./BatchOrderList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { BatchOrderColumn } from "./BatchOrderColumn";
-import Navbar from '../NavBarManufacturer/NavBar';
 import record from './MOCK_DATA (6).json';
 
 function BatchOrderList() {
@@ -32,10 +31,6 @@ function BatchOrderList() {
   ];
   return (
     <>
-      <div className='navbarcomponent'>
-        <Navbar/>
-      </div>
-
       <div className="batchorderlist">
         <DataGrid
           rows={data}

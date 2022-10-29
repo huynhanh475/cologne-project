@@ -1,10 +1,5 @@
 @import '~antd/dist/antd.css';
 
-.navbarcomponent {
-  position: relative;
-  z-index: 2;
-}
-
 .batchjourneytable {
   display: flex;
   justify-content: center;
@@ -62,24 +57,3 @@
     cursor: pointer;
   } 
 
-/* .filter_batch_journey {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 1%;
-  padding-top: 0.5%;
-}
-  
-  
-.filter_batch_journey input{
-  margin-top: 20px;
-  width: 30%;
-  height: 8%;
-  border-radius: 20px;
-  font-size: 15px;
-  padding-left: 10px;
-  background-color: transparent;
-  border: 2px solid #01185e;
-  color: #013567;
-  font-family: 'Verdana', sans-serif;
-} */

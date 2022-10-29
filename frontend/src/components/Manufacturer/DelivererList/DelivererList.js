@@ -3,7 +3,6 @@ import "./DelivererList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { DelivererColumn } from "./DelivererColumn";
 import { useState } from "react";
-import Navbar from '../NavBarManufacturer/NavBar';
 import DelivererForm from './DelivererForm';
 import record from './MOCK_DATA.json';
 
@@ -44,11 +43,8 @@ function DelivererList() {
     },
   ];
   return (
-    <div>
+    <div className="maintable">
       <DelivererForm isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} delivererID={delivererID}/>
-      <div className="navbarcomponent">
-        <Navbar/>
-      </div>
       <div className="deliverertable">
         <DataGrid
           rows={data}

@@ -3,6 +3,7 @@ import './CreateUserForm.css';
 import Cologne from '../../images/Cologne.png';
 import login from '../../images/login.jpg';
 import {Button, Modal} from 'antd';
+import { request } from '../../../utils/request';
 
 function UserForm() {
     const [name, setName] = useState("");
@@ -20,16 +21,18 @@ function UserForm() {
 
     const handleOnClick = async(e) => {
         e.preventDefault();
-        const userType = localStorage.getItem("userType");
-        const token = localStorage.getItem("x-access-token");
+        const userType = JSON.parse(localStorage.getItem("USER_DATA"))["userType"];
+        const token = localStorage.getItem("AUTH_DATA");
         const item = {userType, address, email, name, password};
+        const params = {
+            method : "POST",
+            url: "/user/createUser",
+            body: item,
+            headers: { 'Content-Type': "application/json", 'x-access-token': token },
+        }
         console.log(item);
         setIsLoading(true);
-        const response = await fetch("http://localhost:8090/user/createUser", {
-            method: 'POST',
-            headers: { 'Content-Type': "application/json" , 'x-access-token': token},
-            body: JSON.stringify(item),
-        }) 
+        const response = await request(params);
         if (response.ok){
             setIsLoading(false);
             console.log(response.status);
@@ -70,21 +73,6 @@ function UserForm() {
                         <input className="label-input" onChange={(e)=>{setAddress(e.target.value)}}/>
                         <div className="label">Password</div>
                         <input className="label-input" onChange={(e)=>{setPassword(e.target.value)}} type="password"/>
-                        {/* <div className="label">User Type</div>
-                        <div className="dropdown">
-                            <select onChange={(e)=>{setUserType(e.target.value)}} className="select-option">
-                                <option value="manufacturer">Manufacturer</option>
-                                <option value="deliverer">Deliverer</option>
-                                <option value="retailer">Retailer</option>
-                            </select>
-                        </div>
-                        <div className="label">Role</div>
-                        <div className="dropdown">
-                            <select onChange={(e)=>{setRole(e.target.value)}} className="select-option">
-                                <option value="admin">Admin</option>
-                                <option value="client">Client</option>
-                            </select>
-                        </div> */}
                         <div className="submit-button" onClick={handleOnClick}>
                             <Button type="primary" htmlType="submit">Submit</Button>
                         </div>
