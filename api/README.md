@@ -49,7 +49,6 @@
 
 ```json
 {
-    "userType": "deliverer",
     "address": "berlin",
     "email": "man1@example.com",
     "name": "Deliverer 3",
