@@ -175,22 +175,26 @@ class Supply extends Contract {
         return shim.success(userAsBytes.toString());
     }
 
-    async queryAllUser(ctx)
+    async queryAllUser(ctx, userType)
     {
-	const users = [];
-    
-    const userCounter = await this.getCounter(ctx, 'user');
-    //console.log(this.userCounter);
-    for(let i=0; i<userCounter; i++)
-	{
-	    const userAsBytes = await ctx.stub.getState('user-' + i);
-        if(!userAsBytes || userAsBytes.length ===0)
+        const users = [];
+        
+        const userCounter = await this.getCounter(ctx, 'user');
+        //console.log(this.userCounter);
+        for(let i=0; i<userCounter; i++)
         {
-            return shim.error(`${'user-' + i} does not exist`);
+            const userAsBytes = await ctx.stub.getState('user-' + i);
+            if(!userAsBytes || userAsBytes.length ===0)
+            {
+                return shim.error(`${'user-' + i} does not exist`);
+            }
+
+            const userAsJson = JSON.parse(userAsBytes);
+            if (userAsJson.userType === userType) {
+                users.push(userAsBytes);
+            }
         }
-        users.push(userAsBytes);
-	}
-    return shim.success(`[${users.toString()}]`);
+        return shim.success(`[${users.toString()}]`);
     }
 
     async queryAllProduct(ctx, manufacturerId)
