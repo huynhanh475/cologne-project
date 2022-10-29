@@ -44,7 +44,7 @@ export async function signIn(loggedUserType, information) {
     const { name, userType, role } = contractRes;
     console.log(userType)
     const accessToken = generateAccessToken({ id, userType, role, name });
-    return createModelRes(200, 'Success', { id, userType, role, name, accessToken });
+    return createModelRes(200, 'Success', { user : contractRes, accessToken });
 }
 
 export async function getAllUser(loggedUserType, information) {
