@@ -49,7 +49,6 @@
 
 ```json
 {
-    "userType": "deliverer",
     "address": "berlin",
     "email": "man1@example.com",
     "name": "Deliverer 3",
@@ -79,9 +78,9 @@
 
 - Endpoint: `/user`
 - Method: Get
-- Chaincode: `queryUsers`
+- Chaincode: `queryUser`
 - Body: None
-- Response: list user entity
+- Response: list of users that have same userType with the authorized user
 
 ```json
 {
@@ -90,8 +89,8 @@
         {
             "address": "berlin",
             "docType": "user",
-            "email": "man1@example.com",
-            "name": "Deliverer 3",
+            "email": "del1@example.com",
+            "name": "Deliverer 1",
             "password": "password123",
             "role": "client",
             "userId": "user-0",
@@ -100,24 +99,44 @@
         {
             "address": "berlin",
             "docType": "user",
-            "email": "man1@example.com",
-            "name": "Manufacturer 1",
+            "email": "del2@example.com",
+            "name": "Deliverer 2",
             "password": "password123",
             "role": "client",
             "userId": "user-1",
-            "userType": "manufacturer"
+            "userType": "deliverer"
         }
     ]
 }
 ```
 
-### Get all users of a type
+### Get all deliverers
 
-- Endpoint: `/user/:userType`
+This is a special use only manufacturers can access
+
+- Endpoint: `/user/deliverer`
 - Method: Get
-- Chaincode: `queryAllUsers`
+- Chaincode: `queryAllUser`
 - Body: None
-- Response: list user entity
+- Response: list of deliverers
+
+```json
+{
+    "message": "Success",
+    "data": [
+        {
+            "address": "Munich",
+            "docType": "user",
+            "email": "user@coop.com",
+            "name": "Coop Markt",
+            "password": "password123",
+            "role": "client",
+            "userId": "user-0",
+            "userType": "deliverer"
+        }
+    ]
+}
+```
 
 ## Product Management
 
