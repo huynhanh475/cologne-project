@@ -176,10 +176,10 @@ class Supply extends Contract {
     //console.log(this.userCounter);
     for(let i=0; i<userCounter; i++)
 	{
-	    const userAsBytes = await ctx.stub.getState('user' + i);
+	    const userAsBytes = await ctx.stub.getState('user-' + i);
         if(!userAsBytes || userAsBytes.length ===0)
         {
-            return shim.error(`${'user' + i} does not exist`);
+            return shim.error(`${'user-' + i} does not exist`);
         }
         users.push(userAsBytes);
 	}
