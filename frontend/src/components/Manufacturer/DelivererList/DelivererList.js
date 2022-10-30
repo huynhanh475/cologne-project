@@ -4,7 +4,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import { DelivererColumn } from "./DelivererColumn";
 import { useState } from "react";
 import DelivererForm from './DelivererForm';
-import record from './MOCK_DATA.json';
 import { request } from '../../../utils/request';
 
 function DelivererList() {
@@ -39,13 +38,13 @@ function DelivererList() {
   // const data = record;
   const [isOpenModal, setIsOpenModal] = useState(false);
   // const [user, setUserID] = useState("");
-  const [delivererID, setDelivererID] = useState("");
+  const [delivererId, setDelivererId] = useState("");
 
 
   const handleOnClick=(a) => {
     setIsOpenModal(true);    
-    setDelivererID(a.delivererID);
-    console.log(a.delivererID);
+    setDelivererId(a.userId);
+    // console.log(a.userId);
   }
 
   const actionColumn = [
@@ -66,11 +65,11 @@ function DelivererList() {
   ];
   return (
     <div className="maintable">
-      <DelivererForm isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} delivererID={delivererID}/>
+      <DelivererForm isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} delivererId={delivererId}/>
       <div className="deliverertable">
         <DataGrid
           rows={data}
-          getRowId={(row) => row.delivererID}
+          getRowId={(row) => row.userId}
           columns={DelivererColumn.concat(actionColumn)}
           pageSize={9}
           rowsPerPageOptions={[9]}

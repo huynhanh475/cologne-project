@@ -3,14 +3,14 @@ import React, { useState, useRef } from 'react';
 import './DelivererList.css';
 import { request } from '../../../utils/request';
 
-function DelivererForm({ isOpenModal, setIsOpenModal, delivererID }) {
+function DelivererForm({ isOpenModal, setIsOpenModal, delivererId }) {
   const form = useRef();
-  const [batchID, setBatchID] = useState("");
+  const [batchId, setBatchId] = useState("");
   // const [retailerID, setRetailerID] = useState("");
   // const [delivererID, setDelivererID] = useState("");
   const handleOk = async () => {
     const token = localStorage.getItem("AUTH_DATA");
-    const item = { batchID, delivererID};
+    const item = { batchId, delivererId};
     const params = {
       method: "POST",
       url: "/transact/inviteDeliverer",
@@ -20,6 +20,7 @@ function DelivererForm({ isOpenModal, setIsOpenModal, delivererID }) {
     const response = await request(params);
     if (response.ok) {
       setIsOpenModal(false);
+      console.log(response.status);
     }
     document.getElementById("InviteDelivererForm").reset();
   };
@@ -38,7 +39,7 @@ function DelivererForm({ isOpenModal, setIsOpenModal, delivererID }) {
         <form ref={form} id="InviteDelivererForm" className="create_form">
           <div>
             <label htmlFor='delivererID'>Deliverer ID</label>
-            <input type="text" name="delivererID" value={delivererID} readOnly required />
+            <input type="text" name="delivererId" value={delivererId} readOnly required />
           </div>
 {/* 
           <div>
@@ -48,7 +49,7 @@ function DelivererForm({ isOpenModal, setIsOpenModal, delivererID }) {
 
           <div>
             <label htmlFor='batchID'>Batch ID</label>
-            <input type="text" name="batchID" placeholder="Enter batch ID: " onChange={(e) => { setBatchID(e.target.value) }} required />
+            <input type="text" name="batchId" placeholder="Enter batch ID: " onChange={(e) => { setBatchId(e.target.value) }} required />
           </div>
         </form>
 
