@@ -39,7 +39,7 @@ function FaultyBatchList() {
         component.date = component.date.markedFaultDate
       })
 
-      let newData = body.filter(component => component.status=="fault")
+      let newData = body.filter(component => component.status==="fault")
       setData(newData)
     };
     getFaultBatch();

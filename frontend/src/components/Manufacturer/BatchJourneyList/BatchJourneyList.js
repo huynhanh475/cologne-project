@@ -1,43 +1,134 @@
-import React, {useState} from 'react'
+import React, { useState, useEffect } from 'react'
 import "./BatchJourneyList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { BatchJourneyColumn } from "./BatchJourneyColumn";
-import record from './MOCK_DATA (3).json';
-import TransferModal from './TransferModal';
-import MarkFaultModal from './MarkFaultModal';
+// import TransferModal from './TransferModal';
+// import MarkFaultModal from './MarkFaultModal';
+import { request } from '../../../utils/request';
+import {Modal} from 'antd';
+
 
 function BatchJourneyList() {
-  // const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
   // query data based on the manufacturerID
   const [isTransfer, setIsTransfer] = useState(false);
   const [isFault, setIsFault] = useState(false);
-  const [batchID, setBatchID] = useState("");
-  const [productID, setProductID] = useState("");
-  const [manufacturerID, setManufacturerID] = useState("");
-  const [retailerID, setRetailerID] = useState("");
-  const [delivererID, setDelivererID] = useState("");
+  const [batchId, setBatchID] = useState("");
+  const [productId, setProductID] = useState("");
+  const [manufacturerId, setManufacturerID] = useState("");
+  const [retailerId, setRetailerID] = useState("");
+  const [delivererId, setDelivererID] = useState("");
   const [quantity, setQuantity] = useState("");
-  
-  const data = record;
-  const handleOnClickTransfer=(a) => {
+
+  // const record = [{ "batchID": "5d55a008-2df0-4aaf-bacd-b10172c13ac1", "productID": "94160fb8-34d0-4440-941f-13a248853fa3", "manufacturerID": "aebaafbd-d2c6-4591-9357-c399c5e8ff73", "retailerID": "76c925ec-d078-44c0-9168-2b591ea8ef7e", "delivererID": "57ff6ec8-02b6-4570-a844-dd6ee6cbfde6", "status": "approve-invitation-by-deliverer", "date": { "orderedDate": "27-12-2001" }, "quantity": "33-373-3482" },
+  // { "batchID": "225612ef-b58c-420a-a177-57dba1f0b476", "productID": "adfde43e-9fbd-4211-936b-132e8c5adf9a", "manufacturerID": "b1de9c4d-0ae5-43ba-92dd-28ba53feeb10", "retailerID": "919827a2-9821-4141-b32a-aaab2a060379", "delivererID": "657990df-62b2-4822-bbf5-2c0dbdc0634b", "status": "approve-invitation-by-deliverer", "date": { "orderedDate": "7/15/2022" }, "quantity": "92-394-4475" },
+  // { "batchID": "f8b7b4d6-381a-45fa-8350-b40dc52cb428", "productID": "48f111f2-b11f-4569-b1bd-3b946869d800", "manufacturerID": "c956c59e-0d88-4281-a852-92c4e280bae7", "retailerID": "c0a5835e-40cd-413f-98c1-b26a320abe6a", "delivererID": "2bd2e13f-012c-4795-97b9-fd8c7cb935ab", "status": "approve-invitation-by-deliverer", "date": { "orderedDate": "7/15/2022" }, "quantity": "93-836-8541" },
+  // { "batchID": "053c6e43-9b3b-45dd-83c3-e73cb2b6fed9", "productID": "761569fb-7efc-4393-a5d4-462f7c5910a7", "manufacturerID": "7ee0042f-38bc-4b68-8faa-255852138cbb", "retailerID": "7e976a0a-9ca8-4640-b38a-27cc2db9dfb1", "delivererID": "b0dd38f0-bbc9-4a88-b3dc-6c3ce7facc9f", "status": "approve-invitation-by-deliverer", "date": { "orderedDate": "7/15/2022" }, "quantity": "57-777-0442" },
+  // { "batchID": "3ad0cc3d-6115-4d42-bde0-bb4520335bcf", "productID": "4c1c82ee-a686-436e-9f39-c1ec9a4d8932", "manufacturerID": "cd4c1954-dba6-449c-b0a6-f920eaf7a222", "retailerID": "7b8db1e5-24b1-47dd-a03d-d7a6caa057e4", "delivererID": "79fd9f87-247b-45c0-8637-6e42bab7c0c0", "status": "approve-invitation-by-deliverer", "date": { "orderedDate": "7/15/2022" }, "quantity": "54-262-6413" }]
+
+  const handleOnClickTransfer = (a) => {
     setIsTransfer(true);
-    setBatchID(a.batchID);
-    setProductID(a.productID);
-    setManufacturerID(a.manufacturerID);
-    setRetailerID(a.retailerID);
-    setDelivererID(a.delivererID);
+    setBatchID(a.batchId);
+    setProductID(a.productId);
+    setManufacturerID(a.manufacturerId);
+    setRetailerID(a.retailerId);
+    setDelivererID(a.delivererId);
     setQuantity(a.quantity);
   }
 
-  const handleOnClickFault=(a) => {
+  const handleOnClickFault = (a) => {
     setIsFault(true);
-    setBatchID(a.batchID);
-    setProductID(a.productID);
-    setManufacturerID(a.manufacturerID);
-    setRetailerID(a.retailerID);
-    setDelivererID(a.delivererID);
+    setBatchID(a.batchId);
+    setProductID(a.productId);
+    setManufacturerID(a.manufacturerId);
+    setRetailerID(a.retailerId);
+    setDelivererID(a.delivererId);
   }
 
+  const handleOkTransfer = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("AUTH_DATA");
+    const item = { batchId };
+    const params = {
+      method: "POST",
+      url: "/transact/transferToDeliverer",
+      body: item,
+      headers: { 'Content-Type': "application/json", 'x-access-token': token },
+    }
+    const response = await request(params);
+    if (response.ok) {
+      setIsTransfer(false);
+    }
+  };
+
+  const handleCancelTransfer = () => {
+    setIsTransfer(false);
+  };
+
+  const handleOkFault = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("AUTH_DATA");
+    const item = { batchId };
+    const params = {
+      method: "POST",
+      url: "/batch/report",
+      body: item,
+      headers: { 'Content-Type': "application/json", 'x-access-token': token },
+    }
+    const response = await request(params);
+    if (response.ok) {
+      setIsFault(false);
+    }
+  };
+
+  const handleCancelFault = () => {
+    setIsFault(false);
+  };
+
+  useEffect(() => {
+    const getBatch = async () => {
+      const token = localStorage.getItem("AUTH_DATA");
+      const params = {
+        method: "GET",
+        url: "/batch/all",
+        headers: { 'Content-Type': "application/json", 'x-access-token': token },
+      }
+      const response = await request(params);
+      let rawData = await response.text();
+      let jsonData = JSON.parse(rawData);
+      let body = jsonData["data"]; //take the body of data
+
+      body.forEach((component) => {
+        component.date = component.date.orderedDate;
+      })
+
+      let newData = body.filter(component => component.status !== "fault" && component.status === 'approve-invitation-by-deliverer')
+      setData(newData)
+    };
+    getBatch();
+    return () => {
+      // this now gets called when the component unmounts
+    };
+  }, [isTransfer, isFault]);
+
+  // useEffect(() => {
+  //   body.forEach((component) => {
+  //     component.date = component.date.orderedDate;
+  //   })
+
+  //   let newData = body.filter(component => component.status !== "fault" && component.status === 'approve-invitation-by-deliverer')
+  //   setData(newData)
+  //   console.log(body)
+
+  //   return () => {
+  //     // this now gets called when the component unmounts
+  //   };
+  // }, []);
+
+  // record.forEach((component) => {
+  //   component.date = component.date.orderedDate
+  // })
+  // console.log(record);
   const actionColumn = [
     {
       field: "action",
@@ -46,8 +137,8 @@ function BatchJourneyList() {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            {params.row.status==="approve-invitation-by-deliverer" && <div className="transferButton" onClick={()=>handleOnClickTransfer(params.row)}>Transfer</div>}
-            {params.row.status!=="fault" && <div className="markFaultButton" onClick={()=>handleOnClickFault(params.row)}>Fault</div>}
+            {params.row.status === "approve-invitation-by-deliverer" && <div className="transferButton" onClick={() => handleOnClickTransfer(params.row)}>Transfer</div>}
+            {params.row.status !== "fault" && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Fault</div>}
           </div>
 
         );
@@ -56,20 +147,40 @@ function BatchJourneyList() {
   ];
   return (
     <>
-      <TransferModal isTransfer={isTransfer} setIsTransfer={setIsTransfer} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID} quantity={quantity}/>
-      <MarkFaultModal isFault={isFault} setIsFault={setIsFault} batchID={batchID} productID={productID} manufacturerID={manufacturerID} retailerID={retailerID} delivererID={delivererID}/>
+      {/* <TransferModal isTransfer={isTransfer} setIsTransfer={setIsTransfer} batchId={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} quantity={quantity} /> */}
+      <Modal title="Transfer Confirmation" open={isTransfer} onOk={handleOkTransfer} onCancel={handleCancelTransfer}>
+        <div>
+          <p>1. Batch ID: {batchId}</p>
+          <p>2. Product ID: {productId}</p>
+          <p>3. Manufacturer ID: {manufacturerId}</p>
+          <p>4. Retailer ID: {retailerId}</p>
+          <p>5. Deliverer ID: {delivererId}</p>
+          <p>6. Quantity: {quantity}</p>
+        </div>
+      </Modal>
+      {/* <MarkFaultModal isFault={isFault} setIsFault={setIsFault} batchId={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} /> */}
+      <Modal title="Mark Fault Confirmation" open={isFault} onOk={handleOkFault} onCancel={handleCancelFault}>
+        <div>
+          <p>1. Batch ID: {batchId}</p>
+          <p>2. Product ID: {productId}</p>
+          <p>3. Manufacturer ID: {manufacturerId}</p>
+          <p>4. Retailer ID: {retailerId}</p>
+          <p>5. Deliverer ID: {delivererId}</p>
+          <p>6. Quantity: {quantity}</p>
+        </div>
+      </Modal>
       <div className="batchjourneylisttable">
         <DataGrid
           rows={data}
           columns={BatchJourneyColumn.concat(actionColumn)}
-          getRowId={(row) => row.batchID}
+          getRowId={(row) => row.batchId}
           pageSize={9}
           rowsPerPageOptions={[9]}
           checkboxSelection
         />
       </div>
     </>
-    
+
   );
 };
 

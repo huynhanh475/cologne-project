@@ -23,7 +23,7 @@ function UserForm() {
         e.preventDefault();
         const userType = JSON.parse(localStorage.getItem("USER_DATA"))["userType"];
         const token = localStorage.getItem("AUTH_DATA");
-        const item = {userType, address, email, name, password};
+        const item = {address, email, name, password};
         const params = {
             method : "POST",
             url: "/user/createUser",
