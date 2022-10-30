@@ -668,7 +668,7 @@ class Supply extends Contract {
         product.status = 'fault';
         product.markedFaultBy = userID;
         await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
-        const allResults=JSON.parse(JSON.parse(this.getAllBatches(ctx)).payload);
+        const allResults=JSON.parse((await this.getAllBatches(ctx)).payload);
         for (let i in allResults)
         {
             if(allResults[i].productId == batch.productId)
@@ -679,7 +679,8 @@ class Supply extends Contract {
             }
         }
         console.info('================= END : Report Fault ==============');
-        return shim.success(JSON.stringify(batch));
+        const batch2=await JSON.parse(await (await this.queryBatch(ctx,batchId)).payload);
+        return shim.success(JSON.stringify(batch2));
     }
 
     async queryFaultBatches(ctx)
