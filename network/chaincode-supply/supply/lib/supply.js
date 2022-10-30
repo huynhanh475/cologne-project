@@ -12,6 +12,7 @@
 
 const { Contract } = require('fabric-contract-api');
 const shim = require('fabric-shim');
+const crypto = require('crypto');
 
 /*Data models
  * User{Name, User_ID, Email, User_Type, Address, Password}
@@ -38,7 +39,7 @@ class Supply extends Contract {
                 userType: 'manufacturer',
                 role:'admin',
                 address: 'Cologne',
-                password: 'adminpw',
+                password: await this.hashPassword('adminpw'),
             },
             {
                 name: 'Deliverer Admin',
@@ -47,7 +48,7 @@ class Supply extends Contract {
                 userType: 'deliverer',
                 role: 'admin',
                 address: 'Berlin',
-                password: 'adminpw',
+                password: await this.hashPassword('adminpw'),
             },
             {
                 name: 'Retailer Admin',
@@ -56,16 +57,7 @@ class Supply extends Contract {
                 userType: 'retailer',
                 role: 'admin',
                 address: 'Munich',
-                password: 'adminpw',
-            },
-            {
-                name: 'retailerAdmin',
-                userId: 'admin3',
-                email: '',
-                userType: 'retailer',
-                role: 'admin',
-                address: '',
-                password: 'adminpw',
+                password: await this.hashPassword('adminpw'),
             },
         ];
 
@@ -96,7 +88,7 @@ class Supply extends Contract {
         //need hash password before
         // if hashed(password) == password
         const userJson = await JSON.parse(await userEntity.toString());
-        if(userJson.password !== password)
+        if(userJson.password !== await this.hashPassword(password))
         {
             return shim.error(`Wrong Password Provided`);
         }
@@ -154,7 +146,7 @@ class Supply extends Contract {
             userType: userType,
             role: 'client',
             address: address,
-            password: password,
+            password: await this.hashPassword(password),
         };
 
         const userAsBytes = await Buffer.from(JSON.stringify(user));
@@ -285,6 +277,12 @@ class Supply extends Contract {
 
         const batchAsJson = await JSON.parse(await batchAsBytes.toString());
 
+        //check docType
+        if(batchAsJson.docType !== 'batch')
+        {
+            return shim.error(`Batch invalid type`);
+        }
+
         //mark fault
         batchAsJson.status = 'fault';
         batchAsJson.date.markedFaultDate = await this.getCurrentDate();
@@ -315,7 +313,7 @@ class Supply extends Contract {
     }
 
     //Function to update batch status = 'transferred-to-deliverer'
-    async transferToDeliverer (ctx, batchId)
+    async transferToDeliverer (ctx, batchId, userId)
     {
         const batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
@@ -323,7 +321,7 @@ class Supply extends Contract {
         }
     
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        if(batchAsJson.status === 'approve-invitation-by-deliverer')
+        if(batchAsJson.status === 'approve-invitation-by-deliverer' && batchAsJson.manufacturerId === userId)
         {
             batchAsJson.status = 'transferred-to-deliverer';
             batchAsJson.date.sendToDelivererDate = await this.getCurrentDate();
@@ -338,6 +336,11 @@ class Supply extends Contract {
     }
 
     //Utils function for updating batch=====================================================
+    async hashPassword(password)
+    {
+        return crypto.createHash('sha256', 'cologne').update(password).digest('hex');
+    }
+
     async getCurrentDate()
     {
         let ts = Date.now();
@@ -414,7 +417,7 @@ class Supply extends Contract {
     //====== END ============================================================================
 
     //Function to update the status of batch to 'deliverer-confirm-transfer'
-    async delivererConfirmTransfer (ctx, batchId)
+    async delivererConfirmTransfer (ctx, batchId, userId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
@@ -422,7 +425,7 @@ class Supply extends Contract {
         }
 
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        if(batchAsJson.status === 'transferred-to-deliverer')
+        if(batchAsJson.status === 'transferred-to-deliverer' && batchAsJson.delivererId === userId)
         {
             batchAsJson.status = 'deliverer-confirm-transfer';
         }
@@ -438,7 +441,7 @@ class Supply extends Contract {
     }
 
     //Function to update the status of batch to 'retailer-confirm-transfer'
-    async retailerConfirmTransfer (ctx, batchId)
+    async retailerConfirmTransfer (ctx, batchId, userId)
     {
         var batchAsBytes = await ctx.stub.getState(batchId);
         if (!batchAsBytes || batchAsBytes.length === 0) {
@@ -446,7 +449,7 @@ class Supply extends Contract {
         }
 
         const batchAsJson = await JSON.parse( await batchAsBytes.toString());
-        if(batchAsJson.status === 'transferred-to-retailer')
+        if(batchAsJson.status === 'transferred-to-retailer' && batchAsJson.retailerId === userId)
         {
             batchAsJson.status = 'retailer-confirm-transfer';
         }
@@ -470,6 +473,67 @@ class Supply extends Contract {
         }
         console.log(batchAsBytes.toString());
         return shim.success(batchAsBytes.toString());
+    }
+
+
+    async markBatchOfProductFault(ctx, productId, manufacturerId)
+    {
+        //set fault status to all batches containing that product
+        //Get the number of batches
+        const currentCounter = await this.getCounter(ctx, 'batch');
+        for(let i = 0; i < currentCounter; i++)
+        {
+            const batchAsBytes = await ctx.stub.getState('batch' + i);
+            if(!batchAsBytes || batchAsBytes.length ===0)
+            {
+                return shim.error(`${'batch' + i} does not exist`);
+            }
+
+            const batchAsJson = await JSON.parse(await batchAsBytes.toString());
+
+            //check batch's productId
+            if(batchAsJson.productId === productId)
+            {
+                batchAsJson.status = 'fault';
+                batchAsJson.date.markedFaultDate = await this.getCurrentDate();
+                batchAsJson.markedFaultBy = manufacturerId;
+            }
+            //put the record back to the db
+            await ctx.stub.putState('batch'+i, Buffer.from(JSON.stringify(batchAsJson)));
+        }
+        return shim.success(`All fault batches are marked`);
+    }
+
+    async markProductFault(ctx, productId, manufacturerId)
+    {
+        const productAsBytes = await ctx.stub.getState(productId);
+        if(!productAsBytes || productAsBytes.length === 0)
+        {
+            return shim.error(`${productId} does not exist`);
+        }
+
+        //parse product to json
+        const productAsJson = await JSON.parse(await productAsBytes.toString());
+
+        //check docType
+        if(productAsJson.docType !== 'product')
+        {
+            return shim.error(`Invalid product type`);
+        }
+
+        //check manufacturer
+        if(productAsJson.manufacturerId !== manufacturerId)
+        {
+            return shim.error(`Invalid manufacturer`);
+        }
+
+        //set fault status
+        productAsJson.status = 'fault';
+        productAsJson.markedFaultBy = manufacturerId;
+
+        //mark fault batches
+        await this.markBatchOfProductFault(ctx, productId, manufacturerId);
+        return shim.success(JSON.stringify(productAsJson));
     }
 
     //========================================================= Chuong's Chaincode (for review and debug) =====================================================================
