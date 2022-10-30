@@ -1,9 +1,22 @@
 import React from 'react';
 import {Modal} from 'antd';
+import { request } from '../../../utils/request';
 
 function TransferModal({isTransfer, setIsTransfer, batchID, productID, manufacturerID, retailerID, delivererID, quantity}) {
-    const handleOk = () => {
-        setIsTransfer(false);
+    const handleOk = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("AUTH_DATA");
+        const item = {batchID};
+        const params = {
+          method: "POST",
+          url: "/transact/transferToDeliverer",
+          body: item,
+          headers: { 'Content-Type': "application/json", 'x-access-token': token },
+        }
+        const response = await request(params);
+        if (response.ok){
+            setIsTransfer(false);
+        }
     };
     
     const handleCancel = () => {
