@@ -20,7 +20,6 @@ function DelivererForm({ isOpenModal, setIsOpenModal, delivererId }) {
     const response = await request(params);
     if (response.ok) {
       setIsOpenModal(false);
-      console.log(response.status);
     }
     document.getElementById("InviteDelivererForm").reset();
   };
