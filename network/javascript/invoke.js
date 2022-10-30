@@ -80,13 +80,17 @@ async function main() {
 
 
 
-
+/*
         await contract.submitTransaction('registerBatchOrder', 'product0', 'user-4','11');
         await contract.submitTransaction('registerBatchOrder', 'product1', 'user-4','11');
         await contract.submitTransaction('registerBatchOrder', 'product2', 'user-4','11');
         await contract.submitTransaction('registerBatchOrder', 'product3', 'user-5','11');
         await contract.submitTransaction('registerBatchOrder', 'product4', 'user-5','11');
         await contract.submitTransaction('registerBatchOrder', 'product5', 'user-5','11');
+*/
+        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '20');
+        await contract.submitTransaction('registerBatchOrder', 'product4', 'user-4', '20');
+        await contract.submitTransaction('registerBatchOrder', 'product5', 'user-4', '20');
 
         //console.log(result.toString());
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
