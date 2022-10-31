@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
-import * as IoIcons from 'react-icons/io';
+// import * as IoIcons from 'react-icons/io';
 import { Link } from 'react-router-dom';
 import { SidebarData } from './SidebarData.js';
 import './NavBar.css';
 import { IconContext } from 'react-icons';
-import {roles, userTypes} from '../../utils/constants';
+import {roles} from '../../utils/constants';
 import {logout} from '../../utils/auth';
 
 function Navbar() {
@@ -14,11 +14,11 @@ function Navbar() {
   const typeOfUser = JSON.parse(localStorage.getItem("USER_DATA"))["userType"];
   const roleOfUser = JSON.parse(localStorage.getItem("USER_DATA"))["role"];
   function filterSidebar(SidebarData, typeOfUser, roleOfUser){
-    if (roleOfUser==roles.admin){
-        return SidebarData.filter(component => component.role==roles.admin)
+    if (roleOfUser===roles.admin){
+        return SidebarData.filter(component => component.role===roles.admin)
     }
     else{
-        return SidebarData.filter(component => component.userType==typeOfUser)
+        return SidebarData.filter(component => component.userType===typeOfUser)
     }
   }
 
