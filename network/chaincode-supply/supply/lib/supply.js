@@ -675,6 +675,8 @@ class Supply extends Contract {
             {
                 allResults[i].status = 'fault';
                 allResults[i].markedFaultBy = userID;
+                allResults[i].markedFaul = userID;
+                allResults[i].date.markedFaultDate=await this.getCurrentDate();
                 await ctx.stub.putState(allResults[i].batchId, Buffer.from(JSON.stringify(allResults[i])));
             }
         }
