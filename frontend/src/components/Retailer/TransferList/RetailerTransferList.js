@@ -74,7 +74,7 @@ function TransferList() {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            {params.row.status === 'transferred-to-deliverer' && <div className="confirmButton" onClick={() => handleOnClickConfirm(params.row)}>Confirm</div>}
+            {params.row.status === 'transferred-to-retailer' && <div className="confirmButton" onClick={() => handleOnClickConfirm(params.row)}>Confirm</div>}
             {params.row.status !== 'fault' && <div className="markFaultButton" onClick={() => handleOnClickMarkFault(params.row)}>Fault</div>}
           </div>
         );
@@ -84,7 +84,7 @@ function TransferList() {
 
   return (
     <div>
-      <ConfirmModal isConfirm={isConfirm} setIsConfirm={setIsConfirm} batchd={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} date={date} quantity={quantity} />
+      <ConfirmModal isConfirm={isConfirm} setIsConfirm={setIsConfirm} batchId={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} date={date} quantity={quantity} />
       <MarkFaultModal isMarkFault={isMarkFault} setIsMarkFault={setIsMarkFault} batchId={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} date={date} quantity={quantity} />
       <div className="transferlisttable">
         <DataGrid
