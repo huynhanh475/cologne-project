@@ -44,10 +44,11 @@ export async function queryFaultBatches(userType, information) {
     const { loggedUserId } = information;
     const networkObj = await connect(userType, loggedUserId);
 
-    const contractRes = await query(networkObj, 'markFaultBatch');
+    const contractRes = await query(networkObj, 'queryFaultBatches');
     const error = networkObj.error || contractRes.error;
     if(error){
         const status = networkObj.status || contractRes.status;
         return createModelRes(status, error);
     }
+    return createModelRes(200, 'Success', contractRes);
 }
