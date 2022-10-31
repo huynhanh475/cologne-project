@@ -66,7 +66,7 @@ export async function replyInvitation(userType, information) {
 export async function transferToDeliverer(userType, information) {
     const { loggedUserId, batchId } = information;
     const networkObj = await connect(userType, loggedUserId);
-    const contractRes = await invoke(networkObj, 'transferToDeliverer', batchId);
+    const contractRes = await invoke(networkObj, 'transferToDeliverer', batchId, loggedUserId);
     const error = networkObj.error || contractRes.error;
     if (error) {
         const status = networkObj.status || contractRes.status;
