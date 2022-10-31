@@ -66,7 +66,7 @@ export async function replyInvitation(userType, information) {
 export async function transferToDeliverer(userType, information) {
     const { loggedUserId, batchId } = information;
     const networkObj = await connect(userType, loggedUserId);
-    const contractRes = await invoke(networkObj, 'transferToDeliverer', batchId);
+    const contractRes = await invoke(networkObj, 'transferToDeliverer', batchId, loggedUserId);
     const error = networkObj.error || contractRes.error;
     if (error) {
         const status = networkObj.status || contractRes.status;
@@ -81,7 +81,7 @@ export async function transferToDeliverer(userType, information) {
 export async function confirmTransfer(userType, information) {
     const { loggedUserId, batchId } = information;
     const networkObj = await connect(userType, loggedUserId);
-    const contractRes = await invoke(networkObj, 'delivererConfirmTransfer', batchId);
+    const contractRes = await invoke(networkObj, 'delivererConfirmTransfer', batchId, loggedUserId);
     const error = networkObj.error || contractRes.error;
     if (error) {
         const status = networkObj.status || contractRes.status;
@@ -112,7 +112,7 @@ export async function transferToRetailer(userType, information) {
 export async function receiveProduct(userType, information) {
     const { loggedUserId, batchId } = information;
     const networkObj = await connect(userType, loggedUserId);
-    const contractRes = await invoke(networkObj, 'retailerConfirmTransfer', batchId);
+    const contractRes = await invoke(networkObj, 'retailerConfirmTransfer', batchId, loggedUserId);
     const error = networkObj.error || contractRes.error;
     if (error) {
         const status = networkObj.status || contractRes.status;
