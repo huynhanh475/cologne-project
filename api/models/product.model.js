@@ -57,3 +57,22 @@ export async function getAllProducts( loggedUserType, information ) {
 
     return createModelRes(200, 'Success', contractRes);
 }
+
+export async function reportFaultProduct( loggedUserType, information ) {
+    const { loggedUserId, productId } = information;
+
+    const networkObj = await connect(loggedUserType, loggedUserId);
+    if (networkObj.error) {
+        return createModelRes(networkObj.status, networkObj.error);
+    }
+    
+    const contractRes = await invoke(networkObj, 'markProductFault', productId, loggedUserId);
+    if (contractRes.error) {
+        return createModelRes(contractRes.status, contractRes.error);
+    }
+
+    contractRes.quantity = Number(contractRes.quantity);
+    contractRes.price = Number(contractRes.price);
+
+    return createModelRes(200, 'Success', contractRes);
+}
