@@ -191,7 +191,7 @@ export async function query(networkObj, ...funcAndArgs) {
         if (jsonResult.status === 200) {
             return JSON.parse(jsonResult.payload);
         }
-        return { status: 500, error: jsonResult.message };
+        return { status: 400, error: jsonResult.message };
     }
     catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
@@ -218,7 +218,7 @@ export async function invoke(networkObj, ...funcAndArgs) {
         if (jsonResult.status === 200) {
             return JSON.parse(jsonResult.payload);
         }
-        return { status: 500, error: jsonResult.message };
+        return { status: 400, error: jsonResult.message };
     }
     catch (error) {
         console.error(`Failed to submit transaction: ${error}`);

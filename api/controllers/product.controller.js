@@ -42,3 +42,15 @@ export async function getAllProducts(req, res) {
     return send(res, modelRes);
 }
 
+export async function reportFaultProduct(req, res) {
+    const { loggedUserId, loggedUserType } = req.body;
+    const { productId } = req.params;
+
+    if (!loggedUserId || !loggedUserType || !productId ) {
+        return badRequest(res);
+    }
+
+    const modelRes = await model.reportFaultProduct(loggedUserType, { loggedUserId, productId });
+
+    return send(res, modelRes);
+}
