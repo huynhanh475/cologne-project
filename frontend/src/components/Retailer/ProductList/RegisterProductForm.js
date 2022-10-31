@@ -1,25 +1,17 @@
 import React, { useRef, useState } from 'react';
 import { Modal } from 'antd';
 import './ProductList.css';
+import { request } from '../../../utils/request';
 
-function RegisterProductForm({ isRegister, setIsRegister, productID, name, manufacturerID, date, price }) {
+
+function RegisterProductForm({ isRegister, setIsRegister, productId, name, manufacturerId, date, price }) {
     const form = useRef();
     const [quantity, setQuantity] = useState("");
-
-    useEffect(() => {
-        const registerOrder = async () => {
-          let rawData = await response.text();
-          let jsonData = JSON.parse(rawData);
-          setData(jsonData["data"]);
-        };
-        registerOrder();
-        return () => { };
-      }, []);
 
     const handleOk = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("AUTH_DATA");
-        const item = { "productId": productID, "quantity": quantity };
+        const item = { productId, quantity };
         const params = {
             method: "POST",
             url: "/transact/resigerOrder",
@@ -27,8 +19,8 @@ function RegisterProductForm({ isRegister, setIsRegister, productID, name, manuf
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-
-        setIsRegister(false);
+        if (response.ok)
+            setIsRegister(false);
         document.getElementById("CreateProductForm").reset();
     };
 
@@ -41,7 +33,7 @@ function RegisterProductForm({ isRegister, setIsRegister, productID, name, manuf
             <Modal open={isRegister} onOk={handleOk} onCancel={handleCancel} title="Create Product Form">
                 <form ref={form} id="CreateProductForm" className="create_form">
                     <div>
-                        <label for='productID'>1. Product ID: {productID}</label>
+                        <label for='productId'>1. Product ID: {productId}</label>
                     </div>
 
                     <div>
@@ -49,7 +41,7 @@ function RegisterProductForm({ isRegister, setIsRegister, productID, name, manuf
                     </div>
 
                     <div>
-                        <label for='manufacturerID'>3. Manufacturer ID: {manufacturerID}</label>
+                        <label for='manufacturerId'>3. Manufacturer Id: {manufacturerId}</label>
                     </div>
 
                     <div>

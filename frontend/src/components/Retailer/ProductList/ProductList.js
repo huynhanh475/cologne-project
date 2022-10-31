@@ -58,7 +58,7 @@ function ProductList() {
   ];
   return (
     <div>
-      <RegisterProductForm isRegister={isRegister} setIsRegister={setIsRegister} productID={productId} name={name} manufacturerID={manufacturerId} date={date} price={price} />
+      <RegisterProductForm isRegister={isRegister} setIsRegister={setIsRegister} productId={productId} name={name} manufacturerId={manufacturerId} date={date} price={price} />
       <div className="productlisttable">
         <DataGrid
           rows={data}
