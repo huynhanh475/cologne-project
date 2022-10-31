@@ -549,7 +549,7 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
-        if (batch.status !== 'pending-invite-to-deliverer')
+        if (batch.status !== 'pending-invite-to-deliverer' && batch.status !== 'reject-invitation-by-deliverer')
             return shim.error('Deliverer is not invited');
         if (batch.delivererId !== userID)
             return shim.error("Wrong deliverer");
