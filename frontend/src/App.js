@@ -19,8 +19,11 @@ import UserList from './components/Admin/UserList/UserList';
 import { isLoggedIn } from './utils/auth';
 import WithNav from './components/Layout/WithNav';
 import WithoutNav from './components/Layout/WithoutNav';
-// import {AnimatedPresence} from "framer-motion/dist/framer-motion"
-
+import HomePage from './components/Manufacturer/HomePage/HomePage';
+import HomePageDeliverer from './components/Deliverer/HomePage/HomePageDeliverer';// import {AnimatedPresence} from "framer-motion/dist/framer-motion"
+import HomePageRetailer from './components/Retailer/HomePage/HomePageRetailer';
+import HomePageAdmin
+ from './components/Admin/HomePage/HomePageAdmin';
 function App() {
   return (
     <>
@@ -30,18 +33,22 @@ function App() {
             <Route path="/" element={<Login />} />
           </Route>
           {isLoggedIn() ? <Route element={<WithNav />}>
+            <Route path="/manufacturer/homepage" element ={<HomePage/>} />
             <Route path="/manufacturer/productform" element={<ProductForm />} />
             <Route path="/manufacturer/batchorderlist" element={<BatchOrderList />} />
             <Route path="/manufacturer/delivererlist" element={<DelivererList />} />
             <Route path="/manufacturer/batchjourney" element={<BatchJourneyList />} />
             <Route path="/manufacturer/faultybatch" element={<FaultyBatchList />} />
+            <Route path="/deliverer/homepage" element ={<HomePageDeliverer/>} />
             <Route path="/deliverer/invitationlist" element={<InvitationList />} />
             <Route path="/deliverer/transferlist" element={<TransferList />} />
             <Route path="/deliverer/batchjourney" element={<BatchJourneyListDeliverer />} />
             <Route path="/deliverer/faultybatch" element={<DelivererFaultyBatch />} />
+            <Route path="/retailer/homepage" element ={<HomePageRetailer/>} />
             <Route path="/retailer/productlist" element={<ProductList />} />
             <Route path="/retailer/transferlist" element={<RetailerTransferList />} />
             <Route path="/retailer/faultybatch" element={<RetailerFaultyBatch />} />
+            <Route path="/admin/homepage" element ={<HomePageAdmin/>} />
             <Route path="/admin/createuser" element={<CreateUserForm />} />
             <Route path="/admin/userlist" element={<UserList />} />
           </Route> : <Route path="*" element={<Navigate to="/" replace />}></Route>}

@@ -87,8 +87,20 @@ function BatchJourneyListDeliverer() {
   };
 
   const handleOkFault = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("AUTH_DATA");
+    const item = { batchId };
+    const params = {
+      method: "POST",
+      url: "/batch/report",
+      body: item,
+      headers: { 'Content-Type': "application/json", 'x-access-token': token },
+    }
+    const response = await request(params);
+    if (response.ok) {
+      setIsFault(false);
+    }
     setIsFault(false);
-
   };
 
   const handleCancelFault = () => {
