@@ -1,5 +1,14 @@
 # Food Supply Chain API documentation
 
+## Run the API
+
+```shell
+cd path/to/repo
+cd api
+npm install
+npm run dev
+```
+
 ## Operations
 
 - [Authentication](#authentication)
