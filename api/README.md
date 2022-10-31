@@ -221,6 +221,32 @@
 }
 ```
 
+### Report a Fault Product
+
+- Endpoint: `/product/report/:productId`
+- Method: `POST`
+- Chaincode: `markProductFault`
+- Params: `productId`
+- Body: none
+- Response: product entity
+
+```json
+{
+    "message": "Success",
+    "data": {
+        "date": "2022-10-31",
+        "docType": "product",
+        "manufacturerId": "admin1",
+        "markedFaultBy": "admin1",
+        "name": "Green Apple - 2810",
+        "price": 129000,
+        "productId": "product0",
+        "quantity": 9000,
+        "status": "fault"
+    }
+}
+```
+
 ## Batch Management
 
 ### Users can query all  of their current orders
@@ -259,15 +285,15 @@
 - Endpoint: `/batch/single`
 - Method: Get
 - Chaincode: `queryBatch`
-- Body: 
+- Body:
 
 ```json
 {
     "batchId": "batch0"
 }
 ```
-- Response: a batch's entity
 
+- Response: a batch's entity
 
 ### Users can report if a batch is fault
 
@@ -288,7 +314,6 @@
 - Method: Get
 - Chaincode: `queryFaultBatches`
 - Body: None
-
 
 ## Transaction
 
