@@ -24,13 +24,14 @@ function FaultyBatchList() {
   const token = localStorage.getItem("AUTH_DATA");
   const params = {
     method: "GET",
-    url: "/batch/all",
+    url: "/batch/query",
     headers: { 'Content-Type': "application/json", 'x-access-token': token },
   }
 
   useEffect(() => {
     const getFaultBatch = async () => {
       const response = await request(params);
+      // console.log(response.statusText);
       let rawData = await response.text();
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"]; //take the body of data
@@ -39,8 +40,8 @@ function FaultyBatchList() {
         component.date = component.date.markedFaultDate
       })
 
-      let newData = body.filter(component => component.status==="fault")
-      setData(newData)
+      // let newData = body.filter(component => component.status==="fault")
+      setData(body)
     };
     getFaultBatch();
     return () => {
@@ -52,7 +53,7 @@ function FaultyBatchList() {
       <div className="faultybatchmanufacturertable-container">
         <DataGrid
           rows={data}
-          getRowId={(row) => row.batchID}
+          getRowId={(row) => row.batchId}
           columns={FaultyBatchColumn}
           pageSize={9}
           rowsPerPageOptions={[9]}

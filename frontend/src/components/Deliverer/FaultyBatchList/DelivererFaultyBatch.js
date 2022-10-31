@@ -41,7 +41,7 @@ function DelivererFaultyBatch() {
             <div className="faultybatchtable-deliverer">
                 <DataGrid
                     rows={data}
-                    getRowId={(row) => row.batchID}
+                    getRowId={(row) => row.batchId}
                     columns={FaultyBatchColumn}
                     pageSize={9}
                     rowsPerPageOptions={[9]}
