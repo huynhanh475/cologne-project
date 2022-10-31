@@ -15,6 +15,7 @@ import RetailerFaultyBatch from './components/Retailer/FaultyBatchList/RetailerF
 import RetailerTransferList from './components/Retailer/TransferList/RetailerTransferList';
 import CreateUserForm from './components/Admin/CreateUserForm/CreateUserForm';
 import UserList from './components/Admin/UserList/UserList';
+import ProductListManufacturer from './components/Manufacturer/ProductList/ProductListManufacturer';
 // import Navbar from './components/NavBar/NavBar';
 import { isLoggedIn } from './utils/auth';
 import WithNav from './components/Layout/WithNav';
@@ -39,6 +40,7 @@ function App() {
             <Route path="/manufacturer/delivererlist" element={<DelivererList />} />
             <Route path="/manufacturer/batchjourney" element={<BatchJourneyList />} />
             <Route path="/manufacturer/faultybatch" element={<FaultyBatchList />} />
+            <Route path="/manufacturer/productlist" element={<ProductListManufacturer />} />
             <Route path="/deliverer/homepage" element ={<HomePageDeliverer/>} />
             <Route path="/deliverer/invitationlist" element={<InvitationList />} />
             <Route path="/deliverer/transferlist" element={<TransferList />} />

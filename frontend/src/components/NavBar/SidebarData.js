@@ -112,5 +112,13 @@ export const SidebarData = [
     icon: <IoIcons.IoIosCreate />,
     cName: 'nav-text-container',
     role: 'admin'
-  }
+  },
+  {
+    title: 'Product List',
+    path: '/manufacturer/productlist',
+    icon: <IoIcons.IoIosListBox />,
+    cName: 'nav-text-container',
+    userType: 'manufacturer',
+    role: 'client'
+  },
 ];

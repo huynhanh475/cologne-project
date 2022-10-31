@@ -1,0 +1,39 @@
+@import '~antd/dist/antd.css';
+
+.navbarcomponent {
+    position: relative;
+    z-index: 2;
+}
+
+.product-list-manufacturer-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    background-color: white;
+    width: 80vw;
+    height: 80vh;
+    position: relative;
+    top: 5vh;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    margin-top: 2vh;
+}
+
+.product-list-manufacturer-container .cellAction {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.product-list-manufacturer-container .cellAction .markFault {
+    padding: 2px 5px;
+    border-radius: 5px;
+    color: crimson;
+    border: 1px dotted rgba(220, 20, 60, 0.6);
+    cursor: pointer;
+}
