@@ -43,6 +43,7 @@ function BatchJourneyList() {
     setManufacturerID(a.manufacturerId);
     setRetailerID(a.retailerId);
     setDelivererID(a.delivererId);
+    setQuantity(a.quantity);
   }
 
   const handleOkTransfer = async (e) => {

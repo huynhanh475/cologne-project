@@ -15,10 +15,11 @@ import RetailerFaultyBatch from './components/Retailer/FaultyBatchList/RetailerF
 import RetailerTransferList from './components/Retailer/TransferList/RetailerTransferList';
 import CreateUserForm from './components/Admin/CreateUserForm/CreateUserForm';
 import UserList from './components/Admin/UserList/UserList';
-import Navbar from './components/NavBar/NavBar';
+// import Navbar from './components/NavBar/NavBar';
 import { isLoggedIn } from './utils/auth';
 import WithNav from './components/Layout/WithNav';
 import WithoutNav from './components/Layout/WithoutNav';
+// import {AnimatedPresence} from "framer-motion/dist/framer-motion"
 
 function App() {
   return (
