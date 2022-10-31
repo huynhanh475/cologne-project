@@ -45,10 +45,6 @@
             align-items: center;
     gap: 15px;
   }
-
-  .cellViewAction{
-    
-  }
   
   .batchjourneylisttable .cellAction .transferButton {
     padding: 2px 5px;
