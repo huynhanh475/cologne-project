@@ -39,7 +39,6 @@ function DelivererList() {
   // const [user, setUserID] = useState("");
   const [delivererId, setDelivererId] = useState("");
 
-
   const handleOnClick=(a) => {
     setIsOpenModal(true);    
     setDelivererId(a.userId);

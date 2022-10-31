@@ -29,7 +29,7 @@ function InvitationList() {
         if (response.ok) {
             setStateChange(true);
             Modal.success({
-                content: "Approve invitation successfully!",
+                content: "Invitation is approved!",
             });
         }
     }
@@ -50,9 +50,10 @@ function InvitationList() {
         if (response.ok) {
             setStateChange(true);
             Modal.success({
-                content: "Reject invitation successfully!",
+                content: "Invitation is rejected!",
             });
         }
+        setStateChange(false);
     }
 
     useEffect(() => {

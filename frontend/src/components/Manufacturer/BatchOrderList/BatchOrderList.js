@@ -55,6 +55,7 @@ function BatchOrderList() {
         content: "Approve batch order successfully!",
     });
     }
+    setStateChange(false);
   }
 
   const actionColumn = [
@@ -66,10 +67,6 @@ function BatchOrderList() {
         return (
           <div className="cellAction">
             <div className="acceptButton" onClick={()=>handleAccept(params.row)}>Accept</div>
-            {/* <div
-              className="pendingButton">
-              Pending
-            </div> */}
           </div>
 
         );
