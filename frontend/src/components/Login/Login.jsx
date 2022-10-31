@@ -14,50 +14,7 @@ function Login() {
         { value: "retailer", text: "Retailer" },
     ]
 
-    const [id, setId] = useState("");
-    const [password, setPassword] = useState("");
-    const [userType, setUserType] = useState(options[0].value);
     const [isLoading, setIsLoading] = useState(false);
-
-    // handleChange(e){
-    //     setUserType(e.target.value);
-    //     console.log("userType: " + userType);
-    //     console.log("e value: " + e.target.value);
-    // }
-
-    const handleSubmit = async (e) => {
-        
-        try {
-            e.preventDefault();
-            const item = { id, password, userType };
-            console.log(item)
-            const params = {
-                method : "POST",
-                url: "/user/signin",
-                body: item,
-                headers: { 'Content-Type': "application/json" },
-            }
-            setIsLoading(true)
-            const rawResponse = await request(params);
-            const response = await rawResponse.json();
-            console.log(response)
-            setIsLoading(false)
-            if (rawResponse.status === 200){
-                
-                onLogInSuccess(response.data)
-                // console.log("Role: " + jsonData.data.role)
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Login Failed',
-                    text: response.message,
-                })
-            }
-        } catch (error) {
-            setIsLoading(false);
-            console.error(error);
-        }
-    }
 
     const handleOnFormFinish = async (values) => {
         try {
@@ -73,9 +30,7 @@ function Login() {
             console.log(response)
             setIsLoading(false)
             if (rawResponse.status === 200){
-                
                 onLogInSuccess(response.data)
-                // console.log("Role: " + jsonData.data.role)
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -91,11 +46,6 @@ function Login() {
 
     const handleOnFormFailed = (errorInfo) => {
         console.log(`failed: ${errorInfo}`)
-    }
-
-    const handleChange = (value) => {
-        setUserType(value);
-        console.log(value)
     }
 
     return (
