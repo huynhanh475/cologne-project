@@ -1,11 +1,13 @@
 import React from 'react';
 import { Modal } from 'antd';
+import { request } from '../../../utils/request';
 
 function MarkFaultModal({ isMarkFault, setIsMarkFault, batchId, productId, manufacturerId, retailerId, delivererId, date, quantity }) {
-    const item = { batchId };
+    const token = localStorage.getItem("AUTH_DATA");
+
     const handleOk = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("AUTH_DATA");
+        const item = { batchId };
         const params = {
             method: "POST",
             url: "/batch/report",
@@ -14,12 +16,13 @@ function MarkFaultModal({ isMarkFault, setIsMarkFault, batchId, productId, manuf
         }
         const response = await request(params);
         if (response.ok)
-            setIsConfirm(false);
+            setIsMarkFault(false);
     };
 
     const handleCancel = () => {
         setIsMarkFault(false);
     };
+
     return (
         <>
             <Modal title="Mark Fault" open={isMarkFault} onOk={handleOk} onCancel={handleCancel}>

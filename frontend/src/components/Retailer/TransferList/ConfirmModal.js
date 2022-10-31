@@ -1,14 +1,17 @@
 import React from 'react';
 import { Modal } from 'antd';
+import { request } from '../../../utils/request';
 
 function ConfirmModal({ isConfirm, setIsConfirm, batchId, productId, manufacturerId, retailerId, delivererId, date, quantity }) {
-    const item = { batchId };
+    const token = localStorage.getItem("AUTH_DATA");
+
     const handleOk = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("AUTH_DATA");
+        const item = { batchId };
         const params = {
             method: "POST",
             url: "/transact/receiveProduct",
+            body: item,
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
@@ -19,6 +22,7 @@ function ConfirmModal({ isConfirm, setIsConfirm, batchId, productId, manufacture
     const handleCancel = () => {
         setIsConfirm(false);
     };
+    
     return (
         <>
             <Modal title="Transfer Confirmation" open={isConfirm} onOk={handleOk} onCancel={handleCancel}>

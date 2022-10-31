@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { RetailerTransferColumn } from './RetailerTransferColumn';
-import record from './MOCK_DATA (4).json';
 import { DataGrid } from "@mui/x-data-grid";
 import './RetailerTransferList.css';
 import ConfirmModal from './ConfirmModal';
 import MarkFaultModal from './MarkFaultModal';
+import { request } from '../../../utils/request';
+
 
 function TransferList() {
   const [data, setData] = useState([]);
@@ -22,7 +23,7 @@ function TransferList() {
   const token = localStorage.getItem("AUTH_DATA");
 
   useEffect(() => {
-    getCurrentBatches = async () => {
+    const getCurrentBatches = async () => {
       const params = {
         method: "GET",
         url: "/batch/all",
@@ -73,7 +74,7 @@ function TransferList() {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            {params.row.status === 'transfer-to-retailer' && <div className="confirmButton" onClick={() => handleOnClickConfirm(params.row)}>Confirm</div>}
+            {params.row.status === 'transferred-to-deliverer' && <div className="confirmButton" onClick={() => handleOnClickConfirm(params.row)}>Confirm</div>}
             {params.row.status !== 'fault' && <div className="markFaultButton" onClick={() => handleOnClickMarkFault(params.row)}>Fault</div>}
           </div>
         );

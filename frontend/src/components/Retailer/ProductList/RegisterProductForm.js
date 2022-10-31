@@ -14,7 +14,7 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
         const item = { productId, quantity };
         const params = {
             method: "POST",
-            url: "/transact/resigerOrder",
+            url: "/transact/registerOrder",
             body: item,
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }

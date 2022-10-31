@@ -23,14 +23,15 @@ function ProductList() {
 
   useEffect(() => {
     const getAllProducts = async () => {
-      const response = await request(params);
-      let rawData = await response.text();
-      let jsonData = JSON.parse(rawData);
-      setData(jsonData["data"]);
+        const response = await request(params);
+        let rawData = await response.text();
+        let jsonData = JSON.parse(rawData);
+        let body = jsonData["data"];
+        setData(body);
     };
     getAllProducts();
     return () => { };
-  }, []);
+  });
 
 
   const handleOnClickRegister = (a) => {
