@@ -6,7 +6,7 @@ import { BatchJourneyColumn } from "./BatchJourneyColumn";
 // import TransferModal from './TransferModal';
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
-import { Modal } from 'antd';
+import { Modal, Popover, Button, Timeline } from 'antd';
 
 function BatchJourneyListDeliverer() {
   const [data, setData] = useState([]);
@@ -53,11 +53,7 @@ function BatchJourneyListDeliverer() {
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"]; //take the body of data
 
-      body.forEach((component) => {
-        component.date = component.date.sendToDelivererDate;
-      })
-
-      let newData = body.filter(component => component.status !== "fault" && component.status === 'deliverer-confirm-transfer')
+      let newData = body.filter(component => component.status !== 'pending-invite-to-deliverer' && component.status !== 'approved' && component.status !== 'pending-registration')
       setData(newData)
     };
     getBatch();
@@ -79,6 +75,9 @@ function BatchJourneyListDeliverer() {
     const response = await request(params);
     if (response.ok) {
       setIsTransfer(false);
+      Modal.success({
+        content: "Batch is transferred!",
+      });
     }
   };
 
@@ -99,6 +98,9 @@ function BatchJourneyListDeliverer() {
     const response = await request(params);
     if (response.ok) {
       setIsFault(false);
+      Modal.success({
+        content: "Batch is marked fault!",
+      });
     }
     setIsFault(false);
   };
@@ -121,6 +123,51 @@ function BatchJourneyListDeliverer() {
         );
       },
     },
+  ];
+
+  const [orderedDate, setOrderedDate] = useState("");
+  const [sendToDelivererDate, setSendToDelivererDate] = useState("");
+  const [sendToRetailerDate, setSendToRetailerDate] = useState("");
+  const [markedFaultDate, setMarkedFaultDate] = useState("");
+
+  let content = (
+    <div>
+      <Timeline>
+        <Timeline.Item color="gray">Ordered Date: {orderedDate}</Timeline.Item>
+        <Timeline.Item color="blue">Send To Deliverer Date: {sendToDelivererDate} </Timeline.Item>
+        <Timeline.Item color="green">Send To Retailer Date: {sendToRetailerDate}</Timeline.Item>
+        <Timeline.Item color="red">Marked Fault Date: {markedFaultDate}</Timeline.Item>
+      </Timeline>
+    </div>
+  );
+
+  const handleOnClickView = (a) => {
+    setOrderedDate(a.date.orderedDate);
+    setSendToDelivererDate(a.date.sendToDelivererDate);
+    setSendToRetailerDate(a.date.sendToRetailerDate);
+    setMarkedFaultDate(a.date.markedFaultDate);
+  }
+
+  // "markedFaultDate": "",
+  // "orderedDate": "2022-10-31",
+  // "sendToDelivererDate": "",
+  // "sendToRetailerDate": ""
+
+  const viewColumn = [
+    {
+      field: "viewaction",
+      headerName: "View",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellViewAction">
+            <Popover title="Date" content={content} trigger="click">
+              <Button type="primary" onClick={() => handleOnClickView(params.row)}>View</Button>
+            </Popover>
+          </div>
+        )
+      }
+    }
   ];
 
   return (
@@ -150,7 +197,7 @@ function BatchJourneyListDeliverer() {
       <div className="batchjourneytable">
         <DataGrid
           rows={data}
-          columns={BatchJourneyColumn.concat(actionColumn)}
+          columns={BatchJourneyColumn.concat(actionColumn, viewColumn)}
           getRowId={(row) => row.batchId}
           pageSize={9}
           rowsPerPageOptions={[9]}
