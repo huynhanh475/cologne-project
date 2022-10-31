@@ -49,6 +49,7 @@
 
 ```json
 {
+    "userType": "deliverer",
     "address": "berlin",
     "email": "man1@example.com",
     "name": "Deliverer 3",
@@ -78,9 +79,9 @@
 
 - Endpoint: `/user`
 - Method: Get
-- Chaincode: `queryUser`
+- Chaincode: `queryUsers`
 - Body: None
-- Response: list of users that have same userType with the authorized user
+- Response: list user entity
 
 ```json
 {
@@ -89,8 +90,8 @@
         {
             "address": "berlin",
             "docType": "user",
-            "email": "del1@example.com",
-            "name": "Deliverer 1",
+            "email": "man1@example.com",
+            "name": "Deliverer 3",
             "password": "password123",
             "role": "client",
             "userId": "user-0",
@@ -99,44 +100,24 @@
         {
             "address": "berlin",
             "docType": "user",
-            "email": "del2@example.com",
-            "name": "Deliverer 2",
+            "email": "man1@example.com",
+            "name": "Manufacturer 1",
             "password": "password123",
             "role": "client",
             "userId": "user-1",
-            "userType": "deliverer"
+            "userType": "manufacturer"
         }
     ]
 }
 ```
 
-### Get all deliverers
+### Get all users of a type
 
-This is a special use only manufacturers can access
-
-- Endpoint: `/user/deliverer`
+- Endpoint: `/user/:userType`
 - Method: Get
-- Chaincode: `queryAllUser`
+- Chaincode: `queryAllUsers`
 - Body: None
-- Response: list of deliverers
-
-```json
-{
-    "message": "Success",
-    "data": [
-        {
-            "address": "Munich",
-            "docType": "user",
-            "email": "user@coop.com",
-            "name": "Coop Markt",
-            "password": "password123",
-            "role": "client",
-            "userId": "user-0",
-            "userType": "deliverer"
-        }
-    ]
-}
-```
+- Response: list user entity
 
 ## Product Management
 
@@ -244,20 +225,70 @@ This is a special use only manufacturers can access
 
 ### Users can query all  of their current orders
 
-- Enpoint: `/batch`
+- Enpoint: `/batch/all`
 - Method: Get
-- Chaincode: `queryBatches`
-- Params: role
-- Body:
-  
+- Chaincode: `getAllBatches`
+- Body: None
+- Response: all batches' entities
+
 ```json
 {
-    "productID": "productOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
-    "delivererID": "delivererOne"
+  "message": "Success",
+  "data": {
+    "batchId": "batch0",
+    "date": {
+      "markedFaultDate": "",
+      "orderedDate": "2022-10-28",
+      "sendToDelivererDate": "",
+      "sendToRetailerDate": ""
+    },
+    "delivererId": "",
+    "docType": "batch",
+    "manufacturerId": "admin1",
+    "markedFaultBy": "",
+    "productId": "product0",
+    "quantity": "1000",
+    "retailerId": "user-0",
+    "status": "pending-registration"
+  }
 }
 ```
+
+### Users can query their single batch order
+
+- Endpoint: `/batch/single`
+- Method: Get
+- Chaincode: `queryBatch`
+- Body: 
+
+```json
+{
+    "batchId": "batch0"
+}
+```
+- Response: a batch's entity
+
+
+### Users can report if a batch is fault
+
+- Endpoint: `/batch/report`
+- Method: Post
+- Chaincode: `reportBatchFault`
+- Body:
+
+```json
+{
+    "batchId": "batch0"
+}
+```
+
+### Users can query all fault batches
+
+- Endpoint: `/batch/query`
+- Method: Get
+- Chaincode: `queryFaultBatches`
+- Body: None
+
 
 ## Transaction
 
@@ -266,130 +297,266 @@ This is a special use only manufacturers can access
 - Endpoint: `/transact/registerOrder`
 - Method: Post
 - Chaincode: `registerBatchOrder`
-- Params: role
 - Body:
 
 ```json
 {
-    "productID": "productOne",
-    "manufacturerID": "manufacturerOne",
-    "retailerID": "retailerOne",
+    "productId": "product0",
     "quantity": 1000
 }
 ```
 
-- Response: batch order entity
+- Response: a batch's entity
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "batchId": "batch0",
+    "productId": "product0",
+    "docType": "batch",
+    "manufacturerId": "admin1",
+    "retailerId": "user-0",
+    "delivererId": "",
+    "status": "pending-registration",
+    "markedFaultBy": "",
+    "date": {
+      "orderedDate": "2022-10-28",
+      "sendToDelivererDate": "",
+      "sendToRetailerDate": "",
+      "markedFaultDate": ""
+    },
+    "quantity": "1000"
+  }
+}
+```
 
 ### Manufacturer replies the order of the retailer
 
 - Endpoint: `/transact/approveOrder`
-- Method: Put
+- Method: Post
 - Chaincode: `approveBatchOrder`
-- Params: role
 - Body:
 
 ```json
 {
-    "batchID": "batchOne",
+    "batchId": "batch0",
 }
 ```
 
-- Response: status (200 for success; otherwise, fail)
+- Response: a batch's entity
+  
+```json
+{
+  "message": "Success",
+  "data": {
+    "batchId": "batch0",
+    "date": {
+      "markedFaultDate": "",
+      "orderedDate": "2022-10-28",
+      "sendToDelivererDate": "",
+      "sendToRetailerDate": ""
+    },
+    "delivererId": "",
+    "docType": "batch",
+    "manufacturerId": "admin1",
+    "markedFaultBy": "",
+    "productId": "product0",
+    "quantity": "1000",
+    "retailerId": "user-0",
+    "status": "approved"
+  }
+}
+```
 
 ### Manufacturer invites/adds the deliverer
 
 - Endpoint: `/transact/inviteDeliverer`
-- Method: Put
+- Method: Post
 - Chaincode: `inviteDeliverer`
-- Params: role
 - Body:
 
 ```json
 {
-    "batchID": "batchOne",
-    "delivererID": "delivererOne"
+    "batchId": "batch0",
+    "delivererId": "user-2"
 }
 ```
 
-- Response: status (200 for success; otherwise, fail)
+- Response: a batch's entity
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "batchId": "batch0",
+    "date": {
+      "markedFaultDate": "",
+      "orderedDate": "2022-10-28",
+      "sendToDelivererDate": "",
+      "sendToRetailerDate": ""
+    },
+    "delivererId": "user-2",
+    "docType": "batch",
+    "manufacturerId": "admin1",
+    "markedFaultBy": "",
+    "productId": "product0",
+    "quantity": "1000",
+    "retailerId": "user-0",
+    "status": "pending-invite-to-deliverer"
+  }
+}
+```
 
 ### Deliverer replies the invitation from the manufacturer
 
 - Endpoint: `/transact/replyInvitation`
-- Method: Put
+- Method: Post
 - Chaincode: `approveInvitation`
-- Params: role
 - Body:
 
 ```json
 {
-    "batchID": "batchOne",
+    "batchId": "batch0",
     "action" : "approved/disapproved"
 }
 ```
 
-- Response: status (200 for success; otherwise, fail)
+- Response: a batch's entity
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "batchId": "batch0",
+    "date": {
+      "markedFaultDate": "",
+      "orderedDate": "2022-10-28",
+      "sendToDelivererDate": "",
+      "sendToRetailerDate": ""
+    },
+    "delivererId": "user-2",
+    "docType": "batch",
+    "manufacturerId": "admin1",
+    "markedFaultBy": "",
+    "productId": "product0",
+    "quantity": "1000",
+    "retailerId": "user-0",
+    "status": "approve-invitation-by-deliverer"
+  }
+}
+```
 
 ### Manufacturer transfers the batch to the deliverer
 
 - Endpoint: `/transact/transferToDeliverer`
-- Method: Put
+- Method: Post
 - Chaincode: `transferToDeliverer`
-- Params: role
 - Body:
 
 ```json
 {
-    "batchID": "batchOne",
+    "batchId": "batch0",
 }
 ```
 
-- Response: status (200 for success; otherwise, fail)
+- Response: a batch's entity
+
+```json
+
+```
 
 ### Deliverer confirms that the batch has been received
 
 - Endpoint: `/transact/confirmTransfer`
-- Method: Put
+- Method: Post
 - Chaincode: `delivererConfirmTransfer`
-- Params: role
 - Body:
 
 ```json
 {
-    "batchID": "batchOne",
+    "batchId": "batch0",
 }
 ```
 
-- Response: status (200 for success; otherwise, fail)
+- Response: a batch's entity
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "batchId": "batch0",
+    "date": {
+      "markedFaultDate": "",
+      "orderedDate": "2022-10-28",
+      "sendToDelivererDate": "",
+      "sendToRetailerDate": ""
+    },
+    "delivererId": "user-2",
+    "docType": "batch",
+    "manufacturerId": "admin1",
+    "markedFaultBy": "",
+    "productId": "product0",
+    "quantity": "1000",
+    "retailerId": "user-0",
+    "status": "deliverer-confirm-transfer"
+  }
+```
 
 ### Deliverer transfers the batch to the retailer
 
 - Endpoint: `/transact/transferToRetailer`
-- Method: Put
+- Method: Post
 - Chaincode: `transferToRetailer`
-- Params: role
 - Body:
 
 ```json
 {
-    "batchID": "batchOne",
+    "batchId": "batch0",
 }
 ```
 
-- Response: status (200 for success; otherwise, fail)
+- Response: a batch's entity
+  
+```json
+{
+}
+```
 
 ### Retailer confirms that the batch has been received
 
 - Endpoint: `/transact/receiveProduct`
-- Method: Put
+- Method: Post
 - Chaincode: `retailerConfirmTransfer`
-- Params: role
 - Body:
 
 ```json
 {
-    "batchID": "batchOne",
+    "batchId": "batch0",
 }
 ```
 
-- Response: status (200 for success; otherwise, fail)
+- Response: a batch's entity
+
+```json
+{
+  "message": "Success",
+  "data": {
+    "batchId": "batch0",
+    "date": {
+      "markedFaultDate": "",
+      "orderedDate": "2022-10-28",
+      "sendToDelivererDate": "",
+      "sendToRetailerDate": ""
+    },
+    "delivererId": "user-2",
+    "docType": "batch",
+    "manufacturerId": "admin1",
+    "markedFaultBy": "",
+    "productId": "product0",
+    "quantity": "1000",
+    "retailerId": "user-0",
+    "status": "retailer-confirm-transfer"
+  }
+}
+```
