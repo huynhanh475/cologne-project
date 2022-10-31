@@ -1,3 +1,5 @@
+import { roles, userTypes } from "./constants";
+
 /**
  * Checks if user data exists in localStorage
  * @returns true if exists, false if undefined | null
@@ -13,9 +15,34 @@ export const isLoggedIn = () => {
  * 2. Reload page to /
  * @returns true if exists, false if undefined | null
  */
-export const onLogInSuccess = (data, route) => {
+export const onLogInSuccess = (data) => {
     window.localStorage.setItem("AUTH_DATA", data["accessToken"]);
     window.localStorage.setItem("USER_DATA", JSON.stringify(data["user"]));
+    const role = data.user.role;
+    const userType = data.user.userType;
+    let route;
+    switch(role){
+        case roles.admin:
+            route = '/admin/createuser';
+            break;
+        case roles.client:
+            switch(userType){
+                case(userTypes.manufacturer):
+                    route = '/manufacturer/productform';
+                    break;
+                case(userTypes.deliverer):
+                    route = '/deliverer/invitationlist';
+                    break;
+                case(userTypes.retailer):
+                    route = '/retailer/productlist';
+                    break;
+                default:
+                    break;
+            };
+            break;
+        default:
+            break;
+    }
     console.log("Access token: " + data["accessToken"]);
     console.log("User data: " + JSON.stringify(data["user"]));
     window.location.href = route;
