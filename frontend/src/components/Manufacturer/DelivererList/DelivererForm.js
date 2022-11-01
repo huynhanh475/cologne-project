@@ -20,6 +20,9 @@ function DelivererForm({ isOpenModal, setIsOpenModal, delivererId }) {
     const response = await request(params);
     if (response.ok) {
       setIsOpenModal(false);
+      Modal.success({
+        content: "Invitation is sent to deliverer!",
+      });
     }
     document.getElementById("InviteDelivererForm").reset();
   };

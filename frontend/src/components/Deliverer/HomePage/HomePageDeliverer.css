@@ -1,11 +1,11 @@
-.homepage {
+.homepage1 {
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
 }
 
-.first-part-landing{
+.first-part-landing1{
     width: 50%;
     height: 100vh;
     margin: 0 auto;
@@ -15,7 +15,7 @@
     /* margin-top: -8%; */
 }
 
-.image {
+.image1 {
     width: 50vw;
     height: auto;
     display: flex;
@@ -23,7 +23,7 @@
     align-items: center;
 }
 
-.second-part-landing{
+.second-part-landing1{
     width: 50%;
     height: 100vh;
     margin: 0 auto;
@@ -31,17 +31,17 @@
     align-items: center;
 }
 
-.second-part-container{
+.second-part-container1{
     justify-content: center;
     align-items: center;
     /* margin-top: 6%; */
 }
 
-.text-container{
+.text-container1{
     color: #01185e;
-    font-size: 60px;
-    font-weight: 600;
-    width: 50vw;
+    font-size: 50px;
+    font-weight: 550;
+    width: 45vw;
     justify-content: center;
     margin-top: 30%;
     margin-left: 15%;

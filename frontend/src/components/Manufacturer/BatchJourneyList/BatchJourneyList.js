@@ -5,7 +5,7 @@ import { BatchJourneyColumn } from "./BatchJourneyColumn";
 // import TransferModal from './TransferModal';
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
-import {Modal} from 'antd';
+import { Modal, Popover, Button, Timeline } from 'antd';
 
 
 function BatchJourneyList() {
@@ -59,6 +59,9 @@ function BatchJourneyList() {
     const response = await request(params);
     if (response.ok) {
       setIsTransfer(false);
+      Modal.success({
+        content: "Batch is transferred!",
+      });
     }
   };
 
@@ -70,6 +73,7 @@ function BatchJourneyList() {
     e.preventDefault();
     const token = localStorage.getItem("AUTH_DATA");
     const item = { batchId };
+    // console.log(batchId);
     const params = {
       method: "POST",
       url: "/batch/report",
@@ -78,8 +82,12 @@ function BatchJourneyList() {
     }
     const response = await request(params);
     if (response.ok) {
+      Modal.success({
+        content: "Batch is marked fault!",
+      });
       setIsFault(false);
     }
+    console.log(await response.text());
   };
 
   const handleCancelFault = () => {
@@ -99,11 +107,11 @@ function BatchJourneyList() {
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"]; //take the body of data
 
-      body.forEach((component) => {
-        component.date = component.date.orderedDate;
-      })
+      // body.forEach((component) => {
+      //   component.date = component.date.orderedDate;
+      // })
 
-      let newData = body.filter(component => component.status !== "fault" && component.status === 'approve-invitation-by-deliverer')
+      let newData = body.filter(component => component.status !== 'pending-invite-to-deliverer' && component.status !== 'pending-registration')
       setData(newData)
     };
     getBatch();
@@ -141,11 +149,64 @@ function BatchJourneyList() {
             {params.row.status === "approve-invitation-by-deliverer" && <div className="transferButton" onClick={() => handleOnClickTransfer(params.row)}>Transfer</div>}
             {params.row.status !== "fault" && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Fault</div>}
           </div>
-
         );
       },
     },
   ];
+
+  // const hide = () => {
+  //   setOpen(false);
+  // };
+
+  // const handleOpenChange = (newOpen: boolean) => {
+  //   setOpen(newOpen);
+  // };
+
+  const [orderedDate, setOrderedDate] = useState("");
+  const [sendToDelivererDate, setSendToDelivererDate] = useState("");
+  const [sendToRetailerDate, setSendToRetailerDate] = useState("");
+  const [markedFaultDate, setMarkedFaultDate] = useState("");
+
+  let content = (
+    <div>
+      <Timeline>
+        <Timeline.Item color="gray">Ordered Date: {orderedDate}</Timeline.Item>
+        <Timeline.Item color="blue">Send To Deliverer Date: {sendToDelivererDate} </Timeline.Item>
+        <Timeline.Item color="green">Send To Retailer Date: {sendToRetailerDate}</Timeline.Item>
+        <Timeline.Item color="red">Marked Fault Date: {markedFaultDate}</Timeline.Item>
+      </Timeline>
+    </div>
+  );
+
+  const handleOnClickView = (a) => {
+    setOrderedDate(a.date.orderedDate);
+    setSendToDelivererDate(a.date.sendToDelivererDate);
+    setSendToRetailerDate(a.date.sendToRetailerDate);
+    setMarkedFaultDate(a.date.markedFaultDate);
+  }
+
+  // "markedFaultDate": "",
+  // "orderedDate": "2022-10-31",
+  // "sendToDelivererDate": "",
+  // "sendToRetailerDate": ""
+
+  const viewColumn = [
+    {
+      field: "viewaction",
+      headerName: "View",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellViewAction">
+            <Popover title="Date" content={content} trigger="click">
+              <Button type="primary" onClick={()=>handleOnClickView(params.row)}>View</Button>
+            </Popover>
+          </div>
+        )
+      }
+    }
+  ];
+
   return (
     <>
       {/* <TransferModal isTransfer={isTransfer} setIsTransfer={setIsTransfer} batchId={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} quantity={quantity} /> */}
@@ -173,7 +234,7 @@ function BatchJourneyList() {
       <div className="batchjourneylisttable">
         <DataGrid
           rows={data}
-          columns={BatchJourneyColumn.concat(actionColumn)}
+          columns={BatchJourneyColumn.concat(actionColumn, viewColumn)}
           getRowId={(row) => row.batchId}
           pageSize={9}
           rowsPerPageOptions={[9]}

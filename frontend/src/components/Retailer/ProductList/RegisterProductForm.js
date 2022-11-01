@@ -19,13 +19,21 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-        if (response.ok)
+        if (response.ok){
             setIsRegister(false);
+            Modal.success({
+                content: 'A new batch has been registered!',
+            });
+        }
+            
         document.getElementById("CreateProductForm").reset();
     };
 
     const handleCancel = () => {
         setIsRegister(false);
+        Modal.error({
+            content: 'Please fill in the required information!'
+        })
         document.getElementById("CreateProductForm").reset();
     };
     return (
@@ -33,23 +41,23 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
             <Modal open={isRegister} onOk={handleOk} onCancel={handleCancel} title="Create Product Form">
                 <form ref={form} id="CreateProductForm" className="create_form">
                     <div>
-                        <label for='productId'>1. Product ID: {productId}</label>
+                        <label for='productId'>1. Product ID: <strong>{productId}</strong></label>
                     </div>
 
                     <div>
-                        <label for='name'>2. Name: {name}</label>
+                        <label for='name'>2. Name: <strong>{name}</strong></label>
                     </div>
 
                     <div>
-                        <label for='manufacturerId'>3. Manufacturer Id: {manufacturerId}</label>
+                        <label for='manufacturerId'>3. Manufacturer Id: <strong>{manufacturerId}</strong></label>
                     </div>
 
                     <div>
-                        <label for='date'>4. Date: {date}</label>
+                        <label for='date'>4. Date created: <strong>{date}</strong></label>
                     </div>
 
                     <div>
-                        <label for='price'>5. Price: {price}</label>
+                        <label for='price'>5. Price: <strong>{price}</strong></label>
                     </div>
 
                     <div>

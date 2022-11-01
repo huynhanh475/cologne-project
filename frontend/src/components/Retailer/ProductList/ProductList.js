@@ -31,7 +31,7 @@ function ProductList() {
     };
     getAllProducts();
     return () => { };
-  });
+  },[isRegister]);
 
 
   const handleOnClickRegister = (a) => {

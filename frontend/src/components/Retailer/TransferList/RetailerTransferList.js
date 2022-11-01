@@ -5,7 +5,7 @@ import './RetailerTransferList.css';
 import ConfirmModal from './ConfirmModal';
 import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
-
+import { Modal, Popover, Button, Timeline } from 'antd';
 
 function TransferList() {
   const [data, setData] = useState([]);
@@ -21,6 +21,20 @@ function TransferList() {
   const [isMarkFault, setIsMarkFault] = useState(false);
 
   const token = localStorage.getItem("AUTH_DATA");
+  const typeOfUser = JSON.parse(localStorage.getItem("USER_DATA"))['userType'];
+  const statusAllowReport ={
+    "pending-registration" : "",
+    "approved" : "manufacturer",
+    "pending-invite-to-deliverer" : "manufacturer",
+    "approve-invitation-by-deliverer": "manufacturer",
+    "reject-invitation-by-deliverer": "manufacturer",
+    "transferred-to-deliverer" : "deliverer",
+    "deliverer-confirm-transfer" : "deliverer",
+    "transferred-to-retailer" : "retailer",
+    "retailer-confirm-transfer" : "retailer",
+    "fault" : "",
+  }
+  //error
 
   useEffect(() => {
     const getCurrentBatches = async () => {
@@ -34,14 +48,22 @@ function TransferList() {
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"];
 
-      // body.forEach((element) => {
-      //   element.date = element.date.sendToDelivererDate;
-      // });
-      let newData = body.filter(element => element.status !== "fault")
-      setData(newData);
+      body.forEach((element) => {
+        if (element.manufacturerObj){
+          element.manufacturerObj = element["manufacturerObj"]["name"];
+        }
+        if (element.retailerObj){
+          element.retailerObj = element["retailerObj"]["name"];
+        }
+        if(element.delivererObj){
+          element.delivererObj = element["delivererObj"]["name"];
+        }
+      });
+      // let newData = body.filter(element => element.status !== "fault")
+      setData(body);
     }
     getCurrentBatches();
-    return () => {};
+    return () => { };
   }, [isConfirm, isMarkFault]);
 
   const handleOnClickConfirm = (a) => {
@@ -66,20 +88,67 @@ function TransferList() {
     setQuantity(a.quantity);
   }
 
+
+
   const actionColumn = [
     {
       field: "action",
       headerName: "Action",
-      width: 200,
+      width: 180,
       renderCell: (params) => {
         return (
           <div className="cellAction">
             {params.row.status === 'transferred-to-retailer' && <div className="confirmButton" onClick={() => handleOnClickConfirm(params.row)}>Confirm</div>}
-            {params.row.status === 'transferred-to-retailer' && <div className="markFaultButton" onClick={() => handleOnClickMarkFault(params.row)}>Fault</div>}
+            {statusAllowReport[params.row.status] === typeOfUser && <div className="markFaultButton" onClick={() => handleOnClickMarkFault(params.row)}>Mark Fault</div>}
           </div>
         );
       },
     },
+  ];
+
+  const [orderedDate, setOrderedDate] = useState("");
+  const [sendToDelivererDate, setSendToDelivererDate] = useState("");
+  const [sendToRetailerDate, setSendToRetailerDate] = useState("");
+  const [markedFaultDate, setMarkedFaultDate] = useState("");
+
+  let content = (
+    <div>
+      <Timeline>
+        <Timeline.Item color="gray">Ordered Date: {orderedDate}</Timeline.Item>
+        <Timeline.Item color="blue">Send To Deliverer Date: {sendToDelivererDate} </Timeline.Item>
+        <Timeline.Item color="green">Send To Retailer Date: {sendToRetailerDate}</Timeline.Item>
+        <Timeline.Item color="red">Marked Fault Date: {markedFaultDate}</Timeline.Item>
+      </Timeline>
+    </div>
+  );
+
+  const handleOnClickView = (a) => {
+    setOrderedDate(a.date.orderedDate);
+    setSendToDelivererDate(a.date.sendToDelivererDate);
+    setSendToRetailerDate(a.date.sendToRetailerDate);
+    setMarkedFaultDate(a.date.markedFaultDate);
+  }
+
+  // "markedFaultDate": "",
+  // "orderedDate": "2022-10-31",
+  // "sendToDelivererDate": "",
+  // "sendToRetailerDate": ""
+
+  const viewColumn = [
+    {
+      field: "viewaction",
+      headerName: "View",
+      width: 180,
+      renderCell: (params) => {
+        return (
+          <div className="cellViewAction">
+            <Popover title="Date" content={content} trigger="click">
+              <Button type="primary" onClick={() => handleOnClickView(params.row)}>View</Button>
+            </Popover>
+          </div>
+        )
+      }
+    }
   ];
 
   return (
@@ -89,7 +158,7 @@ function TransferList() {
       <div className="transferlisttable">
         <DataGrid
           rows={data}
-          columns={RetailerTransferColumn.concat(actionColumn)}
+          columns={RetailerTransferColumn.concat(actionColumn, viewColumn)}
           getRowId={(row) => row.batchId}
           pageSize={9}
           rowsPerPageOptions={[9]}
@@ -101,3 +170,4 @@ function TransferList() {
 }
 
 export default TransferList
+//error

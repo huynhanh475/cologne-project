@@ -13,15 +13,14 @@ function DelivererList() {
   // {"name":"Subaru","userID":"eu.europa.Cookley","email":"bdye2@accuweather.com","address":"397 Michigan Crossing"},
   // {"name":"Jaguar","userID":"com.marriott.Veribet","email":"bhasslocher3@unicef.org","address":"1 Graedel Court"}]
 
-  const token = localStorage.getItem("AUTH_DATA");
-  const params = {
-    method: "GET",
-    url: "/user/deliverer",
-    headers: { 'Content-Type': "application/json", 'x-access-token': token },
-  }
-
   useEffect(() => {
     const getDelivererList = async () => {
+      const token = localStorage.getItem("AUTH_DATA");
+      const params = {
+        method: "GET",
+        url: "/user/deliverer",
+        headers: { 'Content-Type': "application/json", 'x-access-token': token },
+      }
       const response = await request(params);
       let rawData = await response.text();
       let jsonData = JSON.parse(rawData);
@@ -39,7 +38,6 @@ function DelivererList() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   // const [user, setUserID] = useState("");
   const [delivererId, setDelivererId] = useState("");
-
 
   const handleOnClick=(a) => {
     setIsOpenModal(true);    

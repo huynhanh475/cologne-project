@@ -1,3 +1,7 @@
+*{
+    font-family: 'Verdana', sans-serif;
+}
+
 .create-user-background{
     width: 100vw;
     height: 100vh;

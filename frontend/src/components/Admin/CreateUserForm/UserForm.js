@@ -10,7 +10,6 @@ function UserForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [address, setAddress] = useState("");
-    const [isLoading, setIsLoading] = useState("false");
 
     const clearField= () => {
         setName("");
@@ -21,7 +20,7 @@ function UserForm() {
 
     const handleOnClick = async(e) => {
         e.preventDefault();
-        const userType = JSON.parse(localStorage.getItem("USER_DATA"))["userType"];
+        let typeOfUser = JSON.parse(localStorage.getItem("USER_DATA"))['userType'];
         const token = localStorage.getItem("AUTH_DATA");
         const item = {address, email, name, password};
         const params = {
@@ -31,19 +30,16 @@ function UserForm() {
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         console.log(item);
-        setIsLoading(true);
         const response = await request(params);
         if (response.ok){
-            setIsLoading(false);
             console.log(response.status);
             Modal.success({
-                content: "Create user successfully!",
+                content: `Create user of type ${typeOfUser} successfully!`,
             });
             document.getElementById("create-user").reset();
             clearField();
         }
         else{
-            setIsLoading(false);
             console.log(response.status);
             Modal.error({
                 title: 'Create user unsuccessfully',

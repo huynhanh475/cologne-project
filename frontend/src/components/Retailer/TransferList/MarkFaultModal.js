@@ -15,8 +15,19 @@ function MarkFaultModal({ isMarkFault, setIsMarkFault, batchId, productId, manuf
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-        if (response.ok)
+        if (response.ok){
             setIsMarkFault(false);
+            Modal.success({
+                content:await  response.text()
+            });
+        }
+        else{
+            setIsMarkFault(false);
+            Modal.error({
+                content: await response.text()
+            });   
+        }
+
     };
 
     const handleCancel = () => {

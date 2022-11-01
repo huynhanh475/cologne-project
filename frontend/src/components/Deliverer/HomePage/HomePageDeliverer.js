@@ -5,13 +5,13 @@ import './HomePageDeliverer.css';
 function HomePageDeliverer() {
     return (
         <div>
-            <div className="homepage">
-                <div className="first-part-landing">
-                    <img className="image" src={deliverer} alt="Welcome" />
+            <div className="homepage1">
+                <div className="first-part-landing1">
+                    <img className="image1" src={deliverer} alt="Welcome" />
                 </div>
-                <div className="second-part-landing">
-                    <div className="second-part-container">
-                        <h1 className='text-container'>Welcome Deliverer!</h1>
+                <div className="second-part-landing1">
+                    <div className="second-part-container1">
+                        <h1 className='text-container1'>Welcome Deliverer!</h1>
                     </div>
                 </div>
             </div>

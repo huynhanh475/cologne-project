@@ -23,18 +23,18 @@ export const onLogInSuccess = (data) => {
     let route;
     switch(role){
         case roles.admin:
-            route = '/admin/createuser';
+            route = '/admin/homepage';
             break;
         case roles.client:
             switch(userType){
                 case(userTypes.manufacturer):
-                    route = '/manufacturer/productform';
+                    route = '/manufacturer/homepage';
                     break;
                 case(userTypes.deliverer):
-                    route = '/deliverer/invitationlist';
+                    route = '/deliverer/homepage';
                     break;
                 case(userTypes.retailer):
-                    route = '/retailer/productlist';
+                    route = '/retailer/homepage';
                     break;
                 default:
                     break;

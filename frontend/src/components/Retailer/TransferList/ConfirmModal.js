@@ -15,8 +15,19 @@ function ConfirmModal({ isConfirm, setIsConfirm, batchId, productId, manufacture
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-        if (response.ok)
+        if (response.ok){
             setIsConfirm(false);
+            Modal.success({
+                content: await response.text(),
+            });
+        }
+        else{
+            setIsConfirm(false);
+            Modal.error({
+                content: await response.text(),
+            });
+        }
+            
     };
 
     const handleCancel = () => {
