@@ -500,6 +500,7 @@ class Supply extends Contract {
 
         //mark fault batches
         await this.markBatchOfProductFault(ctx, productId, manufacturerId);
+        await ctx.stub.putState(productId, Buffer.from(JSON.stringify(productAsJson)));
         return shim.success(JSON.stringify(productAsJson));
     }
 
@@ -531,7 +532,7 @@ class Supply extends Contract {
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
-        if (batch.status !== 'approved')
+        if (batch.status !== 'approved' && batch.status !== 'reject-invitation-by-deliverer')
             return shim.error('Batch is not approved');
         if (batch.manufacturerId !== userID)
             return shim.error("Wrong manufacturer");
