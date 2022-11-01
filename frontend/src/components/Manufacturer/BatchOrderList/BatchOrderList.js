@@ -3,11 +3,16 @@ import "./BatchOrderList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { BatchOrderColumn } from "./BatchOrderColumn";
 import { request } from '../../../utils/request';
-import {Modal} from 'antd';
+import { Modal } from 'antd';
 
 function BatchOrderList() {
   const [data, setData] = useState([]);
-  const [stateChange, setStateChange] = useState("false");
+  //const [stateChange, setStateChange] = useState("false");
+  const [toggleFetch, setToggleFetch] = useState("false");
+
+  const reFetch = () => {
+    setToggleFetch(!toggleFetch);
+  }
   // const [batchID, setBatchID] = useState("");
   // const data = record;
   // query only the batch with the status pending registration
@@ -26,7 +31,10 @@ function BatchOrderList() {
       let body = jsonData["data"]; //take the body of data
 
       body.forEach((component) => {
-        component.date = component.date.orderedDate
+        component.date = component.date.orderedDate;
+        if (component.retailerObj) {
+          component.retailerObj = component["retailerObj"]["name"];
+        }
       })
 
       let newData = body.filter(component => component.status === "pending-registration")
@@ -36,7 +44,7 @@ function BatchOrderList() {
     return () => {
       // this now gets called when the component unmounts
     };
-  }, [stateChange]);
+  }, [toggleFetch]);
 
   const handleAccept = async (a) => {
     let batchId = a.batchId;
@@ -50,12 +58,13 @@ function BatchOrderList() {
     }
     const response = await request(params);
     if (response.ok) {
-      setStateChange(true);
+      //setStateChange(true);
       Modal.success({
-        content: "Approve batch order successfully!",
-    });
+        content: "Batch Order is approved!",
+      });
+      reFetch();
     }
-    setStateChange(false);
+    //setStateChange(false);
   }
 
   const actionColumn = [
@@ -66,7 +75,7 @@ function BatchOrderList() {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <div className="acceptButton" onClick={()=>handleAccept(params.row)}>Accept</div>
+            <div className="acceptButton" onClick={() => handleAccept(params.row)}>Accept</div>
           </div>
 
         );

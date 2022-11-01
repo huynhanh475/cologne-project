@@ -15,6 +15,12 @@ function TransferList() {
     const [date, setDate] = useState("");
     const [quantity, setQuantity] = useState("");
 
+    const [toggleFetch, setToggleFetch] = useState("false");
+
+    const reFetch = () => {
+      setToggleFetch(!toggleFetch);
+    }
+
     useEffect(() => {
         const getBatch = async () => {
             const token = localStorage.getItem("AUTH_DATA");
@@ -30,16 +36,22 @@ function TransferList() {
 
             body.forEach((component) => {
                 component.date = component.date.sendToDelivererDate;
+                if (component.retailerObj) {
+                    component.retailerObj = component["retailerObj"]["name"];
+                }
+                if (component.manufacturerObj) {
+                    component.manufacturerObj = component["manufacturerObj"]["name"];
+                }
             })
 
-            let newData = body.filter(component => component.status !== "fault" && component.status === 'transferred-to-deliverer')
+            let newData = body.filter(component => component.status === 'transferred-to-deliverer')
             setData(newData)
         };
         getBatch();
         return () => {
             // this now gets called when the component unmounts
         };
-    }, [isTransfer]);
+    }, [toggleFetch]);
 
     const handleConfirm = async (a) => {
         setIsTransfer(true);
@@ -66,7 +78,13 @@ function TransferList() {
         if (response.ok) {
             setIsTransfer(false);
             Modal.success({
-                content: "Confirm transfer successfully!",
+                content: "Transfer is confirmed!",
+            });
+            reFetch();
+        }
+        else{
+            Modal.error({
+                content: "Transfer is not confirmed!"
             });
         }
     }

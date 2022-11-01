@@ -636,12 +636,8 @@ class Supply extends Contract {
             "transferred-to-retailer" : "retailer",
             "retailer-confirm-transfer" : "retailer",
             "fault" : "",
-          }
-          
-          if (statusAllowReport[batch.status] === userType) {
-            // Report
-          }
-          //error
+          };
+
         let batch = await JSON.parse(await (await this.queryBatch(ctx, batchId)).payload);
         let user= await JSON.parse(await (await this.queryUser(ctx, userID)).payload);
         if (user.userType !== statusAllowReport[batch.status]) {

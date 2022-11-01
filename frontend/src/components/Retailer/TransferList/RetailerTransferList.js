@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { RetailerTransferColumn } from './RetailerTransferColumn';
 import { DataGrid } from "@mui/x-data-grid";
 import './RetailerTransferList.css';
-import ConfirmModal from './ConfirmModal';
-import MarkFaultModal from './MarkFaultModal';
+// import ConfirmModal from './ConfirmModal';
+// import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
 import { Modal, Popover, Button, Timeline } from 'antd';
 
@@ -11,10 +11,10 @@ function TransferList() {
   const [data, setData] = useState([]);
   const [batchId, setBatchID] = useState("");
   const [productId, setProductID] = useState("");
-  const [manufacturerId, setManufacturerID] = useState("");
-  const [retailerId, setRetailerID] = useState("");
-  const [delivererId, setDelivererID] = useState("");
-  const [date, setDate] = useState("");
+  const [manufacturerObj, setManufacturerObj] = useState("");
+  const [retailerObj, setRetailerObj] = useState("");
+  const [delivererObj, setDelivererObj] = useState("");
+  //const [date, setDate] = useState("");
   const [quantity, setQuantity] = useState("");
 
   const [isConfirm, setIsConfirm] = useState(false);
@@ -22,17 +22,17 @@ function TransferList() {
 
   const token = localStorage.getItem("AUTH_DATA");
   const typeOfUser = JSON.parse(localStorage.getItem("USER_DATA"))['userType'];
-  const statusAllowReport ={
-    "pending-registration" : "",
-    "approved" : "manufacturer",
-    "pending-invite-to-deliverer" : "manufacturer",
+  const statusAllowReport = {
+    "pending-registration": "",
+    "approved": "manufacturer",
+    "pending-invite-to-deliverer": "manufacturer",
     "approve-invitation-by-deliverer": "manufacturer",
     "reject-invitation-by-deliverer": "manufacturer",
-    "transferred-to-deliverer" : "deliverer",
-    "deliverer-confirm-transfer" : "deliverer",
-    "transferred-to-retailer" : "retailer",
-    "retailer-confirm-transfer" : "retailer",
-    "fault" : "",
+    "transferred-to-deliverer": "deliverer",
+    "deliverer-confirm-transfer": "deliverer",
+    "transferred-to-retailer": "retailer",
+    "retailer-confirm-transfer": "retailer",
+    "fault": "",
   }
   //error
 
@@ -49,13 +49,13 @@ function TransferList() {
       let body = jsonData["data"];
 
       body.forEach((element) => {
-        if (element.manufacturerObj){
+        if (element.manufacturerObj) {
           element.manufacturerObj = element["manufacturerObj"]["name"];
         }
-        if (element.retailerObj){
+        if (element.retailerObj) {
           element.retailerObj = element["retailerObj"]["name"];
         }
-        if(element.delivererObj){
+        if (element.delivererObj) {
           element.delivererObj = element["delivererObj"]["name"];
         }
       });
@@ -70,10 +70,10 @@ function TransferList() {
     setIsConfirm(true);
     setBatchID(a.batchId);
     setProductID(a.productId);
-    setManufacturerID(a.manufacturerId);
-    setRetailerID(a.retailerId);
-    setDelivererID(a.delivererId);
-    setDate(a.date);
+    setManufacturerObj(a.manufacturerObj);
+    setRetailerObj(a.retailerObj);
+    setDelivererObj(a.delivererObj);
+    // setDate(a.date);
     setQuantity(a.quantity);
   }
 
@@ -81,10 +81,10 @@ function TransferList() {
     setIsMarkFault(true);
     setBatchID(a.batchId);
     setProductID(a.productId);
-    setManufacturerID(a.manufacturerId);
-    setRetailerID(a.retailerId);
-    setDelivererID(a.delivererId);
-    setDate(a.date);
+    setManufacturerObj(a.manufacturerObj);
+    setRetailerObj(a.retailerObj);
+    setDelivererObj(a.delivererObj);
+    // setDate(a.date);
     setQuantity(a.quantity);
   }
 
@@ -150,11 +150,89 @@ function TransferList() {
       }
     }
   ];
+  const handleOkConfirm = async (e) => {
+    e.preventDefault();
+    const item = { batchId };
+    const params = {
+      method: "POST",
+      url: "/transact/receiveProduct",
+      body: item,
+      headers: { 'Content-Type': "application/json", 'x-access-token': token },
+    }
+    const response = await request(params);
+    if (response.ok) {
+      setIsConfirm(false);
+      Modal.success({
+        content: "Batch is confirmed!",
+      });
+    }
+    else {
+      setIsConfirm(false);
+      Modal.error({
+        content: "Batch is not confirmed!",
+      });
+    }
+
+  };
+
+  const handleCancelConfirm = () => {
+    setIsConfirm(false);
+  };
+
+  const handleOkFault = async (e) => {
+    e.preventDefault();
+    const item = { batchId };
+    const params = {
+      method: "POST",
+      url: "/batch/report",
+      body: item,
+      headers: { 'Content-Type': "application/json", 'x-access-token': token },
+    }
+    const response = await request(params);
+    if (response.ok) {
+      setIsMarkFault(false);
+      Modal.success({
+        content: "Batch is marked fault!"
+      });
+    }
+    else {
+      setIsMarkFault(false);
+      Modal.error({
+        content: "Batch cannot be marked fault!"
+      });
+    }
+
+  };
+
+  const handleCancelFault = () => {
+    setIsMarkFault(false);
+  };
 
   return (
     <div>
-      <ConfirmModal isConfirm={isConfirm} setIsConfirm={setIsConfirm} batchId={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} date={date} quantity={quantity} />
-      <MarkFaultModal isMarkFault={isMarkFault} setIsMarkFault={setIsMarkFault} batchId={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} date={date} quantity={quantity} />
+      <Modal title="Transfer Confirmation" open={isConfirm} onOk={handleOkConfirm} onCancel={handleCancelConfirm}>
+        <div>
+          <p>1. Batch ID: {batchId}</p>
+          <p>2. Product ID: {productId}</p>
+          <p>3. Manufacturer Name: {manufacturerObj}</p>
+          <p>4. Retailer Name: {retailerObj}</p>
+          <p>5. Deliverer Name: {delivererObj}</p>
+          <p>6. Quantity: {quantity}</p>
+        </div>
+      </Modal>
+
+      <Modal title="Mark Fault" open={isMarkFault} onOk={handleOkFault} onCancel={handleCancelFault}>
+        <div>
+          <p>1. Batch ID: {batchId}</p>
+          <p>2. Product ID: {productId}</p>
+          <p>3. Manufacturer Name: {manufacturerObj}</p>
+          <p>4. Retailer Name: {retailerObj}</p>
+          <p>5. Deliverer Name: {delivererObj}</p>
+          <p>6. Quantity: {quantity}</p>
+        </div>
+      </Modal>
+
+
       <div className="transferlisttable">
         <DataGrid
           rows={data}

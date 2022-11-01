@@ -19,6 +19,7 @@ function BatchJourneyList() {
   const [retailerId, setRetailerID] = useState("");
   const [delivererId, setDelivererID] = useState("");
   const [quantity, setQuantity] = useState("");
+  const typeOfUser = JSON.parse(localStorage.getItem('USER_DATA'))["userType"];
 
   // const record = [{ "batchID": "5d55a008-2df0-4aaf-bacd-b10172c13ac1", "productID": "94160fb8-34d0-4440-941f-13a248853fa3", "manufacturerID": "aebaafbd-d2c6-4591-9357-c399c5e8ff73", "retailerID": "76c925ec-d078-44c0-9168-2b591ea8ef7e", "delivererID": "57ff6ec8-02b6-4570-a844-dd6ee6cbfde6", "status": "approve-invitation-by-deliverer", "date": { "orderedDate": "27-12-2001" }, "quantity": "33-373-3482" },
   // { "batchID": "225612ef-b58c-420a-a177-57dba1f0b476", "productID": "adfde43e-9fbd-4211-936b-132e8c5adf9a", "manufacturerID": "b1de9c4d-0ae5-43ba-92dd-28ba53feeb10", "retailerID": "919827a2-9821-4141-b32a-aaab2a060379", "delivererID": "657990df-62b2-4822-bbf5-2c0dbdc0634b", "status": "approve-invitation-by-deliverer", "date": { "orderedDate": "7/15/2022" }, "quantity": "92-394-4475" },
@@ -63,6 +64,11 @@ function BatchJourneyList() {
         content: "Batch is transferred!",
       });
     }
+    else {
+      Modal.error({
+        content: "Batch cannot be transferred!",
+      });
+    }
   };
 
   const handleCancelTransfer = () => {
@@ -81,11 +87,17 @@ function BatchJourneyList() {
       headers: { 'Content-Type': "application/json", 'x-access-token': token },
     }
     const response = await request(params);
+    //console.log(await response.text());
     if (response.ok) {
       Modal.success({
         content: "Batch is marked fault!",
       });
       setIsFault(false);
+    }
+    else {
+      Modal.error({
+        content: "Batch cannot be marked fault!",
+      });
     }
     console.log(await response.text());
   };
@@ -107,11 +119,18 @@ function BatchJourneyList() {
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"]; //take the body of data
 
-      // body.forEach((component) => {
-      //   component.date = component.date.orderedDate;
-      // })
+      body.forEach((element) => {
+        //component.date = component.date.orderedDate;
+        if (element.retailerObj) {
+          element.retailerObj = element["retailerObj"]["name"];
+        }
+        if (element.delivererObj) {
+          element.delivererObj = element["delivererObj"]["name"];
+        }
+      })
 
-      let newData = body.filter(component => component.status !== 'pending-invite-to-deliverer' && component.status !== 'pending-registration')
+
+      let newData = body.filter(component => component.status !== 'pending-registration');
       setData(newData)
     };
     getBatch();
@@ -138,6 +157,21 @@ function BatchJourneyList() {
   //   component.date = component.date.orderedDate
   // })
   // console.log(record);
+
+  const statusAllowMarkFault = {
+    "pending-registration": "",
+    "approved": "manufacturer",
+    "pending-invite-to-deliverer": "manufacturer",
+    "approve-invitation-by-deliverer": "manufacturer",
+    "reject-invitation-by-deliverer": "manufacturer",
+    "transferred-to-deliverer": "deliverer",
+    "deliverer-confirm-transfer": "deliverer",
+    "transferred-to-retailer": "retailer",
+    "retailer-confirm-transfer": "retailer",
+    "fault": "",
+  }
+
+
   const actionColumn = [
     {
       field: "action",
@@ -147,7 +181,7 @@ function BatchJourneyList() {
         return (
           <div className="cellAction">
             {params.row.status === "approve-invitation-by-deliverer" && <div className="transferButton" onClick={() => handleOnClickTransfer(params.row)}>Transfer</div>}
-            {params.row.status !== "fault" && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Fault</div>}
+            {(statusAllowMarkFault[params.row.status] === typeOfUser) && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Mark Fault</div>}
           </div>
         );
       },
@@ -199,7 +233,7 @@ function BatchJourneyList() {
         return (
           <div className="cellViewAction">
             <Popover title="Date" content={content} trigger="click">
-              <Button type="primary" onClick={()=>handleOnClickView(params.row)}>View</Button>
+              <Button type="primary" onClick={() => handleOnClickView(params.row)}>View</Button>
             </Popover>
           </div>
         )
