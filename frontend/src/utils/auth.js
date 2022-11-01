@@ -1,4 +1,4 @@
-import { roles, userTypes } from "./constants";
+import { roles } from "./constants";
 
 /**
  * Checks if user data exists in localStorage
@@ -26,19 +26,7 @@ export const onLogInSuccess = (data) => {
             route = '/admin/homepage';
             break;
         case roles.client:
-            switch(userType){
-                case(userTypes.manufacturer):
-                    route = '/manufacturer/homepage';
-                    break;
-                case(userTypes.deliverer):
-                    route = '/deliverer/homepage';
-                    break;
-                case(userTypes.retailer):
-                    route = '/retailer/homepage';
-                    break;
-                default:
-                    break;
-            };
+            route = `/${userType}/homepage`;
             break;
         default:
             break;
