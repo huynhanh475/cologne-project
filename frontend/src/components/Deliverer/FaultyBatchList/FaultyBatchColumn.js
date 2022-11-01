@@ -6,4 +6,5 @@ export const FaultyBatchColumn = [
     // { field: "delivererID", headerName: "Deliverer ID", width: 140,},
     { field: "date", headerName: "Date", width: 200,},
     { field: "quantity", headerName: "Quantity", width: 200,},
+    { field: "markedFaultBy", headerName: "Marked Fault By", width: 250,},
 ];
