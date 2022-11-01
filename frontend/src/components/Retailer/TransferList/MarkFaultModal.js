@@ -18,8 +18,14 @@ function MarkFaultModal({ isMarkFault, setIsMarkFault, batchId, productId, manuf
         if (response.ok){
             setIsMarkFault(false);
             Modal.success({
-                content: "Batch is marked fault!",
+                content:await  response.text()
             });
+        }
+        else{
+            setIsMarkFault(false);
+            Modal.error({
+                content: await response.text()
+            });   
         }
 
     };

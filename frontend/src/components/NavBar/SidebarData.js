@@ -106,13 +106,13 @@ export const SidebarData = [
     cName: 'nav-text-container',
     role: 'admin'
   },
-  {
-    title: 'Create User',
-    path: '/admin/createuser',
-    icon: <IoIcons.IoIosCreate />,
-    cName: 'nav-text-container',
-    role: 'admin'
-  },
+  // {
+  //   title: 'Create User',
+  //   path: '/admin/createuser',
+  //   icon: <IoIcons.IoIosCreate />,
+  //   cName: 'nav-text-container',
+  //   role: 'admin'
+  // },
   {
     title: 'Product List',
     path: '/manufacturer/productlist',

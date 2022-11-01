@@ -21,6 +21,20 @@ function TransferList() {
   const [isMarkFault, setIsMarkFault] = useState(false);
 
   const token = localStorage.getItem("AUTH_DATA");
+  const typeOfUser = JSON.parse(localStorage.getItem("USER_DATA"))['userType'];
+  const statusAllowReport ={
+    "pending-registration" : "",
+    "approved" : "manufacturer",
+    "pending-invite-to-deliverer" : "manufacturer",
+    "approve-invitation-by-deliverer": "manufacturer",
+    "reject-invitation-by-deliverer": "manufacturer",
+    "transferred-to-deliverer" : "deliverer",
+    "deliverer-confirm-transfer" : "deliverer",
+    "transferred-to-retailer" : "retailer",
+    "retailer-confirm-transfer" : "retailer",
+    "fault" : "",
+  }
+  //error
 
   useEffect(() => {
     const getCurrentBatches = async () => {
@@ -34,9 +48,17 @@ function TransferList() {
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"];
 
-      // body.forEach((element) => {
-      //   element.date = element.date.sendToDelivererDate;
-      // });
+      body.forEach((element) => {
+        if (element.manufacturerObj){
+          element.manufacturerObj = element["manufacturerObj"]["name"];
+        }
+        if (element.retailerObj){
+          element.retailerObj = element["retailerObj"]["name"];
+        }
+        if(element.delivererObj){
+          element.delivererObj = element["delivererObj"]["name"];
+        }
+      });
       // let newData = body.filter(element => element.status !== "fault")
       setData(body);
     }
@@ -66,6 +88,8 @@ function TransferList() {
     setQuantity(a.quantity);
   }
 
+
+
   const actionColumn = [
     {
       field: "action",
@@ -75,7 +99,7 @@ function TransferList() {
         return (
           <div className="cellAction">
             {params.row.status === 'transferred-to-retailer' && <div className="confirmButton" onClick={() => handleOnClickConfirm(params.row)}>Confirm</div>}
-            {params.row.status === 'transferred-to-retailer' && <div className="markFaultButton" onClick={() => handleOnClickMarkFault(params.row)}>Fault</div>}
+            {statusAllowReport[params.row.status] === typeOfUser && <div className="markFaultButton" onClick={() => handleOnClickMarkFault(params.row)}>Mark Fault</div>}
           </div>
         );
       },
@@ -146,3 +170,4 @@ function TransferList() {
 }
 
 export default TransferList
+//error

@@ -50,7 +50,7 @@ function App() {
             <Route path="/retailer/transferlist" element={<RetailerTransferList />} />
             <Route path="/retailer/faultybatch" element={<RetailerFaultyBatch />} />
             <Route path="/admin/homepage" element ={<HomePageAdmin/>} />
-            <Route path="/admin/createuser" element={<CreateUserForm />} />
+            {/* <Route path="/admin/createuser" element={<CreateUserForm />} /> */}
             <Route path="/admin/userlist" element={<UserList />} />
           </Route> : <Route path="*" element={<Navigate to="/" replace />}></Route>}
 

@@ -18,7 +18,13 @@ function ConfirmModal({ isConfirm, setIsConfirm, batchId, productId, manufacture
         if (response.ok){
             setIsConfirm(false);
             Modal.success({
-                content: "You have confirmed to receive this batch!",
+                content: await response.text(),
+            });
+        }
+        else{
+            setIsConfirm(false);
+            Modal.error({
+                content: await response.text(),
             });
         }
             
