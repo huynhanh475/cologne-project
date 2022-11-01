@@ -17,11 +17,12 @@ async function main() {
         network.registerUser(userTypes.manufacturer, "admin1"),
         network.registerUser(userTypes.deliverer, "admin2"),
         network.registerUser(userTypes.retailer, "admin3"),
-    ]).then( async () => {
-            const networkObj = await network.connect(userTypes.retailer, 'admin')
-            const users = await network.query(networkObj, 'queryUser', "admin1")
-            console.log(users)
-        })
+    ])
+        // .then( async () => {
+        //     const networkObj = await network.connect(userTypes.retailer, 'admin')
+        //     const users = await network.query(networkObj, 'queryUser', "admin1")
+        //     console.log(users)
+        // })
     )
 
     // testing connection with the network

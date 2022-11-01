@@ -2,11 +2,22 @@
 
 ## Run the API
 
+- For development:
+
 ```shell
 cd path/to/repo
 cd api
 npm install
 npm run dev
+```
+
+- For production:
+
+```shell
+cd path/to/repo
+cd api
+npm install
+npm run start
 ```
 
 ## Operations
