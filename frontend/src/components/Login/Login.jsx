@@ -3,7 +3,7 @@ import './Login.css';
 import login from '../images/login.jpg';
 import Cologne from '../images/Cologne.png'
 import { request } from '../../utils/request';
-import { Button, Form, Input, Select, notification } from 'antd';
+import { Button, Form, Input, Select } from 'antd';
 import { onLogInSuccess } from '../../utils/auth';
 import Swal from 'sweetalert2';
 
@@ -27,7 +27,6 @@ function Login() {
             setIsLoading(true)
             const rawResponse = await request(params);
             const response = await rawResponse.json();
-            console.log(response)
             setIsLoading(false)
             if (rawResponse.status === 200){
                 onLogInSuccess(response.data)
@@ -44,10 +43,6 @@ function Login() {
         }
     }
 
-    const handleOnFormFailed = (errorInfo) => {
-        console.log(`failed: ${errorInfo}`)
-    }
-
     return (
         <div className="main-login">
             <div className="login-contain">
@@ -60,7 +55,6 @@ function Login() {
                     <Form 
                         layout='vertical'
                         onFinish={handleOnFormFinish}
-                        onFinishFailed={handleOnFormFailed}
                     >
                         <Form.Item 
                             name="userType" 

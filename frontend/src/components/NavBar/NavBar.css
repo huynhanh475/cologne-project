@@ -7,7 +7,7 @@
   background-color: #060b26;
   height: 100%;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   position: relative;
   z-index: 5;
@@ -39,7 +39,7 @@
 .nav-text-container {
   font-family: 'Verdana', sans-serif;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   padding: 8px 0px 8px 16px;
   list-style: none;
@@ -71,7 +71,7 @@
   width: 100%;
   height: 8%;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
 }
 
