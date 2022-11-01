@@ -32,7 +32,7 @@ export async function signIn(loggedUserType, information) {
     
     const networkObj = await connect(loggedUserType, id);
     if (networkObj.error) {
-        return createModelRes(networkObj.status, networkObj.error);
+        return createModelRes(400, networkObj.error); // Sign in doesn't return unauthorized, therefore set this to 400
     }
 
     let contractRes;
