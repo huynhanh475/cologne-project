@@ -60,6 +60,14 @@ export const SidebarData = [
     role: 'client'
   },
   {
+    title: 'Batch Journey',
+    path: '/retailer/batchjourney',
+    icon: <IoIcons.IoIosNavigate />,
+    cName: 'nav-text-container',
+    userType: 'retailer',
+    role: 'client'
+  },
+  {
     title: 'Faulty Batch',
     path: '/retailer/faultybatch',
     icon: <IoIcons.IoMdWarning />,

@@ -26,6 +26,14 @@ function DelivererFaultyBatch() {
 
             body.forEach((component) => {
                 component.date = component.date.markedFaultDate;
+                if(component.manufacturerObj)
+                {
+                    component.manufacturerObj = component["manufacturerObj"]["name"];
+                }
+                if(component.retailerObj)
+                {
+                    component.retailerObj = component["retailerObj"]["name"];
+                }
             })
 
             // let newData = body.filter(component => component.status !== "fault" && component.status === 'deliverer-confirm-transfer')

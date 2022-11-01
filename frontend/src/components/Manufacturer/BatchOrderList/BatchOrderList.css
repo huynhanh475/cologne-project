@@ -49,10 +49,26 @@
   .batchorderlist .cellAction .acceptButton {
     padding: 2px 5px;
     border-radius: 5px;
+    color: darkgreen;
+    border: 1px dotted darkgreen;
+    cursor: pointer;
+  }
+
+  .batchorderlist  .cellAction .transferButton {
+    padding: 2px 5px;
+    border-radius: 5px;
     color: darkblue;
     border: 1px dotted rgba(0, 0, 139, 0.596);
     cursor: pointer;
   }
+  
+  .batchorderlist .cellAction .markFaultButton {
+    padding: 2px 5px;
+    border-radius: 5px;
+    color: crimson;
+    border: 1px dotted rgba(220, 20, 60, 0.6);
+    cursor: pointer;
+  } 
   
   .batchorderlist .cellAction .pendingButton {
     padding: 2px 5px;

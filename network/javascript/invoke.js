@@ -94,29 +94,31 @@ async function main() {
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
         //const result =await contract.submitTransaction('signIn', 'user0', '12345');
 
+        //await contract.submitTransaction('createProduct', 'Orange1', 'manufacturer1', '20', '500');
+        await contract.submitTransaction('registerBatchOrder', 'product0', 'retailer1','11');
+        //await contract.submitTransaction('markStatus', 'batch0', 'fault');
+        //const result = await contract.submitTransaction('queryFaultBatches');
 
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
 
-
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4','11');
-
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '20');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '20');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '20');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '30');
-        await contract.submitTransaction('registerBatchOrder', 'product4', 'user-4', '30');
-        await contract.submitTransaction('registerBatchOrder', 'product5', 'user-4', '30');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '40');
-        await contract.submitTransaction('registerBatchOrder', 'product4', 'user-4', '40');
-        await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '40');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '20');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '20');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '20');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '30');
+        // await contract.submitTransaction('registerBatchOrder', 'product4', 'user-4', '30');
+        // await contract.submitTransaction('registerBatchOrder', 'product5', 'user-4', '30');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '40');
+        // await contract.submitTransaction('registerBatchOrder', 'product4', 'user-4', '40');
+        // await contract.submitTransaction('registerBatchOrder', 'product3', 'user-4', '40');
         //console.log(result.toString());
         //const result = await contract.submitTransaction('queryProduct', 'product0');
         //const result = await contract.submitTransaction('createUser', 'MinhDinh', 'minhdinh@gmail.com', 'retailer', 'no address', '12345');
-        // console.log(result.toString());
+        //console.log(result.toString());
         //await contract.submitTransaction('delivererConfirmTransfer', 'batch0');
         console.log('Transaction has been submitted');
 

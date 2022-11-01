@@ -3,22 +3,28 @@ import { DataGrid } from "@mui/x-data-grid";
 import { TransferListColumn } from './TransferListColumn';
 import './TransferList.css';
 import { request } from '../../../utils/request';
-import {Modal} from 'antd';
+import { Modal } from 'antd';
 
 function TransferList() {
     const [data, setData] = useState([]);
-    const [isTransfer, setIsTransfer] = useState(false);
+    const [isTransferConfirm, setIsTransferConfirm] = useState(false);
     const [batchId, setBatchId] = useState("");
     const [productId, setProductId] = useState("");
     const [manufacturerId, setManufacturerId] = useState("");
     const [retailerId, setRetailerId] = useState("");
     const [date, setDate] = useState("");
     const [quantity, setQuantity] = useState("");
+    const [isTransfer, setIsTransfer] = useState(false);
+    const [isFault, setIsFault] = useState(false);
+    const [manufacturerObj, setManufacturerObj] = useState("");
+    const [retailerObj, setRetailerObj] = useState("");
+    const [delivererObj, setDelivererObj] = useState("");
+    const typeOfUser = JSON.parse(localStorage.getItem('USER_DATA'))["userType"];
 
     const [toggleFetch, setToggleFetch] = useState("false");
 
     const reFetch = () => {
-      setToggleFetch(!toggleFetch);
+        setToggleFetch(!toggleFetch);
     }
 
     useEffect(() => {
@@ -44,7 +50,7 @@ function TransferList() {
                 }
             })
 
-            let newData = body.filter(component => component.status === 'transferred-to-deliverer')
+            let newData = body.filter(component => component.status === 'transferred-to-deliverer'||component.status === 'deliverer-confirm-transfer')
             setData(newData)
         };
         getBatch();
@@ -54,7 +60,7 @@ function TransferList() {
     }, [toggleFetch]);
 
     const handleConfirm = async (a) => {
-        setIsTransfer(true);
+        setIsTransferConfirm(true);
         setBatchId(a.batchId);
         setProductId(a.productId);
         setManufacturerId(a.manufacturerId);
@@ -76,13 +82,13 @@ function TransferList() {
         const response = await request(params);
         console.log(response.status);
         if (response.ok) {
-            setIsTransfer(false);
+            setIsTransferConfirm(false);
             Modal.success({
                 content: "Transfer is confirmed!",
             });
             reFetch();
         }
-        else{
+        else {
             Modal.error({
                 content: "Transfer is not confirmed!"
             });
@@ -90,26 +96,142 @@ function TransferList() {
     }
 
     const handleCancelConfirm = () => {
-        setIsTransfer(false);
+        setIsTransferConfirm(false);
     }
+
+    const handleOnClickTransfer = (a) => {
+
+        setIsTransfer(true);
+        setBatchId(a.batchId);
+        setProductId(a.productId);
+        setManufacturerObj(a.manufacturerObj);
+        setRetailerObj(a.retailerObj);
+        //setDelivererObj(a.delivererObj);
+        setQuantity(a.quantity);
+    }
+
+    const handleOnClickFault = (a) => {
+        setIsFault(true);
+        setBatchId(a.batchId);
+        setProductId(a.productId);
+        setManufacturerObj(a.manufacturerObj);
+        setRetailerObj(a.retailerObj);
+        //setDelivererObj(a.delivererObj);
+        setQuantity(a.quantity);
+    }
+
+    const handleOkTransfer = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("AUTH_DATA");
+        const item = { batchId };
+        const params = {
+            method: "POST",
+            url: "/transact/transferToRetailer",
+            body: item,
+            headers: { 'Content-Type': "application/json", 'x-access-token': token },
+        }
+        const response = await request(params);
+        if (response.ok) {
+            setIsTransfer(false);
+            Modal.success({
+                content: "Batch is transferred!",
+            });
+            reFetch();
+        }
+        else {
+            Modal.error({
+                content: "Batch is not transferred!"
+            });
+        }
+    };
+
+    const handleCancelTransfer = () => {
+        setIsTransfer(false);
+    };
+
+    const handleOkFault = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("AUTH_DATA");
+        const item = { batchId };
+        const params = {
+            method: "POST",
+            url: "/batch/report",
+            body: item,
+            headers: { 'Content-Type': "application/json", 'x-access-token': token },
+        }
+        const response = await request(params);
+        if (response.ok) {
+            setIsFault(false);
+            Modal.success({
+                content: "Batch is marked fault!",
+            });
+            reFetch();
+        }
+        else {
+            Modal.error({
+                content: "Batch is not marked fault!"
+            });
+        }
+        setIsFault(false);
+    };
+
+    const handleCancelFault = () => {
+        setIsFault(false);
+    };
+
+    const statusAllowMarkFault = {
+        "pending-registration": "",
+        "approved": "manufacturer",
+        "pending-invite-to-deliverer": "manufacturer",
+        "approve-invitation-by-deliverer": "manufacturer",
+        "reject-invitation-by-deliverer": "manufacturer",
+        "transferred-to-deliverer": "deliverer",
+        "deliverer-confirm-transfer": "deliverer",
+        "transferred-to-retailer": "retailer",
+        "retailer-confirm-transfer": "retailer",
+        "fault": "",
+    }
+
 
     const actionColumn = [
         {
             field: "action",
             headerName: "Action",
-            width: 200,
+            width: 300,
             renderCell: (params) => {
                 return (
                     <div className="cellAction">
-                        {params.row.status === "transferred-to-deliverer" && <div className="confirmButton" onClick={()=>handleConfirm(params.row)}>Confirm</div>}
+                        {params.row.status === "transferred-to-deliverer" && <div className="confirmButton" onClick={() => handleConfirm(params.row)}>Confirm</div>}
+                        {params.row.status === "deliverer-confirm-transfer" && <div className="transferButton" onClick={() => handleOnClickTransfer(params.row)}>Transfer</div>}
+                        {(statusAllowMarkFault[params.row.status] === typeOfUser) && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Mark Fault</div>}
                     </div>
+
                 );
             },
         },
     ];
     return (
         <>
-            <Modal title="Transfer Confirmation" open={isTransfer} onOk={handleOkConfirm} onCancel={handleCancelConfirm}>
+            <Modal title="Transfer To Retailer Confirmation" open={isTransfer} onOk={handleOkTransfer} onCancel={handleCancelTransfer}>
+                <div>
+                    <p>1. Batch ID: {batchId}</p>
+                    <p>2. Product ID: {productId}</p>
+                    <p>3. Manufacturer Name: {manufacturerObj}</p>
+                    <p>4. Retailer Name: {retailerObj}</p>
+                    <p>5. Quantity: {quantity}</p>
+                </div>
+            </Modal>
+            {/* <MarkFaultModal isFault={isFault} setIsFault={setIsFault} batchID={batchId} productID={productId} manufacturerID={manufacturerId} retailerID={retailerId} delivererID={delivererId} />  */}
+            <Modal title="Mark Fault Confirmation" open={isFault} onOk={handleOkFault} onCancel={handleCancelFault}>
+                <div>
+                    <p>1. Batch ID: {batchId}</p>
+                    <p>2. Product ID: {productId}</p>
+                    <p>3. Manufacturer Name: {manufacturerObj}</p>
+                    <p>4. Retailer Name: {retailerObj}</p>  
+                    <p>5. Quantity: {quantity}</p>
+                </div>
+            </Modal>
+            <Modal title="Transfer Confirmation" open={isTransferConfirm} onOk={handleOkConfirm} onCancel={handleCancelConfirm}>
                 <div>
                     <p>1. Batch ID: {batchId}</p>
                     <p>2. Product ID: {productId}</p>

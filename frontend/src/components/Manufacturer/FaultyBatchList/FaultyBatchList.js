@@ -38,8 +38,17 @@ function FaultyBatchList() {
 
       body.forEach((component)=>{
         component.date = component.date.markedFaultDate
+        if(component.retailerObj)
+        {
+          component.retailerObj = component["retailerObj"]["name"];
+        }
+        if(component.delivererObj)
+        {
+          component.delivererObj = component["delivererObj"]["name"];
+        }
       })
 
+      
       // let newData = body.filter(component => component.status==="fault")
       setData(body)
     };

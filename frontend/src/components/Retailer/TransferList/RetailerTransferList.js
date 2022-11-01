@@ -94,7 +94,7 @@ function TransferList() {
     {
       field: "action",
       headerName: "Action",
-      width: 180,
+      width: 200,
       renderCell: (params) => {
         return (
           <div className="cellAction">
@@ -106,50 +106,50 @@ function TransferList() {
     },
   ];
 
-  const [orderedDate, setOrderedDate] = useState("");
-  const [sendToDelivererDate, setSendToDelivererDate] = useState("");
-  const [sendToRetailerDate, setSendToRetailerDate] = useState("");
-  const [markedFaultDate, setMarkedFaultDate] = useState("");
+  // const [orderedDate, setOrderedDate] = useState("");
+  // const [sendToDelivererDate, setSendToDelivererDate] = useState("");
+  // const [sendToRetailerDate, setSendToRetailerDate] = useState("");
+  // const [markedFaultDate, setMarkedFaultDate] = useState("");
 
-  let content = (
-    <div>
-      <Timeline>
-        <Timeline.Item color="gray">Ordered Date: {orderedDate}</Timeline.Item>
-        <Timeline.Item color="blue">Send To Deliverer Date: {sendToDelivererDate} </Timeline.Item>
-        <Timeline.Item color="green">Send To Retailer Date: {sendToRetailerDate}</Timeline.Item>
-        <Timeline.Item color="red">Marked Fault Date: {markedFaultDate}</Timeline.Item>
-      </Timeline>
-    </div>
-  );
+  // let content = (
+  //   <div>
+  //     <Timeline>
+  //       <Timeline.Item color="gray">Ordered Date: {orderedDate}</Timeline.Item>
+  //       <Timeline.Item color="blue">Send To Deliverer Date: {sendToDelivererDate} </Timeline.Item>
+  //       <Timeline.Item color="green">Send To Retailer Date: {sendToRetailerDate}</Timeline.Item>
+  //       <Timeline.Item color="red">Marked Fault Date: {markedFaultDate}</Timeline.Item>
+  //     </Timeline>
+  //   </div>
+  // );
 
-  const handleOnClickView = (a) => {
-    setOrderedDate(a.date.orderedDate);
-    setSendToDelivererDate(a.date.sendToDelivererDate);
-    setSendToRetailerDate(a.date.sendToRetailerDate);
-    setMarkedFaultDate(a.date.markedFaultDate);
-  }
+  // const handleOnClickView = (a) => {
+  //   setOrderedDate(a.date.orderedDate);
+  //   setSendToDelivererDate(a.date.sendToDelivererDate);
+  //   setSendToRetailerDate(a.date.sendToRetailerDate);
+  //   setMarkedFaultDate(a.date.markedFaultDate);
+  // }
 
-  // "markedFaultDate": "",
-  // "orderedDate": "2022-10-31",
-  // "sendToDelivererDate": "",
-  // "sendToRetailerDate": ""
+  // // "markedFaultDate": "",
+  // // "orderedDate": "2022-10-31",
+  // // "sendToDelivererDate": "",
+  // // "sendToRetailerDate": ""
 
-  const viewColumn = [
-    {
-      field: "viewaction",
-      headerName: "View",
-      width: 180,
-      renderCell: (params) => {
-        return (
-          <div className="cellViewAction">
-            <Popover title="Date" content={content} trigger="click">
-              <Button type="primary" onClick={() => handleOnClickView(params.row)}>View</Button>
-            </Popover>
-          </div>
-        )
-      }
-    }
-  ];
+  // const viewColumn = [
+  //   {
+  //     field: "viewaction",
+  //     headerName: "View",
+  //     width: 180,
+  //     renderCell: (params) => {
+  //       return (
+  //         <div className="cellViewAction">
+  //           <Popover title="Date" content={content} trigger="click">
+  //             <Button type="primary" onClick={() => handleOnClickView(params.row)}>View</Button>
+  //           </Popover>
+  //         </div>
+  //       )
+  //     }
+  //   }
+  // ];
   const handleOkConfirm = async (e) => {
     e.preventDefault();
     const item = { batchId };
@@ -236,7 +236,7 @@ function TransferList() {
       <div className="transferlisttable">
         <DataGrid
           rows={data}
-          columns={RetailerTransferColumn.concat(actionColumn, viewColumn)}
+          columns={RetailerTransferColumn.concat(actionColumn)}
           getRowId={(row) => row.batchId}
           pageSize={9}
           rowsPerPageOptions={[9]}

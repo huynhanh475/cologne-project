@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import './FaultyBatchList.css';
 import { DataGrid } from "@mui/x-data-grid";
 import { FaultyBatchColumn } from './FaultyBatchColumn';
@@ -22,6 +22,18 @@ function RetailerFaultyBatchList() {
 
       body.forEach(element => {
         element.date = element.date.markedFaultDate
+        if(element.manufacturerObj)
+        {
+          element.manufacturerObj = element["manufacturerObj"]["name"];
+        }
+        if(element.delivererObj)
+        {
+          element.delivererObj = element["delivererObj"]["name"];
+        }
+        // if(element.markedFaultBy)
+        // {
+        //   element.markedFaultBy = element["markedFaultBy"];
+        // }
       });
       setData(body);
     };
