@@ -75,7 +75,7 @@ function TransferList() {
         return (
           <div className="cellAction">
             {params.row.status === 'transferred-to-retailer' && <div className="confirmButton" onClick={() => handleOnClickConfirm(params.row)}>Confirm</div>}
-            {params.row.status !== 'fault' && <div className="markFaultButton" onClick={() => handleOnClickMarkFault(params.row)}>Fault</div>}
+            {params.row.status === 'transferred-to-retailer' && <div className="markFaultButton" onClick={() => handleOnClickMarkFault(params.row)}>Fault</div>}
           </div>
         );
       },
