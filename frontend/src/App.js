@@ -24,6 +24,8 @@ import HomePage from './components/Manufacturer/HomePage/HomePage';
 import HomePageDeliverer from './components/Deliverer/HomePage/HomePageDeliverer';// import {AnimatedPresence} from "framer-motion/dist/framer-motion"
 import HomePageRetailer from './components/Retailer/HomePage/HomePageRetailer';
 import HomePageAdmin from './components/Admin/HomePage/HomePageAdmin';
+import RetailerBatchJourney from './components/Retailer/BatchJourneyList/RetailerBatchJourney';
+
 function App() {
   return (
     <>
@@ -49,6 +51,7 @@ function App() {
             <Route path="/retailer/productlist" element={<ProductList />} />
             <Route path="/retailer/transferlist" element={<RetailerTransferList />} />
             <Route path="/retailer/faultybatch" element={<RetailerFaultyBatch />} />
+            <Route path="/retailer/batchjourney" element={<RetailerBatchJourney />} />
             <Route path="/admin/homepage" element ={<HomePageAdmin/>} />
             {/* <Route path="/admin/createuser" element={<CreateUserForm />} /> */}
             <Route path="/admin/userlist" element={<UserList />} />
