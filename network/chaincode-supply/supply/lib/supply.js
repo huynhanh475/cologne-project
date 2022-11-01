@@ -624,45 +624,50 @@ class Supply extends Contract {
     }
 
     async reportFaultBatch(ctx, batchId, userID) {
+        const statusAllowReport ={
+            "pending-registration" : "",
+            "approved" : "manufacturer",
+            "pending-invite-to-deliverer" : "manufacturer",
+            "approve-invitation-by-deliverer": "manufacturer",
+            "reject-invitation-by-deliverer": "manufacturer",
+            "transferred-to-deliverer" : "deliverer",
+            "deliverer-confirm-transfer" : "deliverer",
+            "transferred-to-retailer" : "retailer",
+            "retailer-confirm-transfer" : "retailer",
+            "fault" : "",
+          }
+          
+          if (statusAllowReport[batch.status] === userType) {
+            // Report
+          }
+          //error
         let batch = await JSON.parse(await (await this.queryBatch(ctx, batchId)).payload);
         let user= await JSON.parse(await (await this.queryUser(ctx, userID)).payload);
-        if (user.userType === 'retailer') 
-            {
-                if (batch.status !== 'transferred-to-retailer')
-                    return shim.error('Batch is not transferred to retailer');
-            }
-        else if (user.userType === 'manufacturer')
-            {
-                if (batch.status !== 'approved')
-                    return shim.error('Batch is not approved');
-            }
-        else if (user.userType === 'deliverer')
-            {
-                if (batch.status !== 'transferred-to-deliverer')
-                    return shim.error('Batch is not transferred to deliverer');
-            }
+        if (user.userType !== statusAllowReport[batch.status]) {
+            return shim.error('User is not allowed to report');
+        }
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
-        batch.status = 'fault';
-        batch.markedFaultBy = userID;
-        await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
-        // const product = await JSON.parse(await (await this.queryProduct(ctx, batch.productId)).payload);
-        // product.status = 'fault';
-        // product.markedFaultBy = userID;
-        // await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
-        // const allResults = JSON.parse((await this.getAllBatches(ctx)).payload);
-        // for (let i in allResults) {
-        //     if (allResults[i].productId == batch.productId) {
-        //         allResults[i].status = 'fault';
-        //         allResults[i].markedFaultBy = userID;
-        //         allResults[i].markedFaul = userID;
-        //         allResults[i].date.markedFaultDate = await this.getCurrentDate();
-        //         await ctx.stub.putState(allResults[i].batchId, Buffer.from(JSON.stringify(allResults[i])));
-        //         if (batch.batchId === allResults[i].batchId) 
-        //             batch = allResults[i];
-        //     }
-        // }
+        // batch.status = 'fault';
+        // batch.markedFaultBy = userID;
+        // batch.date.markedFaultDate=  await this.getCurrentDate();
+        // await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+        const product = await JSON.parse(await (await this.queryProduct(ctx, batch.productId)).payload);
+        product.status = 'fault';
+        product.markedFaultBy = userID;
+        await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
+        const allResults = JSON.parse((await this.getAllBatches(ctx)).payload);
+        for (let i in allResults) {
+            if (allResults[i].productId == batch.productId) {
+                allResults[i].status = 'fault';
+                allResults[i].markedFaultBy = userID;
+                allResults[i].date.markedFaultDate = await this.getCurrentDate();
+                await ctx.stub.putState(allResults[i].batchId, Buffer.from(JSON.stringify(allResults[i])));
+                if (batch.batchId === allResults[i].batchId) 
+                    batch = allResults[i];
+            }
+        }
         console.info('================= END : Report Fault ==============');
         batch = await this.getUserObj(ctx, batch);
         return shim.success(JSON.stringify(batch));
