@@ -673,8 +673,8 @@ class Supply extends Contract {
     async queryFaultBatches(ctx) {
         const allResults = [];
         for await (const { key, value } of ctx.stub.getStateByRange('', '')) {
-            const elem = Buffer.from(value);
-            const strValue = elem.toString('utf8');
+            var elem = Buffer.from(value);
+            var strValue = elem.toString('utf8');
             let record;
             try {
                 record = JSON.parse(strValue);
