@@ -118,7 +118,7 @@ function BatchJourneyListDeliverer() {
         return (
           <div className="cellAction">
             {params.row.status === "deliverer-confirm-transfer" && <div className="transferButton" onClick={() => handleOnClickTransfer(params.row)}>Transfer</div>}
-            {params.row.status !== "fault" && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Fault</div>}
+            {params.row.status !== "fault" && (params.row.status=== "transferred-to-deliverer"||params.row.status=== "deliverer-confirm-transfer"||params.row.status=== "transferred-to-retailer") && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Fault</div>}
           </div>
         );
       },

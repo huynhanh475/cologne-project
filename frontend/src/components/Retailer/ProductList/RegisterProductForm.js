@@ -19,13 +19,21 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-        if (response.ok)
+        if (response.ok){
             setIsRegister(false);
+            Modal.success({
+                content: 'A new batch has been registered!',
+            });
+        }
+            
         document.getElementById("CreateProductForm").reset();
     };
 
     const handleCancel = () => {
         setIsRegister(false);
+        Modal.error({
+            content: 'Please fill in the required information!'
+        })
         document.getElementById("CreateProductForm").reset();
     };
     return (
@@ -45,7 +53,7 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
                     </div>
 
                     <div>
-                        <label for='date'>4. Date: {date}</label>
+                        <label for='date'>4. Date created: {date}</label>
                     </div>
 
                     <div>

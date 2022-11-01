@@ -1,9 +1,9 @@
 export const ProductColumn = [
-    { field: "manufactureDate", headerName: "Manufacture Date", width: 200 },
-    { field: "productId", headerName: "Product ID", width: 250,},
-    { field: "name", headerName: "Name", width: 200,},
-    { field: "manufacturerId", headerName: "Manufacturer ID", width: 250,},
-    { field: "date", headerName: "Date", width: 100,},
-    { field: "price", headerName: "Price", width: 100,},
-    { field: "quantity", headerName: "Quantity", width: 100,},
+    // { field: "manufactureDate", headerName: "Manufacture Date", width: 150 },
+    { field: "productId", headerName: "Product ID", width: 150,},
+    { field: "name", headerName: "Name", width: 150,},
+    { field: "manufacturerId", headerName: "Manufacturer ID", width: 150,},
+    { field: "date", headerName: "Date created", width: 150,},
+    { field: "price", headerName: "Price", width: 150,},
+    { field: "quantity", headerName: "Quantity", width: 150,},
 ];

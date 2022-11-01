@@ -15,8 +15,13 @@ function ConfirmModal({ isConfirm, setIsConfirm, batchId, productId, manufacture
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-        if (response.ok)
+        if (response.ok){
             setIsConfirm(false);
+            Modal.success({
+                content: "You have confirmed to receive this batch!",
+            });
+        }
+            
     };
 
     const handleCancel = () => {

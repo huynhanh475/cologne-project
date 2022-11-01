@@ -23,8 +23,7 @@ import WithoutNav from './components/Layout/WithoutNav';
 import HomePage from './components/Manufacturer/HomePage/HomePage';
 import HomePageDeliverer from './components/Deliverer/HomePage/HomePageDeliverer';// import {AnimatedPresence} from "framer-motion/dist/framer-motion"
 import HomePageRetailer from './components/Retailer/HomePage/HomePageRetailer';
-import HomePageAdmin
- from './components/Admin/HomePage/HomePageAdmin';
+import HomePageAdmin from './components/Admin/HomePage/HomePageAdmin';
 function App() {
   return (
     <>

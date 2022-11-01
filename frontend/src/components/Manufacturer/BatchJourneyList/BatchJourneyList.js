@@ -73,6 +73,7 @@ function BatchJourneyList() {
     e.preventDefault();
     const token = localStorage.getItem("AUTH_DATA");
     const item = { batchId };
+    // console.log(batchId);
     const params = {
       method: "POST",
       url: "/batch/report",
@@ -86,6 +87,7 @@ function BatchJourneyList() {
       });
       setIsFault(false);
     }
+    console.log(await response.text());
   };
 
   const handleCancelFault = () => {
@@ -109,7 +111,7 @@ function BatchJourneyList() {
       //   component.date = component.date.orderedDate;
       // })
 
-      let newData = body.filter(component => component.status !== 'pending-invite-to-deliverer' && component.status !== 'approved' && component.status !== 'pending-registration')
+      let newData = body.filter(component => component.status !== 'pending-invite-to-deliverer' && component.status !== 'pending-registration')
       setData(newData)
     };
     getBatch();
