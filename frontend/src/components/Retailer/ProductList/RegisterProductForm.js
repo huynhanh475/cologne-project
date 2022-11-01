@@ -19,6 +19,7 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
+        console.log(JSON.parse(await response.text())["data"]);
         if (response.ok){
             setIsRegister(false);
             Modal.success({

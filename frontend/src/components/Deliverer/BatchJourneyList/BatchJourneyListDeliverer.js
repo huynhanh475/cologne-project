@@ -14,19 +14,19 @@ function BatchJourneyListDeliverer() {
   const [isFault, setIsFault] = useState(false);
   const [batchId, setBatchId] = useState("");
   const [productId, setProductId] = useState("");
-  const [manufacturerId, setManufacturerId] = useState("");
-  const [retailerId, setRetailerId] = useState("");
-  const [delivererId, setDelivererId] = useState("");
+  const [manufacturerObj, setManufacturerObj] = useState("");
+  const [retailerObj, setRetailerObj] = useState("");
+  const [delivererObj, setDelivererObj] = useState("");
   const [quantity, setQuantity] = useState("");
-
+  const typeOfUser = JSON.parse(localStorage.getItem('USER_DATA'))["userType"];
   // const data = record;
   const handleOnClickTransfer = (a) => {
     setIsTransfer(true);
     setBatchId(a.batchId);
     setProductId(a.productId);
-    setManufacturerId(a.manufacturerId);
-    setRetailerId(a.retailerId);
-    setDelivererId(a.delivererId);
+    setManufacturerObj(a.manufacturerObj);
+    setRetailerObj(a.retailerObj);
+    setDelivererObj(a.delivererObj);
     setQuantity(a.quantity);
   }
 
@@ -34,9 +34,9 @@ function BatchJourneyListDeliverer() {
     setIsFault(true);
     setBatchId(a.batchId);
     setProductId(a.productId);
-    setManufacturerId(a.manufacturerId);
-    setRetailerId(a.retailerId);
-    setDelivererId(a.delivererId);
+    setManufacturerObj(a.manufacturerObj);
+    setRetailerObj(a.retailerObj);
+    setDelivererObj(a.delivererObj);
     setQuantity(a.quantity);
   }
 
@@ -53,7 +53,17 @@ function BatchJourneyListDeliverer() {
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"]; //take the body of data
 
-      let newData = body.filter(component => component.status !== 'pending-invite-to-deliverer' && component.status !== 'approved' && component.status !== 'pending-registration')
+      body.forEach((element) => {
+        //component.date = component.date.orderedDate;
+        if (element.retailerObj) {
+          element.retailerObj = element["retailerObj"]["name"];
+        }
+        if (element.manufacturerObj) {
+          element.manufacturerObj = element["manufacturerObj"]["name"];
+        }
+      })
+      //let newData = body.filter(component => component.status !== 'pending-invite-to-deliverer' && component.status !== 'approved' && component.status !== 'pending-registration')
+      let newData = body.filter(component => component.status !== 'pending-registration');
       setData(newData)
     };
     getBatch();
@@ -109,6 +119,19 @@ function BatchJourneyListDeliverer() {
     setIsFault(false);
   };
 
+  const statusAllowMarkFault = {
+    "pending-registration": "",
+    "approved": "manufacturer",
+    "pending-invite-to-deliverer": "manufacturer",
+    "approve-invitation-by-deliverer": "manufacturer",
+    "reject-invitation-by-deliverer": "manufacturer",
+    "transferred-to-deliverer": "deliverer",
+    "deliverer-confirm-transfer": "deliverer",
+    "transferred-to-retailer": "retailer",
+    "retailer-confirm-transfer": "retailer",
+    "fault": "",
+  }
+
   const actionColumn = [
     {
       field: "action",
@@ -118,7 +141,7 @@ function BatchJourneyListDeliverer() {
         return (
           <div className="cellAction">
             {params.row.status === "deliverer-confirm-transfer" && <div className="transferButton" onClick={() => handleOnClickTransfer(params.row)}>Transfer</div>}
-            {params.row.status !== "fault" && (params.row.status=== "transferred-to-deliverer"||params.row.status=== "deliverer-confirm-transfer"||params.row.status=== "transferred-to-retailer") && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Fault</div>}
+            {(statusAllowMarkFault[params.row.status] === typeOfUser) && <div className="markFaultButton" onClick={() => handleOnClickFault(params.row)}>Mark Fault</div>}
           </div>
         );
       },
@@ -177,9 +200,9 @@ function BatchJourneyListDeliverer() {
         <div>
           <p>1. Batch ID: {batchId}</p>
           <p>2. Product ID: {productId}</p>
-          <p>3. Manufacturer ID: {manufacturerId}</p>
-          <p>4. Retailer ID: {retailerId}</p>
-          <p>5. Deliverer ID: {delivererId}</p>
+          <p>3. Manufacturer Name: {manufacturerObj}</p>
+          <p>4. Retailer Name: {retailerObj}</p>
+          <p>5. Deliverer Name: {delivererObj}</p>
           <p>6. Quantity: {quantity}</p>
         </div>
       </Modal>
@@ -188,9 +211,9 @@ function BatchJourneyListDeliverer() {
         <div>
           <p>1. Batch ID: {batchId}</p>
           <p>2. Product ID: {productId}</p>
-          <p>3. Manufacturer ID: {manufacturerId}</p>
-          <p>4. Retailer ID: {retailerId}</p>
-          <p>5. Deliverer ID: {delivererId}</p>
+          <p>3. Manufacturer Name: {manufacturerObj}</p>
+          <p>4. Retailer Name: {retailerObj}</p>
+          <p>5. Deliverer Name: {delivererObj}</p>
           <p>6. Quantity: {quantity}</p>
         </div>
       </Modal>
