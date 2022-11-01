@@ -53,7 +53,7 @@ export const onLogInSuccess = (data) => {
  * Redirect to login page fi token expires.
  * @returns IUser object | null
  */
-export const getUser = async () => {
+export const getUser = () => {
     return window.localStorage.getItem("USER_DATA");
 };
 
