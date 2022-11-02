@@ -136,6 +136,7 @@ function BatchOrderList() {
 
     const token = localStorage.getItem("AUTH_DATA");
     const item = { batchId, delivererId };
+    console.log(item);
     const params = {
       method: "POST",
       url: "/transact/inviteDeliverer",
@@ -331,12 +332,13 @@ function BatchOrderList() {
           <p>3. Manufacturer ID: {manufacturerId}</p>
           <p>4. Retailer ID: {retailerId}</p>
           <p>5. Quantity: {quantity}</p>
-          <sapn>6. Deliverer: </sapn>
+          <span>6. Deliverer: </span>
           <Select
-            id="uesrType"
+            id="userType"
             placeholder="Select Deliverer"
             style={{width: "300px"}}
-            onChange={(value) => setDelivererID(value)}
+            onSelect={(value) => setDelivererID(value)}
+            value={delivererId}
           >
             {deliverers.map(deliverer => (
                 <Select.Option key={deliverer.userId} value={deliverer.userId}>
