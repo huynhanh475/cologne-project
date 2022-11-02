@@ -1,5 +1,4 @@
 import React from 'react';
-import * as FaIcons from 'react-icons/fa';
 import * as IoIcons from 'react-icons/io';
 
 export const SidebarData = [
@@ -19,14 +18,14 @@ export const SidebarData = [
     userType: 'manufacturer',
     role: 'client'
   },
-  {
-    title: 'Deliverer List',
-    path: '/manufacturer/delivererlist',
-    icon: <FaIcons.FaCartPlus />,
-    cName: 'nav-text-container',
-    userType: 'manufacturer',
-    role: 'client'
-  },
+  // {
+  //   title: 'Deliverer List',
+  //   path: '/manufacturer/delivererlist',
+  //   icon: <FaIcons.FaCartPlus />,
+  //   cName: 'nav-text-container',
+  //   userType: 'manufacturer',
+  //   role: 'client'
+  // },
   {
     title: 'Batch Journey',
     path: '/manufacturer/batchjourney',
@@ -84,7 +83,7 @@ export const SidebarData = [
     role: 'client'
   },
   {
-    title: 'Transaction List',
+    title: 'Transfer List',
     path: '/deliverer/transferlist',
     icon: <IoIcons.IoMdBasket />,
     cName: 'nav-text-container',

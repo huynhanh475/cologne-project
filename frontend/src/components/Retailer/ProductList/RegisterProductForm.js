@@ -28,7 +28,7 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
         if (response.ok){
             setIsRegister(false);
             Modal.success({
-                content: 'A new batch has been registered!',
+                content: 'A new batch has been registered! Please go to Transaction List to view it.',
             });
         }
             
@@ -45,7 +45,7 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
                 open={isRegister}
                 onOk={handleOk} 
                 onCancel={handleCancel} 
-                title="Create Product Form"
+                title="Register Batch Order Form"
                 footer={[
                     <Button key="back" onClick={handleCancel}>
                         Cancel
@@ -78,7 +78,7 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
 
                     <div>
                         <label for='quantity'>6. Quantity</label>
-                        <input type="text" name="quantity" onChange={(e) => { setQuantity(e.target.value) }} required />
+                        <input type="number" name="quantity" onChange={(e) => { setQuantity(e.target.value) }} required />
                     </div>
 
                 </form>

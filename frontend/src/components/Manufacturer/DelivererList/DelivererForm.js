@@ -23,8 +23,12 @@ function DelivererForm({ isOpenModal, setIsOpenModal, delivererId }) {
       Modal.success({
         content: "Invitation is sent to deliverer!",
       });
+      document.getElementById("InviteDelivererForm").reset();
+    } else {
+      Modal.error({
+        content: await response.json().message,
+      });
     }
-    document.getElementById("InviteDelivererForm").reset();
   };
 
   const handleCancel = () => {

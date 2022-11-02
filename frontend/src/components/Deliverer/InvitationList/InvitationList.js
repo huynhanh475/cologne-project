@@ -4,14 +4,15 @@ import { InvitationListColumn } from "./InvitationListColumn";
 import './InvitationList.css';
 import { request } from '../../../utils/request';
 import { Modal } from 'antd';
-import { Row, Col, Typography } from 'antd';
+import { Row, Col, Typography, Spin } from 'antd';
 // import record from './MOCK_DATA (4).json';
 
 function InvitationList() {
 
     // const [data, setData] = useState([]);
     const [data, setData] = useState([]);
-    const [toggleFetch, setToggleFetch] = useState("false");
+    const [toggleFetch, setToggleFetch] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const reFetch = () => {
         setToggleFetch(!toggleFetch);
@@ -20,6 +21,7 @@ function InvitationList() {
     // const [batchId, setBatchId] = useState("");
     // query data dựa trên delivererID và status
     const handleApprove = async (a) => {
+        setIsLoading(true);
         let batchId = a.batchId;
         let action = "approved";
         let token = localStorage.getItem("AUTH_DATA");
@@ -31,7 +33,8 @@ function InvitationList() {
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-        console.log(response.status);
+        setIsLoading(false);
+
         if (response.ok) {
             //setStateChange(true);
             Modal.success({
@@ -47,6 +50,7 @@ function InvitationList() {
     }
 
     const handleReject = async (a) => {
+        setIsLoading(true);
         let batchId = a.batchId;
         let action = "disapproved";
         let token = localStorage.getItem("AUTH_DATA");
@@ -58,7 +62,8 @@ function InvitationList() {
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-        console.log(response.status);
+        setIsLoading(false);
+        
         if (response.ok) {
             //setStateChange(true);
             Modal.success({
@@ -89,6 +94,7 @@ function InvitationList() {
 
             body.forEach((component) => {
                 component.date = component.date.orderedDate;
+                component.productName = component.productObj.name;
                 if (component.retailerObj) {
                     component.retailerObj = component["retailerObj"]["name"];
                 }
@@ -128,6 +134,7 @@ function InvitationList() {
                     <Typography.Title level={3}>Invitation List</Typography.Title>
                 </Col>
             </Row>
+            <Spin spinning={isLoading}>
             <div className="invitationlisttable">
                 <DataGrid
                     rows={data}
@@ -138,6 +145,7 @@ function InvitationList() {
                     checkboxSelection
                 />
             </div>
+            </Spin>
         </div>
     )
 }

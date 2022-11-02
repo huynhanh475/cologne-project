@@ -38,7 +38,8 @@ function FaultyBatchList() {
       let body = jsonData["data"]; //take the body of data
 
       body.forEach((component) => {
-        component.date = component.date.markedFaultDate
+        component.date = component.date.markedFaultDate;
+        component.productName = component.productObj.name;
         if (component.retailerObj) {
           component.retailerObj = component["retailerObj"]["name"];
         }
@@ -55,6 +56,7 @@ function FaultyBatchList() {
     return () => {
       // this now gets called when the component unmounts
     };
+  // eslint-disable-next-line
   }, []);
   return (
     <div className="page-container">

@@ -3,7 +3,8 @@ import { ProductListColumn } from "./ProductListColumn";
 import { DataGrid } from "@mui/x-data-grid";
 import "./ProductListManufacturer.css";
 import { request } from '../../../utils/request';
-import { Modal, Row, Col, Typography } from 'antd';
+import { Modal, Row, Col, Typography, Button } from 'antd';
+import Swal from 'sweetalert2';
 
 function ProductListManufacturer() {
   const [data, setData] = useState([]);
@@ -13,6 +14,7 @@ function ProductListManufacturer() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [isLoading, setIsLoading] = useState(false)
   const actionColumn = [
     {
       field: "action",
@@ -21,7 +23,7 @@ function ProductListManufacturer() {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            {params.row.status !== "fault" && <div className="markFault" onClick={() => handleOnClickFault(params.row)}>Fault</div>}
+            {params.row.status !== "fault" && <div className="markFault" onClick={() => handleOnClickFault(params.row)}>Mark Fault</div>}
           </div>
         );
       },
@@ -45,9 +47,18 @@ function ProductListManufacturer() {
       url: "/product/report/" + productId,
       headers: { 'Content-Type': "application/json", 'x-access-token': token },
     }
+    
+    setIsLoading(true);
     const response = await request(params);
     if (response.ok) {
       setIsFault(false);
+      setIsLoading(false);
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: "Mark Product Fault Failed",
+        text: await response.json().message,
+      })
     }
   };
 
@@ -76,11 +87,27 @@ function ProductListManufacturer() {
   }, [isFault]);
   return (
     <div className='page-container'>
-      <Modal title="Mark Fault Confirmation" open={isFault} onOk={handleOkFault} onCancel={handleCancelFault}>
+      <Modal 
+        title="Mark Fault Confirmation" 
+        open={isFault} 
+        onOk={handleOkFault} 
+        onCancel={handleCancelFault}
+        footer={[
+          <Button key="back" onClick={handleCancelFault}>
+              Cancel
+          </Button>,
+          <Button key="submit" type="primary" loading={isLoading} disabled={isLoading} onClick={handleOkFault}>
+              Confirm
+          </Button>,
+      ]}
+      >
+        <div style={{marginBottom: "1rem"}}>
+          Are you sure to mark fault this product with following information?
+        </div>
         <div>
           <p>1. Product ID: {productId}</p>
           <p>2. Name: {name}</p>
-          <p>3. Date: {date}</p>
+          <p>3. Manufacture Date: {date}</p>
           <p>4. Price: {price}</p>
           <p>5. Quantity: {quantity}</p>
         </div>

@@ -6,8 +6,9 @@ import { BatchJourneyColumn } from "./BatchJourneyColumn";
 // import TransferModal from './TransferModal';
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
-import { Modal, Popover, Button, Timeline } from 'antd';
+import { Popover, Button, Timeline } from 'antd';
 import { Row, Col, Typography } from 'antd';
+import { batchStatusTranslation } from '../../../utils/constants';
 
 function BatchJourneyListDeliverer() {
   const [data, setData] = useState([]);
@@ -55,7 +56,8 @@ function BatchJourneyListDeliverer() {
       let body = jsonData["data"]; //take the body of data
 
       body.forEach((element) => {
-        //component.date = component.date.orderedDate;
+        element.productName = element.productObj.name;
+        element.processedStatus = batchStatusTranslation[element.status];
         if (element.retailerObj) {
           element.retailerObj = element["retailerObj"]["name"];
         }

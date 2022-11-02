@@ -7,6 +7,7 @@ import './RetailerTransferList.css';
 import { request } from '../../../utils/request';
 import { Modal } from 'antd';
 import { Row, Col, Typography } from 'antd';
+import { batchStatusTranslation } from '../../../utils/constants';
 
 function TransferList() {
   const [data, setData] = useState([]);
@@ -59,6 +60,8 @@ function TransferList() {
         if (element.delivererObj) {
           element.delivererObj = element["delivererObj"]["name"];
         }
+        element.productName = element.productObj.name;
+        element.processedStatus = batchStatusTranslation[element.status];
       });
       // let newData = body.filter(element => element.status !== "fault")
       setData(body);

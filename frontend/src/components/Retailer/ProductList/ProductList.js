@@ -32,6 +32,7 @@ function ProductList() {
     };
     getAllProducts();
     return () => { };
+  // eslint-disable-next-line
   }, [isRegister]);
 
 

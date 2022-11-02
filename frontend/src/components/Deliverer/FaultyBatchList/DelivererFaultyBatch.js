@@ -27,6 +27,7 @@ function DelivererFaultyBatch() {
 
             body.forEach((component) => {
                 component.date = component.date.markedFaultDate;
+                component.productName = component.productObj.name;
                 if (component.manufacturerObj) {
                     component.manufacturerObj = component["manufacturerObj"]["name"];
                 }

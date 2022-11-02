@@ -3,7 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { TransferListColumn } from './TransferListColumn';
 import './TransferList.css';
 import { request } from '../../../utils/request';
-import { Modal } from 'antd';
+import { Modal, Spin } from 'antd';
 import { Row, Col, Typography } from 'antd';
 
 function TransferList() {
@@ -19,7 +19,8 @@ function TransferList() {
     const [isFault, setIsFault] = useState(false);
     const [manufacturerObj, setManufacturerObj] = useState("");
     const [retailerObj, setRetailerObj] = useState("");
-    const [delivererObj, setDelivererObj] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
     const typeOfUser = JSON.parse(localStorage.getItem('USER_DATA'))["userType"];
 
     const [toggleFetch, setToggleFetch] = useState("false");
@@ -43,6 +44,7 @@ function TransferList() {
 
             body.forEach((component) => {
                 component.date = component.date.sendToDelivererDate;
+                component.productName = component.productObj.name;
                 if (component.retailerObj) {
                     component.retailerObj = component["retailerObj"]["name"];
                 }
@@ -72,6 +74,8 @@ function TransferList() {
 
     const handleOkConfirm = async (e) => {
         e.preventDefault();
+
+        setIsLoading(true);
         let token = localStorage.getItem("AUTH_DATA");
         let item = { batchId };
         let params = {
@@ -81,7 +85,8 @@ function TransferList() {
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
-        console.log(response.status);
+        setIsLoading(false);
+        
         if (response.ok) {
             setIsTransferConfirm(false);
             Modal.success({
@@ -123,6 +128,8 @@ function TransferList() {
 
     const handleOkTransfer = async (e) => {
         e.preventDefault();
+
+        setIsLoading(true);
         const token = localStorage.getItem("AUTH_DATA");
         const item = { batchId };
         const params = {
@@ -144,6 +151,7 @@ function TransferList() {
                 content: "Batch is not transferred!"
             });
         }
+        setIsLoading(false);
     };
 
     const handleCancelTransfer = () => {
@@ -152,6 +160,8 @@ function TransferList() {
 
     const handleOkFault = async (e) => {
         e.preventDefault();
+
+        setIsLoading(true);
         const token = localStorage.getItem("AUTH_DATA");
         const item = { batchId };
         const params = {
@@ -173,6 +183,7 @@ function TransferList() {
                 content: "Batch is not marked fault!"
             });
         }
+        setIsLoading(false);
         setIsFault(false);
     };
 
@@ -213,7 +224,7 @@ function TransferList() {
     ];
     return (
         <div className="page-container">
-            <Modal title="Transfer To Retailer Confirmation" open={isTransfer} onOk={handleOkTransfer} onCancel={handleCancelTransfer}>
+            <Modal title="Transfer To Retailer Confirmation" open={isTransfer} okText={isLoading ? <Spin/> : "Confirm"} onOk={handleOkTransfer} onCancel={handleCancelTransfer}>
                 <div>
                     <p>1. Batch ID: {batchId}</p>
                     <p>2. Product ID: {productId}</p>
@@ -223,7 +234,7 @@ function TransferList() {
                 </div>
             </Modal>
             {/* <MarkFaultModal isFault={isFault} setIsFault={setIsFault} batchID={batchId} productID={productId} manufacturerID={manufacturerId} retailerID={retailerId} delivererID={delivererId} />  */}
-            <Modal title="Mark Fault Confirmation" open={isFault} onOk={handleOkFault} onCancel={handleCancelFault}>
+            <Modal title="Mark Fault Confirmation" open={isFault} okText={isLoading ? <Spin/> : "Confirm"} onOk={handleOkFault} onCancel={handleCancelFault}>
                 <div>
                     <p>1. Batch ID: {batchId}</p>
                     <p>2. Product ID: {productId}</p>
@@ -234,10 +245,10 @@ function TransferList() {
             </Modal>
             <Row justify="end" align='middle'>
                 <Col flex="auto">
-                    <Typography.Title level={3}>Transaction List</Typography.Title>
+                    <Typography.Title level={3}>Transfer List</Typography.Title>
                 </Col>
             </Row>
-            <Modal title="Transfer Confirmation" open={isTransferConfirm} onOk={handleOkConfirm} onCancel={handleCancelConfirm}>
+            <Modal title="Transfer Confirmation" open={isTransferConfirm} okText={isLoading ? <Spin/> : "Confirm"} onOk={handleOkConfirm} onCancel={handleCancelConfirm}>
                 <div>
                     <p>1. Batch ID: {batchId}</p>
                     <p>2. Product ID: {productId}</p>
