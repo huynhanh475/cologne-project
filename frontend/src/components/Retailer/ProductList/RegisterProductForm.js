@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Modal } from 'antd';
+import { Modal, Button } from 'antd';
 import './ProductList.css';
 import { request } from '../../../utils/request';
 
@@ -7,6 +7,7 @@ import { request } from '../../../utils/request';
 function RegisterProductForm({ isRegister, setIsRegister, productId, name, manufacturerId, date, price }) {
     const form = useRef();
     const [quantity, setQuantity] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleOk = async (e) => {
         e.preventDefault();
@@ -18,8 +19,12 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
             body: item,
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
+
+        setIsLoading(true);
         const response = await request(params);
         console.log(JSON.parse(await response.text())["data"]);
+        setIsLoading(false);
+
         if (response.ok){
             setIsRegister(false);
             Modal.success({
@@ -32,14 +37,24 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
 
     const handleCancel = () => {
         setIsRegister(false);
-        Modal.error({
-            content: 'Please fill in the required information!'
-        })
         document.getElementById("CreateProductForm").reset();
     };
     return (
         <div>
-            <Modal open={isRegister} onOk={handleOk} onCancel={handleCancel} title="Create Product Form">
+            <Modal 
+                open={isRegister}
+                onOk={handleOk} 
+                onCancel={handleCancel} 
+                title="Create Product Form"
+                footer={[
+                    <Button key="back" onClick={handleCancel}>
+                        Cancel
+                    </Button>,
+                    <Button key="submit" type="primary" loading={isLoading} disabled={isLoading} onClick={handleOk}>
+                        Submit
+                    </Button>,
+                ]}
+            >
                 <form ref={form} id="CreateProductForm" className="create_form">
                     <div>
                         <label for='productId'>1. Product ID: <strong>{productId}</strong></label>

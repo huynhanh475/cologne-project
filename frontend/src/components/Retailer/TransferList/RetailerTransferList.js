@@ -5,7 +5,7 @@ import './RetailerTransferList.css';
 // import ConfirmModal from './ConfirmModal';
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
-import { Modal, Popover, Button, Timeline } from 'antd';
+import { Modal } from 'antd';
 import { Row, Col, Typography } from 'antd';
 
 function TransferList() {

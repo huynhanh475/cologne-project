@@ -12,15 +12,15 @@ function HomePageDeliverer() {
     console.log(currentUser)
     return (
         <div>
-            <Row justify='center' align='middle' style={{margin: "20vh auto"}}>
-                <Col>
+            <Row justify='center' align='middle' style={{margin: "25vh auto"}}>
+                <Col span={14}>
                     <Image
                         width="80%"
                         src={deliverer}
                         preview={false}
                     />
                 </Col>
-                <Col>
+                <Col span={8}>
                     <Typography.Title>Welcome back,</Typography.Title>
                     <span style={{fontSize: "32px"}}>{currentUser.name}!</span>
                     <div style={{marginTop:"1rem"}}>

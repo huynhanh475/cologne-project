@@ -113,7 +113,7 @@ class Supply extends Contract {
             docType: 'product',
             name: name,
             manufacturerId: manufacturerId,
-            date: await this.getCurrentDate(),
+            date: this.getCurrentDate(),
             price: price,
             quantity: quantity,
             status: 'healthy',
@@ -209,10 +209,16 @@ class Supply extends Contract {
     async getUserObj(ctx, batchAsJSON) {
         const manufacturerAsBytes = await ctx.stub.getState(batchAsJSON.manufacturerId);
         const manufacturerAsJSON = await JSON.parse(manufacturerAsBytes.toString());
+
         const retailerAsBytes = await ctx.stub.getState(batchAsJSON.retailerId);
         const retailerAsJSON = await JSON.parse(retailerAsBytes.toString());
-        batchAsJSON.manufacturerObj=manufacturerAsJSON;
-        batchAsJSON.retailerObj=retailerAsJSON;
+
+        const productAsBytes = await ctx.stub.getState(batchAsJSON.productId);
+        const productAsJSON = await JSON.parse(productAsBytes.toString());
+
+        batchAsJSON.manufacturerObj = manufacturerAsJSON;
+        batchAsJSON.retailerObj = retailerAsJSON;
+        batchAsJSON.productObj = productAsJSON;
         if (batchAsJSON.delivererId !== '') {
             const delivererAsBytes = await ctx.stub.getState(batchAsJSON.delivererId);
             const delivererAsJSON = await JSON.parse(delivererAsBytes.toString());
@@ -251,7 +257,7 @@ class Supply extends Contract {
             status: 'pending-registration',
             markedFaultBy: '',
             date: {
-                orderedDate: await this.getCurrentDate(),
+                orderedDate: this.getCurrentDate(),
                 sendToDelivererDate: '',
                 sendToRetailerDate: '',
                 markedFaultDate: '',
@@ -291,7 +297,7 @@ class Supply extends Contract {
 
         //mark fault
         batchAsJson.status = 'fault';
-        batchAsJson.date.markedFaultDate = await this.getCurrentDate();
+        batchAsJson.date.markedFaultDate = this.getCurrentDate();
         batchAsJson.markedFaultBy = markedBy;
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batchAsJson)));
         batchAsJson = await this.getUserObj(ctx, batchAsJson);
@@ -326,7 +332,7 @@ class Supply extends Contract {
         let batchAsJson = await JSON.parse(await batchAsBytes.toString());
         if (batchAsJson.status === 'approve-invitation-by-deliverer' && batchAsJson.manufacturerId === userId) {
             batchAsJson.status = 'transferred-to-deliverer';
-            batchAsJson.date.sendToDelivererDate = await this.getCurrentDate();
+            batchAsJson.date.sendToDelivererDate = this.getCurrentDate();
         }
         else {
             return shim.error(`Unable to deliver ${batchId} to deliverer`);
@@ -342,7 +348,7 @@ class Supply extends Contract {
         return crypto.createHash('sha256', 'cologne').update(password).digest('hex');
     }
 
-    async getCurrentDate() {
+    getCurrentDate() {
         let ts = Date.now();
 
         let date_ob = new Date(ts);
@@ -466,7 +472,7 @@ class Supply extends Contract {
             //check batch's productId
             if (batchAsJson.productId === productId) {
                 batchAsJson.status = 'fault';
-                batchAsJson.date.markedFaultDate = await this.getCurrentDate();
+                batchAsJson.date.markedFaultDate = this.getCurrentDate();
                 batchAsJson.markedFaultBy = manufacturerId;
             }
             //put the record back to the db
@@ -528,7 +534,7 @@ class Supply extends Contract {
 
     async inviteDeliverer(ctx, batchId, delivererId, userID) {
         console.info('=============== Start : Inviting deliverer =================');
-        let batch = await JSON.parse(await (await this.queryBatch(ctx, batchId)).payload);
+        let batch = JSON.parse( (await this.queryBatch(ctx, batchId)).payload );
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
@@ -546,7 +552,7 @@ class Supply extends Contract {
 
     async approveInvitation(ctx, batchId, action, userID) {
         console.info('=============== Start : Approve Invitation =================');
-        let batch = await JSON.parse(await (await this.queryBatch(ctx, batchId)).payload);
+        let batch = JSON.parse( (await this.queryBatch(ctx, batchId)).payload );
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
@@ -570,7 +576,7 @@ class Supply extends Contract {
 
     async transferToRetailer(ctx, batchId, userID) {
         console.info('=============== Start : Transfer to retailer =================');
-        let batch = await JSON.parse(await (await this.queryBatch(ctx, batchId)).payload);
+        let batch = JSON.parse( (await this.queryBatch(ctx, batchId)).payload );
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
@@ -579,7 +585,7 @@ class Supply extends Contract {
         if (batch.delivererId !== userID)
             return shim.error('Wrong deliverer');
         batch.status = 'transferred-to-retailer';
-        batch.date.sendToRetailerDate = await this.getCurrentDate();
+        batch.date.sendToRetailerDate = this.getCurrentDate();
         await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
 
         //batch.sendToRetailerDate = this.getCurrentDate();
@@ -604,7 +610,7 @@ class Supply extends Contract {
             if (userID == 'all')
                 flag = true;
             else {
-                const user = await JSON.parse(await (await this.queryUser(ctx, userID)).payload);
+                const user = await JSON.parse( (await this.queryUser(ctx, userID)).payload );
                 if (user.userType == 'deliverer' && record.delivererId == userID)
                     flag = true;
                 if (user.userType == 'retailer' && record.retailerId == userID)
@@ -638,8 +644,8 @@ class Supply extends Contract {
             "fault" : "",
           };
 
-        let batch = await JSON.parse(await (await this.queryBatch(ctx, batchId)).payload);
-        let user= await JSON.parse(await (await this.queryUser(ctx, userID)).payload);
+        let batch = await JSON.parse( (await this.queryBatch(ctx, batchId)).payload );
+        let user= await JSON.parse( (await this.queryUser(ctx, userID)).payload );
         if (user.userType !== statusAllowReport[batch.status]) {
             return shim.error('User is not allowed to report');
         }
@@ -650,16 +656,16 @@ class Supply extends Contract {
         // batch.markedFaultBy = userID;
         // batch.date.markedFaultDate=  await this.getCurrentDate();
         // await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
-        const product = await JSON.parse(await (await this.queryProduct(ctx, batch.productId)).payload);
+        const product = await JSON.parse( (await this.queryProduct(ctx, batch.productId)).payload );
         product.status = 'fault';
         product.markedFaultBy = userID;
         await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
-        const allResults = JSON.parse((await this.getAllBatches(ctx)).payload);
+        const allResults = JSON.parse( (await this.getAllBatches(ctx)).payload );
         for (let i in allResults) {
             if (allResults[i].productId == batch.productId) {
                 allResults[i].status = 'fault';
                 allResults[i].markedFaultBy = userID;
-                allResults[i].date.markedFaultDate = await this.getCurrentDate();
+                allResults[i].date.markedFaultDate = this.getCurrentDate();
                 await ctx.stub.putState(allResults[i].batchId, Buffer.from(JSON.stringify(allResults[i])));
                 if (batch.batchId === allResults[i].batchId) 
                     batch = allResults[i];

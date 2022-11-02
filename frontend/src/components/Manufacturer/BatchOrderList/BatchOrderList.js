@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { BatchOrderColumn } from "./BatchOrderColumn";
 import { request } from '../../../utils/request';
 import { Modal, Row, Col, Typography } from 'antd';
+import { batchStatusTranslation } from '../../../utils/constants';
 
 function BatchOrderList() {
   const [data, setData] = useState([]);
@@ -155,6 +156,7 @@ function BatchOrderList() {
 
       body.forEach((component) => {
         component.date = component.date.orderedDate;
+        component.processedStatus = batchStatusTranslation[component.status];
         if (component.retailerObj) {
           component.retailerObj = component["retailerObj"]["name"];
         }

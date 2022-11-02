@@ -27,7 +27,6 @@ function HomePageAdmin() {
                         <Button 
                             icon={<ArrowRightOutlined />}
                             size="large"
-                            type="primary"
                             onClick={() => navigate('/admin/userlist')}
                         >View Users</Button>
                     </div>

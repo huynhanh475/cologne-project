@@ -1,5 +1,5 @@
 export const RetailerTransferColumn = [
-    { field: "batchId", headerName: "Batch ID", width: 180 },
+    { field: "batchId", headerName: "Batch ID", width: 120 },
     { field: "productId", headerName: "Product ID", width: 180 },
     // { field: "name", headerName: "Product Name", width: 180 },
     { field: "manufacturerObj", headerName: "Manufacturer Name", width: 180 },

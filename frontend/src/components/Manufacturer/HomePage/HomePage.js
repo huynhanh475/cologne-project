@@ -27,9 +27,8 @@ function HomePage() {
                     <Button 
                         icon={<ArrowRightOutlined />}
                         size="large"
-                        type="primary"
                         onClick={() => navigate('/manufacturer/batchorderlist')}
-                    >View Batch Orders</Button>
+                    >View Transactions</Button>
                 </div>
             </Col>
         </Row>

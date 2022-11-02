@@ -1,6 +1,5 @@
 import React from 'react';
 import retailer from "../../images/retailer.svg";
-import './HomePageRetailer.css';
 import { useNavigate } from 'react-router-dom'
 import { Row, Col, Image, Typography, Button } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons';
@@ -13,7 +12,7 @@ function HomePageRetailer() {
     return (
         <div>
             <Row justify='center' align='middle' style={{ margin: "20vh auto" }}>
-                <Col>
+                <Col span={14}>
                     <Image
                         width="80%"
                         src={retailer}
@@ -27,8 +26,8 @@ function HomePageRetailer() {
                         <Button
                             icon={<ArrowRightOutlined />}
                             size="large"
-                            onClick={() => navigate('/retailer/productlist')}
-                        >View Product</Button>
+                            onClick={() => navigate('/retailer/transferlist')}
+                        >View Transactions</Button>
                     </div>
                 </Col>
             </Row>

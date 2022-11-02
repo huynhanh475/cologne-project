@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './FaultyBatchList.css';
 import { DataGrid } from "@mui/x-data-grid";
 import { FaultyBatchColumn } from './FaultyBatchColumn';
