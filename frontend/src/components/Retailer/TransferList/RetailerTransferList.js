@@ -6,6 +6,7 @@ import './RetailerTransferList.css';
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
 import { Modal, Popover, Button, Timeline } from 'antd';
+import { Row, Col, Typography } from 'antd';
 
 function TransferList() {
   const [data, setData] = useState([]);
@@ -209,7 +210,7 @@ function TransferList() {
   };
 
   return (
-    <div>
+    <div className="page-container">
       <Modal title="Transfer Confirmation" open={isConfirm} onOk={handleOkConfirm} onCancel={handleCancelConfirm}>
         <div>
           <p>1. Batch ID: {batchId}</p>
@@ -232,6 +233,11 @@ function TransferList() {
         </div>
       </Modal>
 
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Transaction List</Typography.Title>
+        </Col>
+      </Row>
 
       <div className="transferlisttable">
         <DataGrid

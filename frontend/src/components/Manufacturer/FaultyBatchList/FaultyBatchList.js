@@ -3,6 +3,7 @@ import "./FaultyBatchList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaultyBatchColumn } from "./FaultyBatchColumn";
 import { request } from '../../../utils/request';
+import { Row, Col, Typography } from 'antd';
 
 function FaultyBatchList() {
   const [data, setData] = useState([]);
@@ -36,19 +37,17 @@ function FaultyBatchList() {
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"]; //take the body of data
 
-      body.forEach((component)=>{
+      body.forEach((component) => {
         component.date = component.date.markedFaultDate
-        if(component.retailerObj)
-        {
+        if (component.retailerObj) {
           component.retailerObj = component["retailerObj"]["name"];
         }
-        if(component.delivererObj)
-        {
+        if (component.delivererObj) {
           component.delivererObj = component["delivererObj"]["name"];
         }
       })
 
-      
+
       // let newData = body.filter(component => component.status==="fault")
       setData(body)
     };
@@ -58,7 +57,12 @@ function FaultyBatchList() {
     };
   }, []);
   return (
-    <div>
+    <div className="page-container">
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Faulty Batch List</Typography.Title>
+        </Col>
+      </Row>
       <div className="faultybatchmanufacturertable-container">
         <DataGrid
           rows={data}

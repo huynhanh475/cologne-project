@@ -3,6 +3,7 @@ import './FaultyBatchList.css';
 import { DataGrid } from "@mui/x-data-grid";
 import { FaultyBatchColumn } from './FaultyBatchColumn';
 import { request } from '../../../utils/request';
+import { Row, Col, Typography } from 'antd';
 
 function RetailerFaultyBatchList() {
   const [data, setData] = useState([]);
@@ -22,12 +23,10 @@ function RetailerFaultyBatchList() {
 
       body.forEach(element => {
         element.date = element.date.markedFaultDate
-        if(element.manufacturerObj)
-        {
+        if (element.manufacturerObj) {
           element.manufacturerObj = element["manufacturerObj"]["name"];
         }
-        if(element.delivererObj)
-        {
+        if (element.delivererObj) {
           element.delivererObj = element["delivererObj"]["name"];
         }
         // if(element.markedFaultBy)
@@ -42,7 +41,12 @@ function RetailerFaultyBatchList() {
   }, []);
 
   return (
-    <div>
+    <div className='page-container'>
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Faulty Batch List</Typography.Title>
+        </Col>
+      </Row>
       <div className="faultybatchtable">
         <DataGrid
           rows={data}

@@ -1,5 +1,12 @@
 @import '~antd/dist/antd.css';
 
+.page-container {
+    width: 80vw;
+    justify-content: center;
+    align-content: center;
+    margin: 1.5rem auto;
+}
+
 .faultybatchtable {
     display: flex;
     justify-content: center;
@@ -8,14 +15,14 @@
     width: 80vw;
     height: 80vh;
     position: relative;
-    top: 5vh;
+    /* top: 5vh; */
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
     z-index: 1;
-    margin-top: 2vh;
-  }
-  
-  .faultybatchtable .datatableTitle {
+    /* margin-top: 2vh; */
+}
+
+.faultybatchtable .datatableTitle {
     width: 100%;
     font-family: 'Verdana', sans-serif;
     font-size: 100px;
@@ -24,13 +31,13 @@
     display: -ms-flexbox;
     display: flex;
     -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
     -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
-  }
-  
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
 .filter_batch_retailer {
     display: flex;
     justify-content: center;
@@ -38,9 +45,9 @@
     margin-bottom: 1%;
     padding-top: 0.5%;
 }
-  
-  
-.filter_batch_retailer input{
+
+
+.filter_batch_retailer input {
     margin-top: 20px;
     width: 30%;
     height: 8%;
@@ -52,5 +59,3 @@
     color: #013567;
     font-family: 'Verdana', sans-serif;
 }
-
-

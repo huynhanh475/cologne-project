@@ -4,6 +4,7 @@ import { TransferListColumn } from './TransferListColumn';
 import './TransferList.css';
 import { request } from '../../../utils/request';
 import { Modal } from 'antd';
+import { Row, Col, Typography } from 'antd';
 
 function TransferList() {
     const [data, setData] = useState([]);
@@ -50,7 +51,7 @@ function TransferList() {
                 }
             })
 
-            let newData = body.filter(component => component.status === 'transferred-to-deliverer'||component.status === 'deliverer-confirm-transfer')
+            let newData = body.filter(component => component.status === 'transferred-to-deliverer' || component.status === 'deliverer-confirm-transfer')
             setData(newData)
         };
         getBatch();
@@ -211,7 +212,7 @@ function TransferList() {
         },
     ];
     return (
-        <>
+        <div className="page-container">
             <Modal title="Transfer To Retailer Confirmation" open={isTransfer} onOk={handleOkTransfer} onCancel={handleCancelTransfer}>
                 <div>
                     <p>1. Batch ID: {batchId}</p>
@@ -227,10 +228,15 @@ function TransferList() {
                     <p>1. Batch ID: {batchId}</p>
                     <p>2. Product ID: {productId}</p>
                     <p>3. Manufacturer Name: {manufacturerObj}</p>
-                    <p>4. Retailer Name: {retailerObj}</p>  
+                    <p>4. Retailer Name: {retailerObj}</p>
                     <p>5. Quantity: {quantity}</p>
                 </div>
             </Modal>
+            <Row justify="end" align='middle'>
+                <Col flex="auto">
+                    <Typography.Title level={3}>Transaction List</Typography.Title>
+                </Col>
+            </Row>
             <Modal title="Transfer Confirmation" open={isTransferConfirm} onOk={handleOkConfirm} onCancel={handleCancelConfirm}>
                 <div>
                     <p>1. Batch ID: {batchId}</p>
@@ -251,8 +257,7 @@ function TransferList() {
                     checkboxSelection
                 />
             </div>
-        </>
-
+        </div>
     )
 }
 
