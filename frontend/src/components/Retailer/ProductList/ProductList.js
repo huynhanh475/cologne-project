@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { ProductColumn } from "./ProductColumn";
 import RegisterProductForm from './RegisterProductForm';
 import { request } from '../../../utils/request';
+import { Row, Col, Typography } from 'antd';
 
 function ProductList() {
   const [data, setData] = useState([]);
@@ -23,15 +24,15 @@ function ProductList() {
 
   useEffect(() => {
     const getAllProducts = async () => {
-        const response = await request(params);
-        let rawData = await response.text();
-        let jsonData = JSON.parse(rawData);
-        let body = jsonData["data"];
-        setData(body);
+      const response = await request(params);
+      let rawData = await response.text();
+      let jsonData = JSON.parse(rawData);
+      let body = jsonData["data"];
+      setData(body);
     };
     getAllProducts();
     return () => { };
-  },[isRegister]);
+  }, [isRegister]);
 
 
   const handleOnClickRegister = (a) => {
@@ -58,8 +59,13 @@ function ProductList() {
     },
   ];
   return (
-    <div>
+    <div className="page-container">
       <RegisterProductForm isRegister={isRegister} setIsRegister={setIsRegister} productId={productId} name={name} manufacturerId={manufacturerId} date={date} price={price} />
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Product List</Typography.Title>
+        </Col>
+      </Row>
       <div className="productlisttable">
         <DataGrid
           rows={data}

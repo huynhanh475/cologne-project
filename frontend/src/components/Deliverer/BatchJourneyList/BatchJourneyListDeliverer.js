@@ -7,6 +7,7 @@ import { BatchJourneyColumn } from "./BatchJourneyColumn";
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
 import { Modal, Popover, Button, Timeline } from 'antd';
+import { Row, Col, Typography } from 'antd';
 
 function BatchJourneyListDeliverer() {
   const [data, setData] = useState([]);
@@ -194,10 +195,13 @@ function BatchJourneyListDeliverer() {
   ];
 
   return (
-    <>
-      {/* <TransferModal isTransfer={isTransfer} setIsTransfer={setIsTransfer} batchID={batchId} productID={productId} manufacturerID={manufacturerId} retailerID={retailerId} delivererID={delivererId} quantity={quantity} /> */}
-
-      <div className="batchjourneytable">
+    <div className="page-container">
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Batch Journey</Typography.Title>
+        </Col>
+      </Row>
+      <div className="batchjourneytable-deliverer">
         <DataGrid
           rows={data}
           columns={BatchJourneyColumn.concat(viewColumn)}
@@ -207,8 +211,7 @@ function BatchJourneyListDeliverer() {
           checkboxSelection
         />
       </div>
-    </>
-
+    </div>
   );
 }
 

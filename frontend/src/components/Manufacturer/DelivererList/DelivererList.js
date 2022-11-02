@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import "./DelivererList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { DelivererColumn } from "./DelivererColumn";
 import { useState } from "react";
 import DelivererForm from './DelivererForm';
 import { request } from '../../../utils/request';
+import { Row, Col, Typography } from 'antd';
 
 function DelivererList() {
   const [data, setData] = useState([]);
@@ -39,8 +40,8 @@ function DelivererList() {
   // const [user, setUserID] = useState("");
   const [delivererId, setDelivererId] = useState("");
 
-  const handleOnClick=(a) => {
-    setIsOpenModal(true);    
+  const handleOnClick = (a) => {
+    setIsOpenModal(true);
     setDelivererId(a.userId);
     // console.log(a.userId);
   }
@@ -53,7 +54,7 @@ function DelivererList() {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <div className="inviteButton" onClick={()=>handleOnClick(params.row)}>
+            <div className="inviteButton" onClick={() => handleOnClick(params.row)}>
               Invite
             </div>
           </div>
@@ -62,8 +63,13 @@ function DelivererList() {
     },
   ];
   return (
-    <div className="maintable">
-      <DelivererForm isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} delivererId={delivererId}/>
+    <div className="page-container">
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Deliverer List</Typography.Title>
+        </Col>
+      </Row>
+      <DelivererForm isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} delivererId={delivererId} />
       <div className="deliverertable">
         <DataGrid
           rows={data}

@@ -12,7 +12,7 @@ export const SidebarData = [
     role: 'client'
   },
   {
-    title: 'Batch Order List',
+    title: 'Transaction List',
     path: '/manufacturer/batchorderlist',
     icon: <IoIcons.IoMdBasket />,
     cName: 'nav-text-container',
@@ -52,7 +52,7 @@ export const SidebarData = [
     role: 'client'
   },
   {
-    title: 'Transfer List',
+    title: 'Transaction List',
     path: '/retailer/transferlist',
     icon: <IoIcons.IoIosSend />,
     cName: 'nav-text-container',
@@ -84,7 +84,7 @@ export const SidebarData = [
     role: 'client'
   },
   {
-    title: 'Transfer List',
+    title: 'Transaction List',
     path: '/deliverer/transferlist',
     icon: <IoIcons.IoMdBasket />,
     cName: 'nav-text-container',

@@ -5,6 +5,13 @@
   z-index: 2;
 }
 
+.page-container {
+  width: 80vw;
+  justify-content: center;
+  align-content: center;
+  margin: 1.5rem auto;
+}
+
 .faultybatchmanufacturertable-container{
   display: flex;
   justify-content: center;
@@ -13,11 +20,11 @@
   width: 80vw;
   height: 80vh;
   position: relative;
-  top: 5vh;
+  /* top: 5vh; */
   border-radius: 10px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
-  margin-top: 2vh;
+  /* margin-top: 2vh; */
 }
   
   .faultybatchmanufacturertable-container .cellAction {

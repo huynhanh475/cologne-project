@@ -3,7 +3,7 @@ import "./BatchOrderList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { BatchOrderColumn } from "./BatchOrderColumn";
 import { request } from '../../../utils/request';
-import { Modal } from 'antd';
+import { Modal, Row, Col, Typography } from 'antd';
 
 function BatchOrderList() {
   const [data, setData] = useState([]);
@@ -206,7 +206,7 @@ function BatchOrderList() {
   //   },
   // ];
   return (
-    <>
+    <div className="page-container">
       <Modal title="Transfer Confirmation" open={isTransfer} onOk={handleOkTransfer} onCancel={handleCancelTransfer}>
         <div>
           <p>1. Batch ID: {batchId}</p>
@@ -228,6 +228,11 @@ function BatchOrderList() {
           <p>6. Quantity: {quantity}</p>
         </div>
       </Modal>
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Transaction List</Typography.Title>
+        </Col>
+      </Row>
       <div className="batchorderlist">
         <DataGrid
           rows={data}
@@ -238,8 +243,7 @@ function BatchOrderList() {
           checkboxSelection
         />
       </div>
-    </>
-
+    </div>
   );
 };
 

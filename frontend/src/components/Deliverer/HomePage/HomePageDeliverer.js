@@ -1,20 +1,37 @@
 import React from 'react';
 import deliverer from "../../images/deliverer.svg";
 import './HomePageDeliverer.css';
+import {useNavigate} from 'react-router-dom'
+import { Row, Col, Image, Typography, Button } from 'antd'
+import { ArrowRightOutlined } from '@ant-design/icons';
+import { getUser } from '../../../utils/auth';
 
 function HomePageDeliverer() {
+    const currentUser = JSON.parse(getUser());
+    const navigate = useNavigate();
+    console.log(currentUser)
     return (
         <div>
-            <div className="homepage1">
-                <div className="first-part-landing1">
-                    <img className="image1" src={deliverer} alt="Welcome" />
-                </div>
-                <div className="second-part-landing1">
-                    <div className="second-part-container1">
-                        <h1 className='text-container1'>Welcome Deliverer!</h1>
+            <Row justify='center' align='middle' style={{margin: "20vh auto"}}>
+                <Col>
+                    <Image
+                        width="80%"
+                        src={deliverer}
+                        preview={false}
+                    />
+                </Col>
+                <Col>
+                    <Typography.Title>Welcome back,</Typography.Title>
+                    <span style={{fontSize: "32px"}}>{currentUser.name}!</span>
+                    <div style={{marginTop:"1rem"}}>
+                        <Button 
+                            icon={<ArrowRightOutlined />}
+                            size="large"
+                            onClick={() => navigate('/deliverer/invitationlist')}
+                        >View Invitation List</Button>
                     </div>
-                </div>
-            </div>
+                </Col>
+            </Row>
         </div>
     )
 }

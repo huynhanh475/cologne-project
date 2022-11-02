@@ -1,21 +1,39 @@
 import React from 'react';
 import manufacturer from "../../images/manufacturer.svg";
 import './HomePage.css';
+import { Row, Col, Image, Typography, Button } from 'antd'
+import { ArrowRightOutlined } from '@ant-design/icons';
+import { getUser } from '../../../utils/auth';
+import { useNavigate } from 'react-router-dom'
+
 function HomePage() {
-  return (
-    <div>
-        <div className="homepage">
-            <div className="first-part-landing">
-                <img src={manufacturer} alt="Welcome"/>
-            </div>
-            <div className="second-part-landing">
-                <div className="second-part-container">
-                    <h1 className='text-container'>Welcome <br/>Manufacturer!</h1>
-                </div>
-            </div>
+    const currentUser = JSON.parse(getUser());
+    const navigate = useNavigate();
+    console.log(currentUser)
+    return (
+        <div>
+            <Row justify='center' align='middle' style={{ margin: "20vh auto" }}>
+                <Col>
+                    <Image
+                        width="80%"
+                        src={manufacturer}
+                        preview={false}
+                    />
+                </Col>
+                <Col>
+                    <Typography.Title>Welcome back,</Typography.Title>
+                    <span style={{ fontSize: "32px" }}>{currentUser.name}!</span>
+                    <div style={{ marginTop: "1rem" }}>
+                        <Button
+                            icon={<ArrowRightOutlined />}
+                            size="large"
+                            onClick={() => navigate('/manufacturer/productform')}
+                        >Create Product</Button>
+                    </div>
+                </Col>
+            </Row>
         </div>
-    </div>
-  )
+    )
 }
 
 export default HomePage
