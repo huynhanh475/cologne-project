@@ -13,7 +13,7 @@ function ProductForm() {
   // const [date, setDate] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [isLoading, setIsLoading] = useState("false");
+  const [isLoading, setIsLoading] = useState(false);
 
   const clearField = () => {
     setName("");
