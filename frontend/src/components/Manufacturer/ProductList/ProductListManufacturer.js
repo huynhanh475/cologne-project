@@ -3,7 +3,7 @@ import { ProductListColumn } from "./ProductListColumn";
 import { DataGrid } from "@mui/x-data-grid";
 import "./ProductListManufacturer.css";
 import { request } from '../../../utils/request';
-import { Modal } from 'antd';
+import { Modal, Row, Col, Typography } from 'antd';
 
 function ProductListManufacturer() {
   const [data, setData] = useState([]);
@@ -42,7 +42,7 @@ function ProductListManufacturer() {
     const token = localStorage.getItem("AUTH_DATA");
     const params = {
       method: "POST",
-      url: "/product/report/"+productId,
+      url: "/product/report/" + productId,
       headers: { 'Content-Type': "application/json", 'x-access-token': token },
     }
     const response = await request(params);
@@ -75,7 +75,7 @@ function ProductListManufacturer() {
     };
   }, [isFault]);
   return (
-    <div>
+    <div className='page-container'>
       <Modal title="Mark Fault Confirmation" open={isFault} onOk={handleOkFault} onCancel={handleCancelFault}>
         <div>
           <p>1. Product ID: {productId}</p>
@@ -85,6 +85,11 @@ function ProductListManufacturer() {
           <p>5. Quantity: {quantity}</p>
         </div>
       </Modal>
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Product List</Typography.Title>
+        </Col>
+      </Row>
       <div className="product-list-manufacturer-container">
         <DataGrid
           rows={data}

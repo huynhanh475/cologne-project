@@ -5,7 +5,14 @@
   z-index: 2;
 }
 
-.batchjourneylisttable {
+.page-container {
+  width: 80vw;
+  justify-content: center;
+  align-content: center;
+  margin: 1.5rem auto;
+}
+
+.batchjourneylisttable-retailer {
   display: flex;
   justify-content: center;
   margin: 0 auto;
@@ -13,14 +20,14 @@
   width: 80vw;
   height: 80vh;
   position: relative;
-  top: 5vh;
+  /* top: 5vh; */
   border-radius: 10px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
-  margin-top: 2vh;
+  /* margin-top: 2vh; */
 }
   
-  .batchjourneylisttable .datatableTitle {
+  .batchjourneylisttable-retailer .datatableTitle {
     width: 100%;
     font-family: 'Verdana', sans-serif;
     font-size: 100px;

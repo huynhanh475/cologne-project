@@ -6,7 +6,7 @@ import { BatchJourneyColumn } from "./BatchJourneyColumn";
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
 import { Modal, Popover, Button, Timeline } from 'antd';
-
+import { Row, Col, Typography } from 'antd';
 
 function RetailerBatchJourney() {
   const [data, setData] = useState([]);
@@ -89,9 +89,13 @@ function RetailerBatchJourney() {
   ];
 
   return (
-    <>
+    <div className='page-container'>
       {/* <TransferModal isTransfer={isTransfer} setIsTransfer={setIsTransfer} batchId={batchId} productId={productId} manufacturerId={manufacturerId} retailerId={retailerId} delivererId={delivererId} quantity={quantity} /> */}
-      
+      <Row justify="end" align='middle'>
+        <Col flex="auto">
+          <Typography.Title level={3}>Batch Journey</Typography.Title>
+        </Col>
+      </Row>
       <div className="batchjourneylisttable">
         <DataGrid
           rows={data}
@@ -102,7 +106,7 @@ function RetailerBatchJourney() {
           checkboxSelection
         />
       </div>
-    </>
+    </div>
 
   );
 };

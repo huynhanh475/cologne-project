@@ -4,6 +4,7 @@ import { InvitationListColumn } from "./InvitationListColumn";
 import './InvitationList.css';
 import { request } from '../../../utils/request';
 import { Modal } from 'antd';
+import { Row, Col, Typography } from 'antd';
 // import record from './MOCK_DATA (4).json';
 
 function InvitationList() {
@@ -38,7 +39,7 @@ function InvitationList() {
             });
             reFetch();
         }
-        else{
+        else {
             Modal.error({
                 content: "Invitation cannot be approved!",
             });
@@ -65,7 +66,7 @@ function InvitationList() {
             });
             reFetch();
         }
-        else{
+        else {
             Modal.error({
                 content: "Invitation cannot be rejected",
             });
@@ -121,7 +122,12 @@ function InvitationList() {
         },
     ];
     return (
-        <>
+        <div className="page-container">
+            <Row justify="end" align='middle'>
+                <Col flex="auto">
+                    <Typography.Title level={3}>Invitation List</Typography.Title>
+                </Col>
+            </Row>
             <div className="invitationlisttable">
                 <DataGrid
                     rows={data}
@@ -132,7 +138,7 @@ function InvitationList() {
                     checkboxSelection
                 />
             </div>
-        </>
+        </div>
     )
 }
 

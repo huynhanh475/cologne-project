@@ -1,6 +1,13 @@
 @import '~antd/dist/antd.css';
 
-.batchjourneytable {
+.page-container {
+  width: 80vw;
+  justify-content: center;
+  align-content: center;
+  margin: 1.5rem auto;
+}
+
+.batchjourneytable-deliverer {
   display: flex;
   justify-content: center;
   margin: 0 auto;
@@ -8,14 +15,12 @@
   width: 80vw;
   height: 80vh;
   position: relative;
-  top: 5vh;
   border-radius: 10px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
-  margin-top: 2vh;
 }
   
-  .batchjourneytable .datatableTitle {
+  .batchjourneytable-deliverer .datatableTitle {
     width: 100%;
     font-family: 'Verdana', sans-serif;
     font-size: 100px;
@@ -31,7 +36,7 @@
             justify-content: space-between;
   }
   
-  .batchjourneytable .cellAction {
+  .batchjourneytable-deliverer .cellAction {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -41,7 +46,7 @@
     gap: 15px;
   }
   
-  .batchjourneytable .cellAction .transferButton {
+  .batchjourneytable-deliverer .cellAction .transferButton {
     padding: 2px 5px;
     border-radius: 5px;
     color: darkblue;
@@ -49,7 +54,7 @@
     cursor: pointer;
   }
   
-  .batchjourneytable .cellAction .markFaultButton {
+  .batchjourneytable-deliverer .cellAction .markFaultButton {
     padding: 2px 5px;
     border-radius: 5px;
     color: crimson;
