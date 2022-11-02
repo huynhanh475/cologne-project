@@ -13,7 +13,7 @@ function ProductForm() {
   // const [date, setDate] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [isLoading, setIsLoading] = useState("false");
+  const [isLoading, setIsLoading] = useState(false);
 
   const clearField = () => {
     setName("");
@@ -81,7 +81,7 @@ function ProductForm() {
               <div className="label-create-product">Quantity</div>
               <input className="label-input-create-product" onChange={(e) => { setQuantity(e.target.value) }} />
               <div className="submit-button-create-product">
-                <Button type="primary" htmlType="submit" onClick={handleSubmit}>Submit</Button>
+                <Button type="primary" htmlType="submit" onClick={handleSubmit} loading={isLoading} disabled={isLoading}>Submit</Button>
               </div>
             </form>
           </div>

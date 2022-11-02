@@ -54,6 +54,7 @@ function UserList() {
                     'success'
                 )
                 reFetch();
+                userForm.resetFields();
             }
             else{
                 Swal.fire({
@@ -70,7 +71,7 @@ function UserList() {
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        userForm.resetFields()
+        userForm.resetFields();
     };
 
     const reFetch = () => {
