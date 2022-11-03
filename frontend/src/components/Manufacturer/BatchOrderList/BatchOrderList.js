@@ -181,7 +181,7 @@ function BatchOrderList() {
   }
 
   const renderDelivererCell = (params) => {
-    if (!params.row.delivererObj && params.row.status !== "pending-registration") {
+    if (!params.row.delivererObj && params.row.status !== "pending-registration" && params.row.status !== "fault") {
       return (
         <div className="inviteButton" onClick={() => handleOnClickInvite(params.row)}>Invite Deliverer</div>
       )
