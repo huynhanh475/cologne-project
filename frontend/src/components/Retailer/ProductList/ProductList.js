@@ -28,7 +28,11 @@ function ProductList() {
       let rawData = await response.text();
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"];
-      setData(body);
+      setData(body.map( (e) => {
+        let result = e;
+        result.manufacturerName = result.manufacturer.name;
+        return result;
+      }));
     };
     getAllProducts();
     return () => { };

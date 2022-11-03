@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from 'antd';
 import { request } from '../../../utils/request';
 
 function ConfirmModal({ isConfirm, setIsConfirm, batchId, productId, manufacturerId, retailerId, delivererId, date, quantity }) {
     const token = localStorage.getItem("AUTH_DATA");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleOk = async (e) => {
         e.preventDefault();
+
+        setIsLoading(true);
         const item = { batchId };
         const params = {
             method: "POST",
@@ -15,6 +18,7 @@ function ConfirmModal({ isConfirm, setIsConfirm, batchId, productId, manufacture
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
+        setIsLoading(false)
         if (response.ok){
             setIsConfirm(false);
             Modal.success({
@@ -36,7 +40,16 @@ function ConfirmModal({ isConfirm, setIsConfirm, batchId, productId, manufacture
     
     return (
         <>
-            <Modal title="Transfer Confirmation" open={isConfirm} onOk={handleOk} onCancel={handleCancel}>
+            <Modal title="Transfer Confirmation" open={isConfirm} onOk={handleOk} onCancel={handleCancel}
+                footer={[
+                    <Button key="back" onClick={handleCancel}>
+                        Cancel
+                    </Button>,
+                    <Button key="submit" type="primary" loading={isLoading} disabled={isLoading} onClick={handleOk}>
+                        Confirm
+                    </Button>,
+                ]}
+            >
                 <div>
                     <p>1. Batch ID: {batchId}</p>
                     <p>2. Product ID: {productId}</p>

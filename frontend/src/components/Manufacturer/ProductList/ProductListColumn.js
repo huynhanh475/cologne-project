@@ -5,4 +5,4 @@ export const ProductListColumn = [
     { field: "price", headerName: "Price", width: 100,},
     { field: "quantity", headerName: "Quantity", width: 120,},
     { field: "status", headerName: "Status", width: 120,},
-    { field: "markedFaultBy", headerName: "Marked Fault By", width: 150,}];
+    { field: "markedFaultName", headerName: "Marked Fault By", width: 150,}];
