@@ -5,7 +5,7 @@ import { BatchJourneyColumn } from "./BatchJourneyColumn";
 // import TransferModal from './TransferModal';
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
-import { Modal, Popover, Button, Timeline } from 'antd';
+import { Popover, Button, Timeline } from 'antd';
 import { Row, Col, Typography } from 'antd';
 
 function RetailerBatchJourney() {

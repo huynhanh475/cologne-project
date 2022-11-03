@@ -23,6 +23,7 @@ function RetailerFaultyBatchList() {
 
       body.forEach(element => {
         element.date = element.date.markedFaultDate
+        element.markedFaultName = element.markedFaultByObj.name;
         if (element.manufacturerObj) {
           element.manufacturerObj = element["manufacturerObj"]["name"];
         }
@@ -38,6 +39,7 @@ function RetailerFaultyBatchList() {
     };
     getFaultBatch();
     return () => { };
+  // eslint-disable-next-line
   }, []);
 
   return (

@@ -4,9 +4,12 @@ import { request } from '../../../utils/request';
 
 function MarkFaultModal({ isMarkFault, setIsMarkFault, batchId, productId, manufacturerId, retailerId, delivererId, date, quantity }) {
     const token = localStorage.getItem("AUTH_DATA");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleOk = async (e) => {
         e.preventDefault();
+
+        setIsLoading(true);
         const item = { batchId };
         const params = {
             method: "POST",
@@ -15,6 +18,8 @@ function MarkFaultModal({ isMarkFault, setIsMarkFault, batchId, productId, manuf
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
         const response = await request(params);
+        setIsLoading(false);
+        
         if (response.ok){
             setIsMarkFault(false);
             Modal.success({
@@ -36,7 +41,16 @@ function MarkFaultModal({ isMarkFault, setIsMarkFault, batchId, productId, manuf
 
     return (
         <>
-            <Modal title="Mark Fault" open={isMarkFault} onOk={handleOk} onCancel={handleCancel}>
+            <Modal title="Mark Fault" open={isMarkFault} onOk={handleOk} onCancel={handleCancel}
+                footer={[
+                    <Button key="back" onClick={handleCancel}>
+                        Cancel
+                    </Button>,
+                    <Button key="submit" type="primary" loading={isLoading} disabled={isLoading} onClick={handleOk}>
+                        Confirm
+                    </Button>,
+                ]}
+            >
                 <div>
                     <p>1. Batch ID: {batchId}</p>
                     <p>2. Product ID: {productId}</p>

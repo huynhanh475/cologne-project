@@ -6,7 +6,7 @@ import './RetailerTransferList.css';
 // import MarkFaultModal from './MarkFaultModal';
 import { request } from '../../../utils/request';
 import { Modal } from 'antd';
-import { Row, Col, Typography } from 'antd';
+import { Row, Col, Typography, Button } from 'antd';
 import { batchStatusTranslation } from '../../../utils/constants';
 
 function TransferList() {
@@ -21,6 +21,7 @@ function TransferList() {
 
   const [isConfirm, setIsConfirm] = useState(false);
   const [isMarkFault, setIsMarkFault] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const token = localStorage.getItem("AUTH_DATA");
   const typeOfUser = JSON.parse(localStorage.getItem("USER_DATA"))['userType'];
@@ -156,6 +157,8 @@ function TransferList() {
   // ];
   const handleOkConfirm = async (e) => {
     e.preventDefault();
+
+    setIsLoading(true);
     const item = { batchId };
     const params = {
       method: "POST",
@@ -164,6 +167,8 @@ function TransferList() {
       headers: { 'Content-Type': "application/json", 'x-access-token': token },
     }
     const response = await request(params);
+    setIsLoading(false);
+
     if (response.ok) {
       setIsConfirm(false);
       Modal.success({
@@ -185,6 +190,8 @@ function TransferList() {
 
   const handleOkFault = async (e) => {
     e.preventDefault();
+
+    setIsLoading(true);
     const item = { batchId };
     const params = {
       method: "POST",
@@ -193,6 +200,8 @@ function TransferList() {
       headers: { 'Content-Type': "application/json", 'x-access-token': token },
     }
     const response = await request(params);
+    setIsLoading(false);
+
     if (response.ok) {
       setIsMarkFault(false);
       Modal.success({
@@ -214,7 +223,20 @@ function TransferList() {
 
   return (
     <div className="page-container">
-      <Modal title="Transfer Confirmation" open={isConfirm} onOk={handleOkConfirm} onCancel={handleCancelConfirm}>
+      <Modal 
+        title="Transfer Confirmation" 
+        open={isConfirm} 
+        onOk={handleOkConfirm} 
+        onCancel={handleCancelConfirm}
+        footer={[
+          <Button key="back" onClick={handleCancelConfirm}>
+              Cancel
+          </Button>,
+          <Button key="submit" type="primary" loading={isLoading} disabled={isLoading} onClick={handleOkConfirm}>
+              Confirm
+          </Button>,
+        ]}
+      >
         <div>
           <p>1. Batch ID: {batchId}</p>
           <p>2. Product ID: {productId}</p>
@@ -225,7 +247,16 @@ function TransferList() {
         </div>
       </Modal>
 
-      <Modal title="Mark Fault" open={isMarkFault} onOk={handleOkFault} onCancel={handleCancelFault}>
+      <Modal title="Mark Fault" open={isMarkFault} onOk={handleOkFault} onCancel={handleCancelFault}
+        footer={[
+          <Button key="back" onClick={handleCancelFault}>
+              Cancel
+          </Button>,
+          <Button key="submit" type="primary" loading={isLoading} disabled={isLoading} onClick={handleOkFault}>
+              Confirm
+          </Button>,
+        ]}
+      >
         <div>
           <p>1. Batch ID: {batchId}</p>
           <p>2. Product ID: {productId}</p>

@@ -2,7 +2,6 @@ import './App.css';
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import ProductForm from './components/Manufacturer/ProductForm/ProductForm';
 import BatchOrderList from './components/Manufacturer/BatchOrderList/BatchOrderList';
-import DelivererList from './components/Manufacturer/DelivererList/DelivererList';
 import BatchJourneyList from './components/Manufacturer/BatchJourneyList/BatchJourneyList';
 import FaultyBatchList from './components/Manufacturer/FaultyBatchList/FaultyBatchList';
 import InvitationList from './components/Deliverer/InvitationList/InvitationList';
@@ -13,10 +12,8 @@ import DelivererFaultyBatch from './components/Deliverer/FaultyBatchList/Deliver
 import ProductList from './components/Retailer/ProductList/ProductList';
 import RetailerFaultyBatch from './components/Retailer/FaultyBatchList/RetailerFaultyBatch';
 import RetailerTransferList from './components/Retailer/TransferList/RetailerTransferList';
-import CreateUserForm from './components/Admin/CreateUserForm/CreateUserForm';
 import UserList from './components/Admin/UserList/UserList';
 import ProductListManufacturer from './components/Manufacturer/ProductList/ProductListManufacturer';
-// import Navbar from './components/NavBar/NavBar';
 import { isLoggedIn } from './utils/auth';
 import WithNav from './components/Layout/WithNav';
 import WithoutNav from './components/Layout/WithoutNav';
@@ -38,7 +35,7 @@ function App() {
             <Route path="/manufacturer/homepage" element ={<HomePage/>} />
             <Route path="/manufacturer/productform" element={<ProductForm />} />
             <Route path="/manufacturer/batchorderlist" element={<BatchOrderList />} />
-            <Route path="/manufacturer/delivererlist" element={<DelivererList />} />
+            {/* <Route path="/manufacturer/delivererlist" element={<DelivererList />} /> */}
             <Route path="/manufacturer/batchjourney" element={<BatchJourneyList />} />
             <Route path="/manufacturer/faultybatch" element={<FaultyBatchList />} />
             <Route path="/manufacturer/productlist" element={<ProductListManufacturer />} />

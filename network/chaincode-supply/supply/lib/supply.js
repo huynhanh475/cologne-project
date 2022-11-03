@@ -121,7 +121,7 @@ class Supply extends Contract {
         };
 
 
-        const productAsBytes = await Buffer.from(JSON.stringify(product));
+        const productAsBytes = Buffer.from(JSON.stringify(product));
         await ctx.stub.putState('product' + currentCounter, productAsBytes);
 
         console.info('===============END : Create Product==============');
@@ -144,7 +144,7 @@ class Supply extends Contract {
             password: await this.hashPassword(password),
         };
 
-        const userAsBytes = await Buffer.from(JSON.stringify(user));
+        const userAsBytes = Buffer.from(JSON.stringify(user));
         await ctx.stub.putState('user-' + currentCounter, userAsBytes);
 
         console.info('================= END : Create User ===============');
@@ -189,7 +189,7 @@ class Supply extends Contract {
         const productCounter = await this.getCounter(ctx, 'product');
 
         for (let i = 0; i < productCounter; i++) {
-            const productAsBytes = await ctx.stub.getState('product' + i);
+            let productAsBytes = await ctx.stub.getState('product' + i);
             // return error if product not exist
             if (!productAsBytes || productAsBytes.length === 0) {
                 return shim.error(`${'product' + i} does not exist`);
@@ -197,6 +197,17 @@ class Supply extends Contract {
             // check if product satisfy filter
             const productAsJson = await JSON.parse(productAsBytes.toString());
             if (filterFunc(productAsJson)) {
+                const manufacturerAsBytes = await ctx.stub.getState(productAsJson.manufacturerId);
+                const manufacturerAsJSON = await JSON.parse(manufacturerAsBytes.toString());
+                productAsJson.manufacturer = manufacturerAsJSON;
+
+                if (!!productAsJson.markedFaultBy) {
+                    const markerAsBytes = await ctx.stub.getState(productAsJson.markedFaultBy);
+                    const markerAsJson = await JSON.parse(markerAsBytes.toString());
+                    productAsJson.markedFaultByObj = markerAsJson;
+                }
+
+                productAsBytes = Buffer.from(JSON.stringify(productAsJson))
                 products.push(productAsBytes);
             }
         }
@@ -219,10 +230,17 @@ class Supply extends Contract {
         batchAsJSON.manufacturerObj = manufacturerAsJSON;
         batchAsJSON.retailerObj = retailerAsJSON;
         batchAsJSON.productObj = productAsJSON;
+
         if (batchAsJSON.delivererId !== '') {
             const delivererAsBytes = await ctx.stub.getState(batchAsJSON.delivererId);
             const delivererAsJSON = await JSON.parse(delivererAsBytes.toString());
-            batchAsJSON.delivererObj=delivererAsJSON;
+            batchAsJSON.delivererObj = delivererAsJSON;
+        } 
+
+        if (!!batchAsJSON.markedFaultBy) {
+            const markerAsBytes = await ctx.stub.getState(batchAsJSON.markedFaultBy);
+            const markerAsJSON = await JSON.parse(markerAsBytes.toString());
+            batchAsJSON.markedFaultByObj = markerAsJSON;
         } 
         return batchAsJSON;
     }

@@ -78,7 +78,11 @@ function ProductListManufacturer() {
       let rawData = await response.text();
       let jsonData = JSON.parse(rawData);
       let body = jsonData["data"]; //take the body of data
-      setData(body)
+      setData(body.map((e) => {
+        let result = e;
+        result.markedFaultName = result.markedFaultBy.name;
+        return result;
+      }))
     };
     getProduct();
     return () => {

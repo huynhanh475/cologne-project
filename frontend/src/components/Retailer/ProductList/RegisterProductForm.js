@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, Input } from 'antd';
 import './ProductList.css';
 import { request } from '../../../utils/request';
 
@@ -11,6 +11,14 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
 
     const handleOk = async (e) => {
         e.preventDefault();
+
+        if (!quantity) {
+            Modal.warning({
+                title: 'Failed to register product',
+                content: 'Please input required field quantity.',
+              })
+            return;
+        }
         const token = localStorage.getItem("AUTH_DATA");
         const item = { productId, quantity };
         const params = {
@@ -77,8 +85,8 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
                     </div>
 
                     <div>
-                        <label for='quantity'>6. Quantity</label>
-                        <input type="number" name="quantity" onChange={(e) => { setQuantity(e.target.value) }} required />
+                        <span for='quantity'>6. Quantity: </span>
+                        <Input style={{width: "320px"}} type="number" name="quantity" onChange={(e) => { setQuantity(e.target.value) }} />
                     </div>
 
                 </form>

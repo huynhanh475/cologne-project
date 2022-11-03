@@ -40,6 +40,7 @@ function FaultyBatchList() {
       body.forEach((component) => {
         component.date = component.date.markedFaultDate;
         component.productName = component.productObj.name;
+        component.markedFaultName = component.markedFaultByObj.name;
         if (component.retailerObj) {
           component.retailerObj = component["retailerObj"]["name"];
         }
