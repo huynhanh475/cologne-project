@@ -18,8 +18,6 @@ export async function getProductbyId(req, res) {
     const { loggedUserId, loggedUserType } = req.body;
     const { productId } = req.params
 
-    console.log('1');
-
     if (!productId || !loggedUserId || !loggedUserType ) {
         return badRequest(res);
     }

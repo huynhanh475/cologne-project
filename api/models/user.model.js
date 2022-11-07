@@ -7,14 +7,12 @@ export async function createUser(loggedUserType, information) {
     const {loggedUserId, address, name, email, password } = information;
 
     let networkObj;
-    console.log(loggedUserType)
     networkObj = await connect(loggedUserType, loggedUserId);
     if (networkObj.error) {
         return createModelRes(networkObj.status, networkObj.error);
     }
 
     const contractRes = await invoke(networkObj, 'createUser', name, email, loggedUserType, address, password);
-    console.log('5');
     if (contractRes.error) {
         return createModelRes(contractRes.status, contractRes.error);
     }
@@ -40,9 +38,8 @@ export async function signIn(loggedUserType, information) {
     if (contractRes.error) {
         return createModelRes(contractRes.status, contractRes.error);
     }
-    console.log(contractRes);
     const { name, userType, role } = contractRes;
-    console.log(userType)
+
     const accessToken = generateAccessToken({ id, userType, role, name });
     return createModelRes(200, 'Success', { user : contractRes, accessToken });
 }

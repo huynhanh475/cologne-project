@@ -20,7 +20,6 @@ function UserList() {
 
     const token = localStorage.getItem("AUTH_DATA");
     const currentUserType = capitalizeFirstLetter(JSON.parse(getUser()).userType);
-    console.log(currentUserType)
     const params = {
         method: "GET",
         url: "/user",
@@ -32,9 +31,7 @@ function UserList() {
     };
 
     const handleSubmit = async (values) => {
-        console.log(values)
         try {
-            console.log(values)
             const token = localStorage.getItem("AUTH_DATA");
             const params = {
                 method : "POST",
@@ -83,7 +80,6 @@ function UserList() {
             const response = await request(params);
             var rawData = await response.text();
             var jsonData = JSON.parse(rawData);
-            console.log(jsonData["data"])
             setData(jsonData["data"])
         };
         getUsers(); 

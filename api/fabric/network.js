@@ -183,11 +183,10 @@ export async function query(networkObj, ...funcAndArgs) {
         const funcAndArgsStrings = funcAndArgs.map(elem => String(elem));
 
         const result = await networkObj.contract.evaluateTransaction(...funcAndArgsStrings);
-        console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+        console.log("Transaction has been evaluated");
         networkObj.gateway.disconnect();
 
         const jsonResult = JSON.parse(result);
-        console.log(jsonResult)
         if (jsonResult.status === 200) {
             return JSON.parse(jsonResult.payload);
         }
@@ -195,8 +194,7 @@ export async function query(networkObj, ...funcAndArgs) {
     }
     catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
-        console.log(error)
-        console.log(typeof error)
+
         if (networkObj.gateway) {
             networkObj.gateway.disconnect();
         }
@@ -214,7 +212,6 @@ export async function invoke(networkObj, ...funcAndArgs) {
         networkObj.gateway.disconnect();
 
         const jsonResult = JSON.parse(result);
-        console.log(jsonResult)
         if (jsonResult.status === 200) {
             return JSON.parse(jsonResult.payload);
         }

@@ -100,7 +100,6 @@ function BatchOrderList() {
     e.preventDefault();
     const token = localStorage.getItem("AUTH_DATA");
     const item = { batchId };
-    // console.log(batchId);
     const params = {
       method: "POST",
       url: "/batch/report",
@@ -124,7 +123,6 @@ function BatchOrderList() {
         content: "Batch cannot be marked fault!",
       });
     }
-    console.log(await response.text());
   };
 
   const handleCancelFault = () => {
@@ -136,7 +134,6 @@ function BatchOrderList() {
 
     const token = localStorage.getItem("AUTH_DATA");
     const item = { batchId, delivererId };
-    console.log(item);
     const params = {
       method: "POST",
       url: "/transact/inviteDeliverer",

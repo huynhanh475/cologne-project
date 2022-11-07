@@ -23,7 +23,7 @@ function ProductForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const userType = JSON.parse(localStorage.getItem("USER_DATA"))["userType"];
+
     const token = localStorage.getItem("AUTH_DATA");
     const item = { name, price, quantity };
     const params = {
@@ -32,12 +32,11 @@ function ProductForm() {
       body: item,
       headers: { 'Content-Type': "application/json", 'x-access-token': token },
     }
-    console.log(item);
+
     setIsLoading(true);
     const response = await request(params);
     if (response.ok) {
       setIsLoading(false);
-      console.log(response.status);
       Modal.success({
         content: "Create product successfully!",
       });
@@ -46,7 +45,6 @@ function ProductForm() {
     }
     else {
       setIsLoading(false);
-      console.log(response.status);
       Modal.error({
         title: 'Create product unsuccessfully',
         content: 'Please fill in the required information',

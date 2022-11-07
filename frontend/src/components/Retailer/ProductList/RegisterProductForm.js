@@ -30,7 +30,6 @@ function RegisterProductForm({ isRegister, setIsRegister, productId, name, manuf
 
         setIsLoading(true);
         const response = await request(params);
-        console.log(JSON.parse(await response.text())["data"]);
         setIsLoading(false);
 
         if (response.ok){

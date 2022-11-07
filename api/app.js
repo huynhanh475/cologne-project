@@ -18,17 +18,12 @@ async function main() {
         network.registerUser(userTypes.deliverer, "admin2"),
         network.registerUser(userTypes.retailer, "admin3"),
     ])
-        // .then( async () => {
+        // .then( async () => { //for testing connection
         //     const networkObj = await network.connect(userTypes.retailer, 'admin')
         //     const users = await network.query(networkObj, 'queryUser', "admin1")
         //     console.log(users)
         // })
     )
-
-    // testing connection with the network
-    // const networkObj = await network.connect(userTypes.retailer, 'admin')
-    // const users = await network.query(networkObj, 'queryAllUser')
-    // console.log(users)
 
     const app = express();
     app.use(morgan('combined'));

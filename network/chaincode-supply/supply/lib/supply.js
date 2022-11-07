@@ -664,20 +664,21 @@ class Supply extends Contract {
 
         let batch = await JSON.parse( (await this.queryBatch(ctx, batchId)).payload );
         let user= await JSON.parse( (await this.queryUser(ctx, userID)).payload );
+        // Validate parameters
         if (user.userType !== statusAllowReport[batch.status]) {
             return shim.error('User is not allowed to report');
         }
         if (!batch || batch.length === 0) {
             return shim.error(`${batchId}} does not exist`);
         }
-        // batch.status = 'fault';
-        // batch.markedFaultBy = userID;
-        // batch.date.markedFaultDate=  await this.getCurrentDate();
-        // await ctx.stub.putState(batchId, Buffer.from(JSON.stringify(batch)));
+
+        // Mark product related fault
         const product = await JSON.parse( (await this.queryProduct(ctx, batch.productId)).payload );
         product.status = 'fault';
         product.markedFaultBy = userID;
         await ctx.stub.putState(batch.productId, Buffer.from(JSON.stringify(product)));
+
+        // Mark batches related fault
         const allResults = JSON.parse( (await this.getAllBatches(ctx)).payload );
         for (let i in allResults) {
             if (allResults[i].productId == batch.productId) {
@@ -691,6 +692,8 @@ class Supply extends Contract {
         }
         console.info('================= END : Report Fault ==============');
         batch = await this.getUserObj(ctx, batch);
+
+        // Return success response with updated batch entity
         return shim.success(JSON.stringify(batch));
     }
 

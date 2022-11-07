@@ -29,10 +29,9 @@ function UserForm() {
             body: item,
             headers: { 'Content-Type': "application/json", 'x-access-token': token },
         }
-        console.log(item);
         const response = await request(params);
+
         if (response.ok){
-            console.log(response.status);
             Modal.success({
                 content: `Create user of type ${typeOfUser} successfully!`,
             });
@@ -40,7 +39,6 @@ function UserForm() {
             clearField();
         }
         else{
-            console.log(response.status);
             Modal.error({
                 title: 'Create user unsuccessfully',
                 content: 'Please fill in the required information',

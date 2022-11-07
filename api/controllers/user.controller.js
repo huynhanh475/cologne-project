@@ -10,13 +10,13 @@ export async function createUser(req, res) {
     }
 
     const modelRes = await model.createUser(loggedUserType, {  loggedUserId, address, name, email, password });
-    
+
     return send(res, modelRes);
 }
 
 export async function signIn(req, res) {
     const { id, password, userType } = req.body;
-    console.log(req.body);
+
     if (!id || !password || !userType) {
         return badRequest(res);
     }

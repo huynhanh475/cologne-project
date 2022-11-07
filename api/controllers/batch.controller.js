@@ -18,6 +18,9 @@ export async function getAllBatches(req, res) {
 
 export async function reportBatchFault(req, res) {
     const { loggedUserType, loggedUserId, batchId } = req.body;
+    if (!batchId || !loggedUserType || !loggedUserId) {
+        return badRequest(res);
+    }
     const modelRes = await model.reportBatchFault(loggedUserType, { loggedUserId, batchId });
     return send(res, modelRes);
 }

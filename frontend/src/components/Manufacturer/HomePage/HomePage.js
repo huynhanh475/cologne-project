@@ -8,7 +8,6 @@ import { getUser } from '../../../utils/auth';
 function HomePage() {
     const currentUser = JSON.parse(getUser());
     const navigate = useNavigate();
-    console.log(currentUser)
 
   return (
     <div>

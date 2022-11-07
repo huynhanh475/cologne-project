@@ -43,7 +43,6 @@ function DelivererList() {
   const handleOnClick = (a) => {
     setIsOpenModal(true);
     setDelivererId(a.userId);
-    // console.log(a.userId);
   }
 
   const actionColumn = [

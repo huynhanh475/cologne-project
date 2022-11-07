@@ -6,7 +6,6 @@ export default async (req, res, next) => {
     if ( req.path == '/user/signin') return next();
 
     const accessToken = req.headers['x-access-token'];
-    console.log(accessToken);
 
     if (!accessToken) {
         return unauthorized(res, 'Require access token');

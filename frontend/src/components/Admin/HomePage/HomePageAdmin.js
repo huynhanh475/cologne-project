@@ -9,7 +9,6 @@ import { getUser } from '../../../utils/auth';
 function HomePageAdmin() {
     const currentUser = JSON.parse(getUser());
     const navigate = useNavigate();
-    console.log(currentUser)
     return (
         <div>
             <Row justify='center' align='middle' style={{margin: "20vh auto"}}>

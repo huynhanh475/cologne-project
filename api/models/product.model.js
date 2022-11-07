@@ -10,7 +10,6 @@ export async function createProduct(loggedUserType, information) {
     }
 
     const contractRes = await invoke(networkObj, 'createProduct', name, loggedUserId, price, quantity);
-    console.log(contractRes);
     if (contractRes.error) {
         return createModelRes(contractRes.status, contractRes.error);
     }

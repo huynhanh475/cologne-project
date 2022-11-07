@@ -18,6 +18,7 @@ export const isLoggedIn = () => {
 export const onLogInSuccess = (data) => {
     window.localStorage.setItem("AUTH_DATA", data["accessToken"]);
     window.localStorage.setItem("USER_DATA", JSON.stringify(data["user"]));
+    
     const role = data.user.role;
     const userType = data.user.userType;
     let route;
@@ -31,8 +32,7 @@ export const onLogInSuccess = (data) => {
         default:
             break;
     }
-    console.log("Access token: " + data["accessToken"]);
-    console.log("User data: " + JSON.stringify(data["user"]));
+
     window.location.href = route;
 };
 
